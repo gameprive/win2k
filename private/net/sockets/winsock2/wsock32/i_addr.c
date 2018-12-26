@@ -17,10 +17,8 @@ Revision History:
     mikemas     9-20-91     created
 
 Notes:
-
     Exports:
         inet_addr()
-
 --*/
 
 #ident "@(#)inet_addr.c 5.3     3/8/91"
