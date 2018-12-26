@@ -25,12 +25,12 @@ Notes:
 #include <string.h>
 
 #define UC(b)   (((int)b)&0xff)
-
 #define INTOA_Buffer ( ((PWINSOCK_TLS_DATA)TlsGetValue( SockTlsSlot ))->INTOA_Buffer )
 
 // This preinitialized array defines the strings to be used forinet_ntoa.
 // The index of each row corresponds to the value for a byte in an IP address.
-// The first three bytes of each row are the char/string value for the byte, and the fourth byte in each row is the length of the string required for the byte.
+// The first three bytes of each row are the char/string value for the byte, 
+// and the fourth byte in each row is the length of the string required for the byte.
 // This approach allows a fast implementation with no jumps.
 
 BYTE NToACharStrings[][4] = {

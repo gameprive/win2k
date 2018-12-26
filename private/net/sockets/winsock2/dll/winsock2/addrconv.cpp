@@ -572,9 +572,8 @@ Returns:
             return(NULL);
         }
 
-        // PROLOG failed with WSANOTINITIALIZED, meaning the app has not
-        // yet called WSAStartup(). For historical (hysterical?) reasons,
-        // inet_ntoa() must be functional before WSAStartup() is called.
+        // PROLOG failed with WSANOTINITIALIZED, meaning the app has not yet called WSAStartup().
+        // For historical (hysterical?) reasons, inet_ntoa() must be functional before WSAStartup() is called.
         // So, we'll add an artificial WSAStartup() and press on.
 
         ErrorCode = WSAStartup(WINSOCK_HIGH_API_VERSION, &wsaData);
@@ -597,8 +596,8 @@ Returns:
     Buffer = Thread->GetResultBuffer();
     b = (PUCHAR)Buffer;
 
-    // In an unrolled loop, calculate the string value for each of the four
-    // bytes in an IP address.  Note that for values less than 100 we will
+    // In an unrolled loop, calculate the string value for each of the four bytes in an IP address. 
+    // Note that for values less than 100 we will
     // do one or two extra assignments, but we save a test/jump with this algorithm.
     p = (PUCHAR)&in;
 
