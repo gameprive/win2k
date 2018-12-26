@@ -58,9 +58,9 @@ Revision History:
 
 // This preinitialized array defines the strings to be used for inet_ntoa. 
 // The index of each row corresponds to the value for a byte in an IP address. 
-// The first three bytes of each row are the
-// char/string value for the byte, and the fourth byte in each row is
-// the length of the string required for the byte.  This approach allows a fast implementation with no jumps.
+// The first three bytes of each row are the char/string value for the byte,
+// and the fourth byte in each row is the length of the string required for the byte.
+// This approach allows a fast implementation with no jumps.
 
 
 BYTE NToACharStrings[][4] = {
