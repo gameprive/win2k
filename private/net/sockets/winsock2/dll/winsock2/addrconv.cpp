@@ -45,8 +45,6 @@ Revision History:
 
 
 // Macros for swapping the bytes in a long and a short.
-
-
 #define SWAP_LONG(l)                                \
             ( ( ((l) >> 24) & 0x000000FFL ) |       \
               ( ((l) >>  8) & 0x0000FF00L ) |       \
@@ -416,7 +414,6 @@ Returns:
 
     __try {
         while (MoreFields) {
-
             //    Collect number up to ``.''.
             //    Values are specified as for C:
             //    0x=hex, 0=octal, other=decimal.
