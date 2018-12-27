@@ -428,9 +428,7 @@ public:
     // we are an aggregatable object so we use a delegating IUnknown
     DECLARE_DELEGATING_IUNKNOWN(PBCtrl);
 
-    STDMETHOD(GetMoniker) (DWORD dwAssign,
-                            DWORD dwWhichMoniker,
-                            LPMONIKER FAR* ppmk);
+    STDMETHOD(GetMoniker) (DWORD dwAssign, DWORD dwWhichMoniker, LPMONIKER FAR* ppmk);
 
     STDMETHOD(IsUpToDate) (void);
 

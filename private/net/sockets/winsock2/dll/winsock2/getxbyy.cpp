@@ -316,8 +316,10 @@ Returns:
             }
         }
     }
+    
     if (pResults != localResults)
         delete pResults;
+    
     return(ReturnValue);
 }  // gethostname
 

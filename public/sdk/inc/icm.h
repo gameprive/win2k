@@ -1,17 +1,11 @@
 /*++
-
 Copyright (c) 1996-1999 Microsoft Corporation
 
 Module Name:
-
     icm.h
 
 Abstract:
-
     Public header file for Image Color Management
-
-Revision History:
-
 */
 
 #ifndef _ICM_H_
@@ -138,22 +132,14 @@ typedef COLORTYPE *PCOLORTYPE, *LPCOLORTYPE;
 
 
 typedef enum {
-
-
     // 16bpp - 5 bits per channel. The most significant bit is ignored.
-
-
     BM_x555RGB      = 0x0000,
     BM_x555XYZ      = 0x0101,
     BM_x555Yxy,
     BM_x555Lab,
     BM_x555G3CH,
 
-
-    // Packed 8 bits per channel => 8bpp for GRAY and
-    // 24bpp for the 3 channel colors, more for hifi channels
-
-
+    // Packed 8 bits per channel => 8bpp for GRAY and 24bpp for the 3 channel colors, more for hifi channels
     BM_RGBTRIPLETS  = 0x0002,
     BM_BGRTRIPLETS  = 0x0004,
     BM_XYZTRIPLETS  = 0x0201,
@@ -166,38 +152,24 @@ typedef enum {
     BM_8CHANNEL,
     BM_GRAY,
 
-
-    // 32bpp - 8 bits per channel. The most significant byte is ignored
-    // for the 3 channel colors.
-
-
+    // 32bpp - 8 bits per channel. The most significant byte is ignored for the 3 channel colors.
     BM_xRGBQUADS    = 0x0008,
     BM_xBGRQUADS    = 0x0010,
     BM_xG3CHQUADS   = 0x0304,
     BM_KYMCQUADS,
     BM_CMYKQUADS    = 0x0020,
 
-
     // 32bpp - 10 bits per channel. The 2 most significant bits are ignored.
-
-
     BM_10b_RGB      = 0x0009,
     BM_10b_XYZ      = 0x0401,
     BM_10b_Yxy,
     BM_10b_Lab,
     BM_10b_G3CH,
 
-
     // 32bpp - named color indices (1-based)
-
-
     BM_NAMED_INDEX,
 
-
-    // Packed 16 bits per channel => 16bpp for GRAY and
-    // 48bpp for the 3 channel colors.
-
-
+    // Packed 16 bits per channel => 16bpp for GRAY and 48bpp for the 3 channel colors.
     BM_16b_RGB      = 0x000A,
     BM_16b_XYZ      = 0x0501,
     BM_16b_Yxy,
@@ -205,26 +177,18 @@ typedef enum {
     BM_16b_G3CH,
     BM_16b_GRAY,
 
-
     // 16 bpp - 5 bits for Red & Blue, 6 bits for Green
-
-
     BM_565RGB       = 0x0001,
-
 } BMFORMAT;
 typedef BMFORMAT *PBMFORMAT, *LPBMFORMAT;
 
 
 // Callback function definition
-
-
 typedef BOOL (WINAPI *PBMCALLBACKFN)(ULONG, ULONG, LPARAM);
 typedef PBMCALLBACKFN LPBMCALLBACKFN;
 
 
 // ICC profile header
-
-
 typedef struct tagPROFILEHEADER {
     DWORD   phSize;             // profile size in bytes
     DWORD   phCMMType;          // CMM for this profile
@@ -248,8 +212,6 @@ typedef PROFILEHEADER *PPROFILEHEADER, *LPPROFILEHEADER;
 
 
 // Profile class values
-
-
 #define CLASS_MONITOR           'mntr'
 #define CLASS_PRINTER           'prtr'
 #define CLASS_SCANNER           'scnr'
@@ -260,8 +222,6 @@ typedef PROFILEHEADER *PPROFILEHEADER, *LPPROFILEHEADER;
 
 
 // Color space values
-
-
 #define SPACE_XYZ               'XYZ '
 #define SPACE_Lab               'Lab '
 #define SPACE_Luv               'Luv '
@@ -283,15 +243,11 @@ typedef PROFILEHEADER *PPROFILEHEADER, *LPPROFILEHEADER;
 
 
 // Profile flag bitfield values
-
-
 #define FLAG_EMBEDDEDPROFILE    0x00000001
 #define FLAG_DEPENDENTONDATA    0x00000002
 
 
 // Profile attributes bitfield values
-
-
 #define ATTRIB_TRANSPARENCY     0x00000001
 #define ATTRIB_MATTE            0x00000002
 
@@ -322,8 +278,6 @@ typedef PROFILEHEADER *PPROFILEHEADER, *LPPROFILEHEADER;
 
 
 // Profile data structure
-
-
 typedef struct tagPROFILE {
     DWORD   dwType;             // profile type
     PVOID   pProfileData;       // filename or buffer containing profile
@@ -334,22 +288,16 @@ typedef PROFILE *PPROFILE, *LPPROFILE;
 
 
 // Profile types to be used in the PROFILE structure
-
-
 #define PROFILE_FILENAME    1   // profile data is NULL terminated filename
 #define PROFILE_MEMBUFFER   2   // profile data is a buffer containing
                                 // the profile
 
 // Desired access mode for opening profiles
-
-
 #define PROFILE_READ        1   // opened for read access
 #define PROFILE_READWRITE   2   // opened for read and write access
 
 
 // Handles returned to applications
-
-
 typedef HANDLE HPROFILE;        // handle to profile object
 typedef HPROFILE *PHPROFILE;
 typedef HANDLE HTRANSFORM;      // handle to color transform object
@@ -425,8 +373,6 @@ typedef struct tagENUMTYPEW {
 
 
 // Bitfields for enumeration record above
-
-
 #define ET_DEVICENAME           0x00000001
 #define ET_MEDIATYPE            0x00000002
 #define ET_DITHERMODE           0x00000004
@@ -447,8 +393,6 @@ typedef struct tagENUMTYPEW {
 
 
 // Flags for creating color transforms
-
-
 #define PROOF_MODE                  0x00000001
 #define NORMAL_MODE                 0x00000002
 #define BEST_MODE                   0x00000003
@@ -459,8 +403,6 @@ typedef struct tagENUMTYPEW {
 
 
 // Paremeter for GetPS2ColorSpaceArray
-
-
 #define CSA_A                   1
 #define CSA_ABC                 2
 #define CSA_DEF                 3
@@ -472,8 +414,6 @@ typedef struct tagENUMTYPEW {
 
 
 // Parameter for CMGetInfo()
-
-
 #define CMM_WIN_VERSION     0
 #define CMM_IDENT           1
 #define CMM_DRIVER_VERSION  2
@@ -484,15 +424,11 @@ typedef struct tagENUMTYPEW {
 
 
 // Parameter for CMTranslateRGBs()
-
-
 #define CMS_FORWARD         0
 #define CMS_BACKWARD        1
 
 
 //  Constants for SetupColorMatching()
-
-
 #define COLOR_MATCH_VERSION  0x0200
 
 
@@ -535,7 +471,6 @@ typedef BOOL (WINAPI *PCMSCALLBACKW)(struct _tagCOLORMATCHSETUPW *,LPARAM);
 typedef BOOL (WINAPI *PCMSCALLBACKA)(struct _tagCOLORMATCHSETUPA *,LPARAM);
 
 typedef struct _tagCOLORMATCHSETUPW {
-
     DWORD   dwSize;                 //  Size of structure in bytes
     DWORD   dwVersion;              //  Set to COLOR_MATCH_VERSION
 
@@ -567,7 +502,6 @@ typedef struct _tagCOLORMATCHSETUPW {
 }   COLORMATCHSETUPW, *PCOLORMATCHSETUPW, *LPCOLORMATCHSETUPW;
 
 typedef struct _tagCOLORMATCHSETUPA {
-
     DWORD   dwSize;                 //  Size of structure in bytes
     DWORD   dwVersion;              //  Set to COLOR_MATCH_VERSION
 
@@ -595,7 +529,6 @@ typedef struct _tagCOLORMATCHSETUPA {
 
     PCMSCALLBACKA lpfnApplyCallback;   //  Callback Procedure address when apply is pushed
     LPARAM        lParamApplyCallback; //  Given to callback Procedure for apply
-
 }   COLORMATCHSETUPA, *PCOLORMATCHSETUPA, *LPCOLORMATCHSETUPA;
 
 
@@ -659,7 +592,6 @@ BOOL       WINAPI SetupColorMatchingW(PCOLORMATCHSETUPW pcms);
 BOOL       WINAPI SetupColorMatchingA(PCOLORMATCHSETUPA pcms);
 
 #ifdef UNICODE
-
 #define ENUMTYPE                            ENUMTYPEW
 #define PENUMTYPE                           PENUMTYPEW
 #define COLORMATCHSETUP                     COLORMATCHSETUPW
@@ -680,9 +612,7 @@ BOOL       WINAPI SetupColorMatchingA(PCOLORMATCHSETUPA pcms);
 #define SetStandardColorSpaceProfile        SetStandardColorSpaceProfileW
 #define GetStandardColorSpaceProfile        GetStandardColorSpaceProfileW
 #define SetupColorMatching                  SetupColorMatchingW
-
 #else
-
 #define ENUMTYPE                            ENUMTYPEA
 #define PENUMTYPE                           PENUMTYPEA
 #define COLORMATCHSETUP                     COLORMATCHSETUPA
@@ -703,25 +633,18 @@ BOOL       WINAPI SetupColorMatchingA(PCOLORMATCHSETUPA pcms);
 #define SetStandardColorSpaceProfile        SetStandardColorSpaceProfileA
 #define GetStandardColorSpaceProfile        GetStandardColorSpaceProfileA
 #define SetupColorMatching                  SetupColorMatchingA
-
 #endif  // !UNICODE
 
 
 // Transform returned by CMM
-
-
 typedef HANDLE  HCMTRANSFORM;
 
 
 // Pointer to ICC color profile data.
-
-
 typedef PVOID   LPDEVCHARACTER;
 
 
 // CMM API definition
-
-
 BOOL WINAPI CMCheckColors(
     HCMTRANSFORM hcmTransform,  // transform handle
     LPCOLOR lpaInputColors,     // array of COLORs
@@ -905,4 +828,3 @@ BOOL WINAPI CMTranslateRGBsExt(
 #endif
 
 #endif  // ifndef _ICM_H_
-

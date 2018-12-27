@@ -640,9 +640,7 @@ DTHandler_gethostbyname(
     IN     int     BufLen,
     IN     BOOL    PreOrPost);
 
-BOOL CALLBACK
-DTHandler_gethostname(
-    IN     va_list vl,
+BOOL CALLBACK DTHandler_gethostname(IN     va_list vl,
     IN OUT LPVOID  ReturnValue,
     IN     LPSTR   LibraryName,
     OUT    char    *Buffer,

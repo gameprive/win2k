@@ -1479,9 +1479,7 @@ DTHandler_gethostbyname(
 }
 
 
-BOOL CALLBACK
-DTHandler_gethostname(
-    IN     va_list vl,
+BOOL CALLBACK DTHandler_gethostname(IN     va_list vl,
     IN OUT LPVOID  ReturnValue,
     IN     LPSTR   LibraryName,
     OUT    char    *Buffer,

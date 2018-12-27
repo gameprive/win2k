@@ -14,34 +14,20 @@ AUTO_PROXY_HELPER_APIS::ResolveHostName(
     IN OUT LPSTR   lpszIPAddress,
     IN OUT LPDWORD lpdwIPAddressSize
     )
-
 /*++
-
 Routine Description:
-
     Resolves a HostName to an IP address by using Winsock DNS.
-
 Arguments:
-
     lpszHostName   - the host name that should be used.
-
     lpszIPAddress  - the output IP address as a string.
-
     lpdwIPAddressSize - the size of the outputed IP address string.
-
 Return Value:
-
     DWORD
         Win32 error code.
-
 --*/
-
 {
-
     // figure out if we're being asked to resolve a name or an address. If
-    // inet_addr() succeeds then we were given a string respresentation of an
-    // address
-
+    // inet_addr() succeeds then we were given a string respresentation of an address
 
     DWORD ipAddr;
     LPBYTE address;
@@ -57,8 +43,7 @@ Return Value:
     {
         dwIPAddressSize = lstrlen(lpszHostName);
 
-        if ( *lpdwIPAddressSize < dwIPAddressSize ||
-              lpszIPAddress == NULL )
+        if ( *lpdwIPAddressSize < dwIPAddressSize || lpszIPAddress == NULL )
         {
             *lpdwIPAddressSize = dwIPAddressSize+1;
             error = ERROR_INSUFFICIENT_BUFFER;
@@ -82,11 +67,7 @@ Return Value:
 //    } else {
       {
 
-        DEBUG_PRINT(SOCKETS,
-                    INFO,
-                    ("resolving %q\n",
-                    lpszHostName
-                    ));
+        DEBUG_PRINT(SOCKETS, INFO, ("resolving %q\n", lpszHostName));
 
         PERF_LOG(PE_NAMERES_START, 0);
 
@@ -94,14 +75,7 @@ Return Value:
 
         PERF_LOG(PE_NAMERES_END, 0);
 
-        DEBUG_PRINT(SOCKETS,
-                    INFO,
-                    ("%q %sresolved\n",
-                    lpszHostName,
-                    lpHostent ? "" : "NOT "
-                    ));
-
-
+        DEBUG_PRINT(SOCKETS, INFO, ("%q %sresolved\n", lpszHostName, lpHostent ? "" : "NOT "));
 
         // if we successfully resolved the name or address then add the
         // information to the cache
@@ -133,8 +107,7 @@ Return Value:
 
         dwIPAddressSize = lstrlen(pszAddressStr);
 
-        if ( *lpdwIPAddressSize < dwIPAddressSize ||
-              lpszIPAddress == NULL )
+        if ( *lpdwIPAddressSize < dwIPAddressSize || lpszIPAddress == NULL )
         {
             *lpdwIPAddressSize = dwIPAddressSize+1;
             error = ERROR_INSUFFICIENT_BUFFER;
@@ -142,65 +115,39 @@ Return Value:
         }
 
         lstrcpy(lpszIPAddress, pszAddressStr);
-
         goto quit;
-
     }
 
-
     // otherwise, if we get here its an error
-
-
     error = ERROR_INTERNET_NAME_NOT_RESOLVED;
 
 quit:
-
     if (bFromCache) {
-
         INET_ASSERT(lpHostent != NULL);
-
 //        ReleaseHostentCacheEntry(lpHostent);
     }
 
     return error;
 }
 
-BOOL
-AUTO_PROXY_HELPER_APIS::IsResolvable(
-    IN LPSTR lpszHost
-    )
 
+BOOL AUTO_PROXY_HELPER_APIS::IsResolvable(IN LPSTR lpszHost)
 /*++
-
 Routine Description:
-
-    Determines wheter a HostName can be resolved.  Performs a Winsock DNS query,
-      and if it succeeds returns TRUE.
-
+    Determines wheter a HostName can be resolved.  Performs a Winsock DNS query, and if it succeeds returns TRUE.
 Arguments:
-
     lpszHost   - the host name that should be used.
-
 Return Value:
-
     BOOL
         TRUE - the host is resolved.
-
         FALSE - could not resolve.
-
 --*/
-
 {
 
     DWORD dwDummySize;
     DWORD error;
 
-    error = ResolveHostName(
-                lpszHost,
-                NULL,
-                &dwDummySize
-                );
-
+    error = ResolveHostName(lpszHost, NULL, &dwDummySize);
     if ( error == ERROR_INSUFFICIENT_BUFFER )
     {
         return TRUE;
@@ -210,7 +157,6 @@ Return Value:
         INET_ASSERT(error != ERROR_SUCCESS );
         return FALSE;
     }
-
 }
 
 DWORD
@@ -229,24 +175,16 @@ Return Value:
         Win32 Error.
 --*/
 {
-
     CHAR szHostBuffer[255];
     int serr;
 
-    serr = gethostname(
-                szHostBuffer,
-                255-1
-                );
+    serr = gethostname(szHostBuffer, 255-1);
     if ( serr != 0)
     {
         return ERROR_INTERNET_INTERNAL_ERROR;
     }
 
-    return ResolveHostName(
-                szHostBuffer,
-                lpszIPAddress,
-                lpdwIPAddressSize
-                );
+    return ResolveHostName(szHostBuffer, lpszIPAddress, lpdwIPAddressSize);
 }
 
 BOOL
@@ -255,30 +193,18 @@ AUTO_PROXY_HELPER_APIS::IsInNet(
     IN LPSTR   lpszDest,
     IN LPSTR   lpszMask
     )
-
 /*++
-
 Routine Description:
-
     Determines whether a given IP address is in a given dest/mask IP address.
-
 Arguments:
-
     lpszIPAddress   - the host name that should be used.
-
     lpszDest        - the IP address dest to check against.
-
     lpszMask        - the IP mask string
-
 Return Value:
-
     BOOL
         TRUE - the IP address is in the given dest/mask
-
         FALSE - the IP address is NOT in the given dest/mask
-
 --*/
-
 {
     DWORD dwDest, dwIpAddr, dwMask;
 
@@ -290,9 +216,7 @@ Return Value:
     dwDest = inet_addr(lpszDest);
     dwMask = inet_addr(lpszMask);
 
-    if ( dwDest   == INADDR_NONE ||
-         dwIpAddr == INADDR_NONE  )
-
+    if ( dwDest   == INADDR_NONE || dwIpAddr == INADDR_NONE  )
     {
         INET_ASSERT(FALSE);
         return FALSE;
@@ -303,10 +227,6 @@ Return Value:
         return FALSE;
         }
 
-
     // Pass, its Matches.
-
-
     return TRUE;
 }
-
