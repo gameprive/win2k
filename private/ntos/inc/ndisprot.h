@@ -70,11 +70,7 @@ VOID
     IN    UINT                    BytesTransferred
     );
 
-typedef
-VOID
-(*WAN_TRANSFER_DATA_COMPLETE_HANDLER)(
-    VOID
-    );
+typedef VOID (*WAN_TRANSFER_DATA_COMPLETE_HANDLER)(VOID);
 
 typedef
 NDIS_STATUS
@@ -176,11 +172,7 @@ NDIS_STATUS
     IN    PNET_PNP_EVENT            NetPnPEvent
     );
 
-typedef
-VOID
-(*UNLOAD_PROTOCOL_HANDLER)(
-    VOID
-    );
+typedef VOID (*UNLOAD_PROTOCOL_HANDLER)(VOID);
 
 
 // Protocol characteristics for NDIS 4.0 protocols
@@ -193,21 +185,15 @@ typedef struct _NDIS40_PROTOCOL_CHARACTERISTICS
     NDIS30_PROTOCOL_CHARACTERISTICS;
 #endif
 
-
     // Start of NDIS 4.0 extensions.
-
     RECEIVE_PACKET_HANDLER            ReceivePacketHandler;
 
-
     // PnP protocol entry-points
-
     BIND_HANDLER                    BindAdapterHandler;
     UNBIND_HANDLER                    UnbindAdapterHandler;
     PNP_EVENT_HANDLER                PnPEventHandler;
     UNLOAD_PROTOCOL_HANDLER            UnloadHandler;
-
 } NDIS40_PROTOCOL_CHARACTERISTICS;
-
 
 
 // Protocol (5.0) handler proto-types - used by clients as well as call manager modules
@@ -596,13 +582,11 @@ NdisRequest(
 
 
 /*++
-
 VOID
 NdisSetSendFlags(
     IN    PNDIS_PACKET            Packet,
     IN    UINT                    Flags
     );
-
 */
 
 #define NdisSetSendFlags(_Packet,_Flags)    (_Packet)->Private.Flags = (_Flags)
@@ -614,7 +598,6 @@ NdisQuerySendFlags(
     IN    PNDIS_PACKET            Packet,
     OUT    PUINT                    Flags
     );
-
 */
 
 #define NdisQuerySendFlags(_Packet,_Flags)    *(_Flags) = (_Packet)->Private.Flags
@@ -643,24 +626,13 @@ NdisGetReceivedPacket(
 // Macros to portably manipulate NDIS buffers.
 
 #if    BINARY_COMPATIBLE
-
-EXPORT
-ULONG
-NdisBufferLength(
-    IN    PNDIS_BUFFER            Buffer
-    );
-
-EXPORT
-PVOID
-NdisBufferVirtualAddress(
-    IN    PNDIS_BUFFER            Buffer
-    );
-
+EXPORT ULONG NdisBufferLength(IN    PNDIS_BUFFER            Buffer);
+EXPORT PVOID NdisBufferVirtualAddress(IN    PNDIS_BUFFER            Buffer);
 #else // BINARY_COMPATIBLE
 
 #ifdef    NDIS_NT
 #define NdisBufferLength(Buffer)                            MmGetMdlByteCount(Buffer)
-#define NdisBufferVirtualAddress(_Buffer)                    MmGetSystemAddressForMdl(_Buffer)
+#define NdisBufferVirtualAddress(_Buffer)                   MmGetSystemAddressForMdl(_Buffer)
 #define NdisBufferVirtualAddressSafe(_Buffer, _Priority)    MmGetSystemAddressForMdlSafe(_Buffer, _Priority)
 #else
 #define NdisBufferLength(_Buffer)                            (_Buffer)->Length

@@ -630,10 +630,7 @@ UdfLookupAllocation (
     OUT PULONG ByteCount
     );
 
-VOID
-UdfDeletePcb (
-    IN PPCB Pcb
-    );
+VOID UdfDeletePcb (IN PPCB Pcb);
 
 NTSTATUS
 UdfInitializePcb (
@@ -643,11 +640,7 @@ UdfInitializePcb (
     IN PNSR_LVOL LVD
     );
 
-VOID
-UdfAddToPcb (
-    IN PPCB Pcb,
-    IN PNSR_PART PartitionDescriptor
-);
+VOID UdfAddToPcb (IN PPCB Pcb, IN PNSR_PART PartitionDescriptor);
 
 NTSTATUS
 UdfCompletePcb(
@@ -687,25 +680,9 @@ UdfLookupMetaVsnOfExtent (
 //   Buffer control routines for data caching, implemented in CacheSup.c
 
 
-VOID
-UdfCreateInternalStream (
-    IN PIRP_CONTEXT IrpContext,
-    IN PVCB Vcb,
-    IN PFCB Fcb
-    );
-
-VOID
-UdfDeleteInternalStream (
-    IN PIRP_CONTEXT IrpContext,
-    IN PFCB Fcb
-    );
-
-
-NTSTATUS
-UdfCompleteMdl (
-    IN PIRP_CONTEXT IrpContext,
-    IN PIRP Irp
-    );
+VOID UdfCreateInternalStream (IN PIRP_CONTEXT IrpContext, IN PVCB Vcb, IN PFCB Fcb);
+VOID UdfDeleteInternalStream (IN PIRP_CONTEXT IrpContext, IN PFCB Fcb);
+NTSTATUS UdfCompleteMdl (IN PIRP_CONTEXT IrpContext, IN PIRP Irp);
 
 VOID
 UdfMapMetadataView (
@@ -778,19 +755,11 @@ UdfCreateUserMdl (
     );
 
 
-//  VOID
-//  UdfMapUserBuffer (
-//      IN PIRP_CONTEXT IrpContext,
-//      OUT PVOID Buffer
-//      );
+//  VOID UdfMapUserBuffer (IN PIRP_CONTEXT IrpContext, OUT PVOID Buffer);
 
 //  Will raise on failure.
 
-//  VOID
-//  UdfLockUserBuffer (
-//      IN PIRP_CONTEXT IrpContext,
-//      IN ULONG BufferLength
-//      );
+//  VOID UdfLockUserBuffer (IN PIRP_CONTEXT IrpContext, IN ULONG BufferLength);
 
 
 #define UdfMapUserBuffer(IC,UB) {                                                   \

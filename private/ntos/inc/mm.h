@@ -720,8 +720,8 @@ NTKERNELAPI NTSTATUS MmUnmapViewInSessionSpace (IN PVOID MappedBase);
 //     This macro is not usable by WDM 1.0 drivers as 1.0 did not include MmMapLockedPagesSpecifyCache.  The solution for WDM 1.0 drivers is to
 //     provide synchronization and set/reset the MDL_MAPPING_CAN_FAIL bit.
 #define MmGetSystemAddressForMdlSafe(MDL, PRIORITY)                    \
-     (((MDL)->MdlFlags & (MDL_MAPPED_TO_SYSTEM_VA |                    \
-                        MDL_SOURCE_IS_NONPAGED_POOL)) ? ((MDL)->MappedSystemVa) : (MmMapLockedPagesSpecifyCache((MDL), KernelMode, MmCached, NULL, FALSE, (PRIORITY))))
+     (((MDL)->MdlFlags & (MDL_MAPPED_TO_SYSTEM_VA | MDL_SOURCE_IS_NONPAGED_POOL))                    \
+                        ? ((MDL)->MappedSystemVa) : (MmMapLockedPagesSpecifyCache((MDL), KernelMode, MmCached, NULL, FALSE, (PRIORITY))))
 
 
 // PVOID MmGetSystemAddressForMdl (IN PMDL MDL)
