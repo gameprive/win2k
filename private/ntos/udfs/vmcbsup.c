@@ -102,7 +102,8 @@ Authors:
 //  The Dirty Page structure are elements in the dirty table generic table.
 //  This is followed by the procedure prototypes for the local generic table routines
 
-typedef struct _DIRTY_PAGE {
+typedef struct _DIRTY_PAGE
+{
     ULONG LbnPageNumber;
     ULONG DirtyMask;
 } DIRTY_PAGE;
@@ -200,16 +201,19 @@ Return Value:
         //  type to use for allocating additional structures
         RtlInitializeGenericTable(&Vmcb->DirtyTable, PbCompareDirtyVmcb, PbAllocateDirtyVmcb, PbDeallocateDirtyVmcb, (PVOID)PoolType);
 #endif // VMCB_WRITE_SUPPORT
-    }
-    finally{
+    } finally{
         //  If this is an abnormal termination then check if we need to uninitialize the mcb structures
         if (AbnormalTermination()) {
-            if (VbnInitialized) { FsRtlUninitializeMcb(&Vmcb->VbnIndexed); }
-            if (LbnInitialized) { FsRtlUninitializeMcb(&Vmcb->LbnIndexed); }
-        }
+            if (VbnInitialized) {
+ FsRtlUninitializeMcb(&Vmcb->VbnIndexed);
+}
+if (LbnInitialized) {
+FsRtlUninitializeMcb(&Vmcb->LbnIndexed);
+}
+}
 
-        DebugUnwind("UdfInitializeVmcb");
-        DebugTrace((-1, Dbg, "UdfInitializeVmcb -> VOID\n"));
+DebugUnwind("UdfInitializeVmcb");
+DebugTrace((-1, Dbg, "UdfInitializeVmcb -> VOID\n"));
     }
 
         //  And return to our caller
@@ -322,8 +326,7 @@ Return Value:
         if (Result && ARGUMENT_PRESENT(SectorCount) && (*Lbn + *SectorCount - 1 > Vmcb->MaximumLbn)) {
             *SectorCount = (Vmcb->MaximumLbn - *Lbn + 1);
         }
-    }
-    finally{
+    } finally{
      (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
 
      DebugUnwind("UdfVmcbVbnToLbn");
@@ -365,8 +368,7 @@ Return Value:
     try {
         Result = UdfVmcbLookupMcbEntry(&Vmcb->LbnIndexed, Lbn, Vbn, SectorCount, NULL);
         DebugTrace((0, Dbg, "*Vbn = %08x\n", *Vbn));
-    }
-    finally{
+    } finally{
      (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
      DebugUnwind("UdfVmcbLbnToVbn");
      DebugTrace((-1, Dbg, "UdfVmcbLbnToVbn -> Result = %08x\n", Result));
@@ -457,14 +459,12 @@ Return Value:
             if (LocalLbn + 1 == Lbn) {
                 LocalVbn = LocalVbn + 1;
                 LocalLbn = LocalLbn + 1;
-            }
-            else {
+            } else {
                 //  Get the next available Vbn Page, and calculate the Lbn for the page containing the Lbn
                 LocalVbn = PageAlign(Vmcb, LocalVbn + 1);
                 LocalLbn = PageAlign(Vmcb, Lbn + 1) - PageAlign(Vmcb, 1);
             }
-        }
-        else {
+        } else {
             //  Get the first available Vbn page, and calculate the Lbn for the page containing the Lbn.
             LocalVbn = 0;
             LocalLbn = PageAlign(Vmcb, Lbn + 1) - PageAlign(Vmcb, 1);
@@ -487,23 +487,26 @@ Return Value:
         *Vbn = LocalVbn + (Lbn - LocalLbn);
         *AlignedSectorCount = LocalCount - (Lbn - LocalLbn);
         try_leave(Result = TRUE);
-    }
-    finally{
+    } finally{
         //  If this is an abnormal termination then clean up any mcb's that we might have modified.
         if (AbnormalTermination()) {
-            if (VbnMcbAdded) { FsRtlRemoveMcbEntry(&Vmcb->VbnIndexed, LocalVbn, LocalCount); }
-            if (LbnMcbAdded) { FsRtlRemoveMcbEntry(&Vmcb->LbnIndexed, LocalLbn, LocalCount); }
-        }
+            if (VbnMcbAdded) {
+ FsRtlRemoveMcbEntry(&Vmcb->VbnIndexed, LocalVbn, LocalCount);
+}
+if (LbnMcbAdded) {
+FsRtlRemoveMcbEntry(&Vmcb->LbnIndexed, LocalLbn, LocalCount);
+}
+}
 
-        (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
+(VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
 
-        DebugUnwind("UdfAddVmcbMapping");
-        DebugTrace((0, Dbg, " LocalVbn   = %08x\n", LocalVbn));
-        DebugTrace((0, Dbg, " LocalLbn   = %08x\n", LocalLbn));
-        DebugTrace((0, Dbg, " LocalCount = %08x\n", LocalCount));
-        DebugTrace((0, Dbg, " *Vbn                = %08x\n", *Vbn));
-        DebugTrace((0, Dbg, " *AlignedSectorCount = %08x\n", *AlignedSectorCount));
-        DebugTrace((-1, Dbg, "UdfAddVmcbMapping -> %08x\n", Result));
+DebugUnwind("UdfAddVmcbMapping");
+DebugTrace((0, Dbg, " LocalVbn   = %08x\n", LocalVbn));
+DebugTrace((0, Dbg, " LocalLbn   = %08x\n", LocalLbn));
+DebugTrace((0, Dbg, " LocalCount = %08x\n", LocalCount));
+DebugTrace((0, Dbg, " *Vbn                = %08x\n", *Vbn));
+DebugTrace((0, Dbg, " *AlignedSectorCount = %08x\n", *AlignedSectorCount));
+DebugTrace((-1, Dbg, "UdfAddVmcbMapping -> %08x\n", Result));
     }
 
     return Result;
@@ -553,8 +556,7 @@ Return Value:
             DebugTrace((0, Dbg, "VbnIndex:\n", 0));
             DebugTrace((0, Dbg, "LbnIndex:\n", 0));
         }
-    }
-    finally{
+    } finally{
      (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
      DebugUnwind("UdfRemoveVmcbMapping");
      DebugTrace((-1, Dbg, "UdfRemoveVmcbMapping -> VOID\n"));
@@ -573,11 +575,8 @@ UdfVmcbLookupMcbEntry(
     OUT PULONG SectorCount OPTIONAL,
     OUT PULONG Index OPTIONAL
 )
-
 /*++
-
 Routine Description:
-
     This routine retrieves the mapping of a Vbn to an Lbn from an Mcb.
     It indicates if the mapping exists and the size of the run.
 
@@ -593,21 +592,14 @@ Routine Description:
     we wish to use Vbn 0 (remember this is a double map).
 
 Arguments:
-
     Mcb - Supplies the Mcb being examined.
-
     Vbn - Supplies the Vbn to lookup.
-
     Lbn - Receives the Lbn corresponding to the Vbn.  A value of -1 is
         returned if the Vbn does not have a corresponding Lbn.
-
     SectorCount - Receives the number of sectors that map from the Vbn to
         contiguous Lbn values beginning with the input Vbn.
-
     Index - Receives the index of the run found.
-
 Return Value:
-
     BOOLEAN - TRUE if the Vbn is within the range of VBNs mapped by the
         MCB (not if it corresponds to a hole in the mapping), and FALSE
         if the Vbn is beyond the range of the MCB's mapping.
@@ -616,9 +608,7 @@ Return Value:
         6, then a lookup on Vbn 5 or 7 will yield a non zero Lbn and a sector
         count of 1.  A lookup for Vbn 6 will return FALSE with an Lbn value of
         0, and lookup for Vbn 8 or above will return FALSE.
-
 --*/
-
 {
     BOOLEAN Results;
     LONGLONG LiLbn;
@@ -631,38 +621,26 @@ Return Value:
                                        NULL,
                                        NULL,
                                        Index);
-
     if ((ULONG)LiLbn == -1) {
-
         *Lbn = 0;
         Results = FALSE;
-
-    }
-    else {
-
+    } else {
         *Lbn = (ULONG)LiLbn;
     }
 
-    if (ARGUMENT_PRESENT(SectorCount)) { *SectorCount = ((ULONG)LiSectorCount); }
+    if (ARGUMENT_PRESENT(SectorCount)) {
+        *SectorCount = ((ULONG)LiSectorCount);
+    }
 
     return Results;
 }
 
 
 #if VMCB_WRITE_SUPPORT
-VOID
-PbSetDirtyVmcb(
-    IN PVMCB Vmcb,
-    IN ULONG LbnPageNumber,
-    IN ULONG Mask
-)
-
+VOID PbSetDirtyVmcb(IN PVMCB Vmcb, IN ULONG LbnPageNumber, IN ULONG Mask)
 /*++
-
 Routine Description:
-
-    This routine sets the sectors within a page as dirty based on the input
-    mask.
+    This routine sets the sectors within a page as dirty based on the input mask.
 
     If pool is not available to store the information this routine will
     raise a status value indicating insufficient resources.
@@ -678,15 +656,11 @@ Arguments:
 
     Mask - Supplies the mask of dirty sectors to set for the Page (a 1 bit
         means to set it dirty).  For example to set LBN 9 dirty on a system
-        with a page size of 8 the LbnPageNumber will be 1, and the mask will
-        be 0x00000002.
+        with a page size of 8 the LbnPageNumber will be 1, and the mask will be 0x00000002.
 
 Return Value:
-
     None.
-
 --*/
-
 {
     DIRTY_PAGE Key;
     PDIRTY_PAGE Entry;
@@ -700,23 +674,11 @@ Return Value:
     Key.LbnPageNumber = LbnPageNumber;
     Key.DirtyMask = 0;
 
-
     //  Now grab the mutex for the vmcb
-
-
-    (VOID)KeWaitForSingleObject(&Vmcb->Mutex,
-                                Executive,
-                                KernelMode,
-                                FALSE,
-                                (PLARGE_INTEGER)NULL);
+    (VOID)KeWaitForSingleObject(&Vmcb->Mutex, Executive, KernelMode, FALSE, (PLARGE_INTEGER)NULL);
 
     try {
-
-        Entry = RtlInsertElementGenericTable(&Vmcb->DirtyTable,
-                                             &Key,
-                                             sizeof(DIRTY_PAGE),
-                                             NULL);
-
+        Entry = RtlInsertElementGenericTable(&Vmcb->DirtyTable, &Key, sizeof(DIRTY_PAGE), NULL);
         Entry->DirtyMask = (Entry->DirtyMask | Mask) & (SECTOR_MASK); //**** change to manifest constant
 
         DebugTrace(0, Dbg, ("DirtyMask = %08x\n", Entry->DirtyMask));
@@ -724,10 +686,7 @@ Return Value:
         {
             DebugTrace(0, Dbg, ("", PbDumpDirtyVmcb(Vmcb)));
         }
-
-    }
-    finally{
-
+    } finally{
      (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
 
      DebugUnwind("UdfSetDirtyVmcb");
@@ -740,41 +699,23 @@ Return Value:
 
 
 #if VMCB_WRITE_SUPPORT
-VOID
-PbSetCleanVmcb(
-    IN PVMCB Vmcb,
-    IN ULONG LbnPageNumber,
-    IN ULONG Mask
-)
-
+VOID PbSetCleanVmcb(IN PVMCB Vmcb, IN ULONG LbnPageNumber, IN ULONG Mask)
 /*++
-
 Routine Description:
-
     This routine sets all of the sectors within a page as clean.  All
-    of the sectors in a page whether they are dirty or not are set clean
-    by this procedure.
-
+    of the sectors in a page whether they are dirty or not are set clean by this procedure.
 Arguments:
-
     Vmcb - Supplies the Vmcb being manipulated.
-
     LbnPageNumber - Supplies the Page Number (Lbn based) of page being
         modified.  For example, with a page size of 8 a page number of 0
-        corresponds to LBN values 0 through 7, a page number of 1 corresponds
-        to 8 through 15, and so on.
+        corresponds to LBN values 0 through 7, a page number of 1 corresponds to 8 through 15, and so on.
 
     Mask - Supplies the mask of clean sectors to set for the Page (a 1 bit
         means to set it clean).  For example to set LBN 9 clean on a system
-        with a page size of 8 the LbnPageNumber will be 1, and the mask will
-        be 0x00000002.
-
+        with a page size of 8 the LbnPageNumber will be 1, and the mask will be 0x00000002.
 Return Value:
-
     None.
-
 --*/
-
 {
     DIRTY_PAGE Key;
     PDIRTY_PAGE Entry;
@@ -787,34 +728,18 @@ Return Value:
 
     Key.LbnPageNumber = LbnPageNumber;
 
-
     //  Now grab the mutex for the vmcb
-
-
-    (VOID)KeWaitForSingleObject(&Vmcb->Mutex,
-                                Executive,
-                                KernelMode,
-                                FALSE,
-                                (PLARGE_INTEGER)NULL);
+    (VOID)KeWaitForSingleObject(&Vmcb->Mutex, Executive, KernelMode, FALSE, (PLARGE_INTEGER)NULL);
 
     try {
-
-
         // If the page is not in the table, it is already all clean
-
-
         if (Entry = RtlLookupElementGenericTable(&Vmcb->DirtyTable, &Key)) {
-
             Entry->DirtyMask &= ~Mask;
 
             DebugTrace(0, Dbg, ("DirtyMask = %08x\n", Entry->DirtyMask));
 
-
             // If the mask is all clean now, delete the entry
-
-
             if (Entry->DirtyMask == 0) {
-
                 (VOID)RtlDeleteElementGenericTable(&Vmcb->DirtyTable, &Key);
             }
         }
@@ -822,10 +747,7 @@ Return Value:
         {
             DebugTrace(0, Dbg, ("", PbDumpDirtyVmcb(Vmcb)));
         }
-
-    }
-    finally{
-
+    } finally{
      (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
 
      DebugTrace(-1, Dbg, ("UdfSetCleanVcmb -> VOID\n", 0));
@@ -837,34 +759,19 @@ Return Value:
 
 
 #if VMCB_WRITE_SUPPORT
-ULONG
-PbGetDirtySectorsVmcb(
-    IN PVMCB Vmcb,
-    IN ULONG LbnPageNumber
-)
-
+ULONG PbGetDirtySectorsVmcb(IN PVMCB Vmcb, IN ULONG LbnPageNumber)
 /*++
-
 Routine Description:
-
     This routine returns to its caller a mask of dirty sectors within a page.
-
 Arguments:
-
     Vmcb - Supplies the Vmcb being manipulated
-
     LbnPageNumber - Supplies the Page Number (Lbn based) of page being
         modified.  For example, with a page size of 8 a page number of 0
-        corresponds to LBN values 0 through 7, a page number of 1 corresponds
-        to 8 through 15, and so on.
-
+        corresponds to LBN values 0 through 7, a page number of 1 corresponds to 8 through 15, and so on.
 Return Value:
-
     ULONG - Receives a mask of dirty sectors within the specified page.
         (a 1 bit indicates that the sector is dirty).
-
 --*/
-
 {
     DIRTY_PAGE Key;
     PDIRTY_PAGE Entry;
@@ -875,31 +782,17 @@ Return Value:
 
     Key.LbnPageNumber = LbnPageNumber;
 
-
     //  Now grab the mutex for the vmcb
-
-
-    (VOID)KeWaitForSingleObject(&Vmcb->Mutex,
-                                Executive,
-                                KernelMode,
-                                FALSE,
-                                (PLARGE_INTEGER)NULL);
+    (VOID)KeWaitForSingleObject(&Vmcb->Mutex, Executive, KernelMode, FALSE, (PLARGE_INTEGER)NULL);
 
     try {
-
-        if ((Entry = RtlLookupElementGenericTable(&Vmcb->DirtyTable,
-                                                  &Key)) == NULL) {
-
+        if ((Entry = RtlLookupElementGenericTable(&Vmcb->DirtyTable, &Key)) == NULL) {
             DebugTrace(0, Dbg, ("Entry not found\n", 0));
-
             try_leave(Mask = 0);
         }
 
         Mask = Entry->DirtyMask & (SECTOR_MASK); //**** change to manifest constant
-
-    }
-    finally{
-
+    } finally{
      (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
 
      DebugTrace(-1, Dbg, ("UdfGetDirtySectorsVmcb -> %08x\n", Mask));
@@ -911,35 +804,19 @@ Return Value:
 
 
 #if VMCB_WRITE_SUPPORT
-ULONG
-PbGetAndCleanDirtyVmcb(
-    IN PVMCB Vmcb,
-    IN ULONG LbnPageNumber
-)
-
+ULONG PbGetAndCleanDirtyVmcb(IN PVMCB Vmcb, IN ULONG LbnPageNumber)
 /*++
-
 Routine Description:
-
-    This routine returns to its caller a mask of dirty sectors within a page,
-    and atomically clear the bits.
-
+    This routine returns to its caller a mask of dirty sectors within a page, and atomically clear the bits.
 Arguments:
-
     Vmcb - Supplies the Vmcb being manipulated
-
     LbnPageNumber - Supplies the Page Number (Lbn based) of page being
         modified.  For example, with a page size of 8 a page number of 0
-        corresponds to LBN values 0 through 7, a page number of 1 corresponds
-        to 8 through 15, and so on.
-
+        corresponds to LBN values 0 through 7, a page number of 1 corresponds to 8 through 15, and so on.
 Return Value:
-
     ULONG - Receives a mask of dirty sectors within the specified page.
         (a 1 bit indicates that the sector is dirty).
-
 --*/
-
 {
     DIRTY_PAGE Key;
     PDIRTY_PAGE Entry;
@@ -952,44 +829,23 @@ Return Value:
 
     Key.LbnPageNumber = LbnPageNumber;
 
-
     //  Now grab the mutex for the vmcb
-
-
-    (VOID)KeWaitForSingleObject(&Vmcb->Mutex,
-                                Executive,
-                                KernelMode,
-                                FALSE,
-                                (PLARGE_INTEGER)NULL);
+    (VOID)KeWaitForSingleObject(&Vmcb->Mutex, Executive, KernelMode, FALSE, (PLARGE_INTEGER)NULL);
 
     try {
-
-
         //  Locate the dirty page within the dirty table
-
-
-        if ((Entry = RtlLookupElementGenericTable(&Vmcb->DirtyTable,
-                                                  &Key)) == NULL) {
-
+        if ((Entry = RtlLookupElementGenericTable(&Vmcb->DirtyTable, &Key)) == NULL) {
             DebugTrace(0, Dbg, ("Entry not found\n", 0));
-
             try_leave(Mask = 0);
         }
 
-
-        //  We found a page so generate a proper mask and then
-        //  delete the dirty page
-
+        //  We found a page so generate a proper mask and then delete the dirty page
 
         Mask = Entry->DirtyMask & (SECTOR_MASK); //**** change to manifest constant
 
         (VOID)RtlDeleteElementGenericTable(&Vmcb->DirtyTable, &Key);
-
-    }
-    finally{
-
+    } finally{
      (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
-
      DebugTrace(-1, Dbg, ("UdfGetAndCleanDirtyVmcb -> %08x\n", Mask));
     }
 
@@ -998,41 +854,24 @@ Return Value:
 #endif // VMCB_WRITE_SUPPORT
 
 
-
 //  Local support routines
 
 
 #if VMCB_WRITE_SUPPORT
-RTL_GENERIC_COMPARE_RESULTS
-PbCompareDirtyVmcb(
-    IN PRTL_GENERIC_TABLE DirtyTable,
-    IN PVOID FirstStruct,
-    IN PVOID SecondStruct
-)
-
-/*++
-
-Routine Description:
-
-    This generic table support routine compares two dirty page structures
-
-Arguments:
-
-    DirtyTable - Supplies the generic table being queried
-
-    FirstStruct - Really supplies the first structure to compare
-
-    SecondStruct - Really supplies the second structure to compare
-
-Return Value:
-
-    RTL_GENERIDC_COMPARE_RESULTS - The results of comparing the two
-        input structures
-
---*/
-
+RTL_GENERIC_COMPARE_RESULTS PbCompareDirtyVmcb(IN PRTL_GENERIC_TABLE DirtyTable,
+                                               IN PVOID FirstStruct,
+                                               IN PVOID SecondStruct)
+    /*++
+    Routine Description:
+        This generic table support routine compares two dirty page structures
+    Arguments:
+        DirtyTable - Supplies the generic table being queried
+        FirstStruct - Really supplies the first structure to compare
+        SecondStruct - Really supplies the second structure to compare
+    Return Value:
+        RTL_GENERIDC_COMPARE_RESULTS - The results of comparing the two input structures
+    --*/
 {
-
     PDIRTY_PAGE DirtyPage1 = FirstStruct;
     PDIRTY_PAGE DirtyPage2 = SecondStruct;
 
@@ -1041,52 +880,30 @@ Return Value:
     PAGED_CODE();
 
     if (DirtyPage1->LbnPageNumber < DirtyPage2->LbnPageNumber) {
-
         return GenericLessThan;
-
-    }
-    else if (DirtyPage1->LbnPageNumber > DirtyPage2->LbnPageNumber) {
-
+    } else if (DirtyPage1->LbnPageNumber > DirtyPage2->LbnPageNumber) {
         return GenericGreaterThan;
-
-    }
-    else {
-
+    } else {
         return GenericEqual;
     }
 }
 #endif // VMCB_WRITE_SUPPORT
 
 
-
 //  Local support routines
 
 
 #if VMCB_WRITE_SUPPORT
-PVOID
-PbAllocateDirtyVmcb(
-    IN PRTL_GENERIC_TABLE DirtyTable,
-    IN CLONG ByteSize
-)
-
+PVOID PbAllocateDirtyVmcb(IN PRTL_GENERIC_TABLE DirtyTable, IN CLONG ByteSize)
 /*++
-
 Routine Description:
-
     This generic table support routine allocates memory
-
 Arguments:
-
     DirtyTable - Supplies the generic table being modified
-
     ByteSize - Supplies the size, in bytes, to allocate
-
 Return Value:
-
     PVOID - Returns a pointer to the allocated data
-
 --*/
-
 {
     PAGED_CODE();
 
@@ -1095,35 +912,20 @@ Return Value:
 #endif // VMCB_WRITE_SUPPORT
 
 
-
 //  Local support routines
 
 
 #if VMCB_WRITE_SUPPORT
-VOID
-PbDeallocateDirtyVmcb(
-    IN PRTL_GENERIC_TABLE DirtyTable,
-    IN PVOID Buffer
-)
-
+VOID PbDeallocateDirtyVmcb(IN PRTL_GENERIC_TABLE DirtyTable, IN PVOID Buffer)
 /*++
-
 Routine Description:
-
     This generic table support routine deallocates memory
-
 Arguments:
-
     DirtyTable - Supplies the generic table being modified
-
     Buffer - Supplies the buffer being deallocated
-
 Return Value:
-
     None.
-
 --*/
-
 {
     UNREFERENCED_PARAMETER(DirtyTable);
 
@@ -1136,26 +938,11 @@ Return Value:
 #endif // VMCB_WRITE_SUPPORT
 
 
-
 //  Local support routines
 
 
 #if VMCB_WRITE_SUPPORT
-ULONG
-PbDumpDirtyVmcb(
-    IN PVMCB Vmcb
-)
-
-/*++
-
-Routine Description:
-
-Arguments:
-
-Return Value:
-
---*/
-
+ULONG PbDumpDirtyVmcb(IN PVMCB Vmcb)
 {
     PDIRTY_PAGE Ptr;
 
@@ -1166,7 +953,6 @@ Return Value:
     for (Ptr = RtlEnumerateGenericTable(&Vmcb->DirtyTable, TRUE);
          Ptr != NULL;
          Ptr = RtlEnumerateGenericTable(&Vmcb->DirtyTable, FALSE)) {
-
         KdPrint(("        LbnPageNumber = %08x, ", Ptr->LbnPageNumber));
         KdPrint(("DirtyMask = %08x\n", Ptr->DirtyMask));
     }
@@ -1177,113 +963,67 @@ Return Value:
 
 
 #if VMCB_WRITE_SUPPORT
-NTSTATUS
-PbFlushVolumeFile(
-    IN PIRP_CONTEXT IrpContext,
-    IN PVCB Vcb
-)
-
+NTSTATUS PbFlushVolumeFile(IN PIRP_CONTEXT IrpContext, IN PVCB Vcb)
 /*++
-
 Routine Description:
-
     The function carefully flushes the entire volume file.  It is nessecary
     to dance around a bit because of complicated synchronization reasons.
-
 Arguments:
-
     Vcb - Supplies the Vcb being flushed
-
 Return Value:
-
     NTSTATUS - The status of the flush operation
-
 --*/
-
 {
     ULONG ElementNumber;
     ULONG NumberOfDirtyPages;
     PULONG VbnsToFlush;
-
     LBN Lbn;
     PDIRTY_PAGE Ptr;
-
     NTSTATUS ReturnStatus = STATUS_SUCCESS;
-
     PVMCB Vmcb = (PNONOPAQUE_VMCB)&Vcb->Vmcb;
-
 
     //  The only way we have to correctly synchronize things is to
     //  repin stuff, and then unpin repin it with WriteThrough as TRUE.
 
     //  Grab the mutex for the vmcb
-
-
-    (VOID)KeWaitForSingleObject(&Vmcb->Mutex,
-                                Executive,
-                                KernelMode,
-                                FALSE,
-                                (PLARGE_INTEGER)NULL);
+    (VOID)KeWaitForSingleObject(&Vmcb->Mutex, Executive, KernelMode, FALSE, (PLARGE_INTEGER)NULL);
 
     NumberOfDirtyPages = RtlNumberGenericTableElements(&Vmcb->DirtyTable);
 
-
     //  If there are no dirty sectors, no need to flush.
-
-
     if (NumberOfDirtyPages == 0) {
-
         (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
         return STATUS_SUCCESS;
     }
 
     try {
-
         VbnsToFlush = FsRtlAllocatePoolWithTag(PagedPool, NumberOfDirtyPages * sizeof(ULONG), 'bcmV');
-
-    }
-    finally{
-
+    } finally{
      if (AbnormalTermination()) {
-
          (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
      }
     }
 
-        for (Ptr = RtlEnumerateGenericTable(&Vmcb->DirtyTable, TRUE),
-             ElementNumber = 0;
+        for (Ptr = RtlEnumerateGenericTable(&Vmcb->DirtyTable, TRUE), ElementNumber = 0;
              Ptr != NULL;
-             Ptr = RtlEnumerateGenericTable(&Vmcb->DirtyTable, FALSE),
-             ElementNumber += 1) {
-
+             Ptr = RtlEnumerateGenericTable(&Vmcb->DirtyTable, FALSE), ElementNumber += 1) {
             VBN Vbn;
             BOOLEAN Result;
-
 
             //  Lbn pages always map to Vbn pages.  Thus any sector in an Lbn
             //  page will map to the same Vbn page.  So it suffices to map the
             //  first Lbn in the page to a Vbn and flush that page.
 
-
             Lbn = Ptr->LbnPageNumber * (PAGE_SIZE / 512);
-
             ASSERT(Ptr->DirtyMask != 0);
-
             Result = PbVmcbLbnToVbn(&Vcb->Vmcb, Lbn, &Vbn, NULL);
 
-
             //  This lookup must work as the LBN page was dirty.
-
-
             if (!Result) {
-
                 PbBugCheck(0, 0, 0);
             }
 
-
             //  Bring store this Vbn away for flushing later.
-
-
             ASSERT(ElementNumber < NumberOfDirtyPages);
             ASSERT((Vbn & (PAGE_SIZE / 512 - 1)) == 0);
 
@@ -1292,37 +1032,23 @@ Return Value:
 
     ASSERT(ElementNumber == NumberOfDirtyPages);
 
-
     //  Now drop the mutex and walk through the dirty Vbn list generated
     //  above.  We cannot hold the mutex while doing IO as this will cause
     //  a deadlock with the cache manager.
 
-
     (VOID)KeReleaseMutex(&Vmcb->Mutex, FALSE);
 
-    for (ElementNumber = 0;
-         ElementNumber < NumberOfDirtyPages;
-         ElementNumber += 1) {
-
+    for (ElementNumber = 0; ElementNumber < NumberOfDirtyPages; ElementNumber += 1) {
         PBCB Bcb;
         PVOID DontCare;
         LARGE_INTEGER Offset;
         IO_STATUS_BLOCK Iosb;
 
-
         //  This page is dirty.  Flush it by writing it though.
-
-
         Offset.QuadPart = VbnsToFlush[ElementNumber] << 9;
 
         try {
-
-            (VOID)CcPinRead(Vcb->VirtualVolumeFile,
-                            &Offset,
-                            PAGE_SIZE,
-                            TRUE,
-                            &Bcb,
-                            &DontCare);
+            (VOID)CcPinRead(Vcb->VirtualVolumeFile, &Offset, PAGE_SIZE, TRUE, &Bcb, &DontCare);
 
             CcSetDirtyPinnedData(Bcb, NULL);
             CcRepinBcb(Bcb);
@@ -1330,12 +1056,9 @@ Return Value:
             CcUnpinRepinnedBcb(Bcb, TRUE, &Iosb);
 
             if (!NT_SUCCESS(Iosb.Status)) {
-
                 ReturnStatus = Iosb.Status;
             }
-
         } except(PbExceptionFilter(IrpContext, GetExceptionInformation())) {
-
             ReturnStatus = IrpContext->ExceptionStatus;
         }
     }
@@ -1345,4 +1068,3 @@ Return Value:
     return ReturnStatus;
 }
 #endif // VMCB_WRITE_SUPPORT
-
