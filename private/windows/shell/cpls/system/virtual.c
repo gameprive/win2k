@@ -1,26 +1,21 @@
 /*++
-
 Microsoft Confidential
 Copyright (c) 1992-1997  Microsoft Corporation
 All rights reserved
 
 Module Name:
-
     virtual.c
 
 Abstract:
-
     Implements the Change Virtual Memory dialog of the System
     Control Panel Applet
 
 Notes:
-
     The virtual memory settings and the crash dump (core dump) settings
     are tightly-coupled.  Therefore, virtual.c and virtual.h have some
     heavy dependencies on crashdmp.c and startup.h (and vice versa).
 
 Author:
-
     Byron Dazey 06-Jun-1992
 
 Revision History:
@@ -42,7 +37,6 @@ Revision History:
 
     15-Oct-1997 scotthal
         Split out CoreDump*() stuff into separate file
-
 --*/
 
 //                              Include files
@@ -57,16 +51,10 @@ Revision History:
 // Application specific
 #include "sysdm.h"
 
-
-
 //                     External Data Declarations
-
 extern HFONT   hfontBold;
 
-
 //                            Local Definitions
-
-
 #define MAX_SIZE_LEN        4       // Max chars in the Swap File Size edit.
 #define MIN_FREESPACE       5       // Must have 5 meg free after swap file
 #define MIN_SUGGEST         22      // Always suggest at least 22 meg

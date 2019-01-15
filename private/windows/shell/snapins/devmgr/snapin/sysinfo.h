@@ -2,24 +2,16 @@
 #define __SYSINFO_H_
 
 /*++
-
 Copyright (C) 1997-1999  Microsoft Corporation
 
 Module Name:
-
     sysinfo.h
 
 Abstract:
-
     header file for sysinfo.cpp
 
 Author:
-
     William Hsieh (williamh) created
-
-Revision History:
-
-
 */
 
 
@@ -61,9 +53,7 @@ public:
     DWORD ProcessorInfo(LPCTSTR ValueName, TCHAR* Buffer, DWORD BufferSize);
     void TotalPhysicalMemory(ULARGE_INTEGER& Size);
 private:
-    DWORD InfoFromRegistry(LPCTSTR SubkeyName, LPCTSTR ValueName,
-               TCHAR* Buffer, DWORD BufferSize,
-               HKEY hKeyAncestor = NULL);
+    DWORD InfoFromRegistry(LPCTSTR SubkeyName, LPCTSTR ValueName, TCHAR* Buffer, DWORD BufferSize, HKEY hKeyAncestor = NULL);
     String  m_strMachineName;
     BOOL    m_fLocalMachine;
     HKEY    m_hKeyMachine;

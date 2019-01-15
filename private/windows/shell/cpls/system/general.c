@@ -1,5 +1,3 @@
-
-
 //  General.c   -   General property sheet page
 
 //  Microsoft Confidential

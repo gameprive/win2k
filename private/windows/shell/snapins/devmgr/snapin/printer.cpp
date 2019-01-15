@@ -1,22 +1,14 @@
 /*++
-
 Copyright (C) 1997-1999  Microsoft Corporation
 
 Module Name:
-
     printer.cpp
 
 Abstract:
-
     This module implements CPrinter -- class that support printing
 
 Author:
-
     William Hsieh (williamh) created
-
-Revision History:
-
-
 --*/
 
 #include "devmgr.h"

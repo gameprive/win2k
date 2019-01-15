@@ -324,13 +324,14 @@ VOID InternalBreakpointCheck (PKDPC Dpc, PVOID DeferredContext, PVOID SystemArgu
 
     KeSetTimer(&InternalBreakpointTimer, dueTime, &InternalBreakpointCheckDpc);
 
-    for ( i = 0 ; i < KdpNumInternalBreakpoints; i++ ) {
-        if ( !(KdpInternalBPs[i].Flags & DBGKD_INTERNAL_BP_FLAG_INVALID) && (KdpInternalBPs[i].Flags & DBGKD_INTERNAL_BP_FLAG_COUNTONLY) ) {
+    for (i = 0; i < KdpNumInternalBreakpoints; i++) {
+        if (!(KdpInternalBPs[i].Flags & DBGKD_INTERNAL_BP_FLAG_INVALID) &&
+            (KdpInternalBPs[i].Flags & DBGKD_INTERNAL_BP_FLAG_COUNTONLY)) {
             PDBGKD_INTERNAL_BREAKPOINT b = KdpInternalBPs + i;
             ULONG callsThisPeriod;
 
             callsThisPeriod = b->Calls - b->CallsLastCheck;
-            if ( callsThisPeriod > b->MaxCallsPerPeriod ) {
+            if (callsThisPeriod > b->MaxCallsPerPeriod) {
                 b->MaxCallsPerPeriod = callsThisPeriod;
             }
             b->CallsLastCheck = b->Calls;
@@ -343,7 +344,8 @@ VOID KdSetInternalBreakpoint (IN PDBGKD_MANIPULATE_STATE64 m)
 /*++
 Routine Description:
     This function sets an internal breakpoint.  "Internal breakpoint"
-    means one in which control is not returned to the kernel debugger at all, but rather just update internal counting routines and resume.
+    means one in which control is not returned to the kernel debugger at all,
+    but rather just update internal counting routines and resume.
 Arguments:
     m - Supplies the state manipulation message.
 --*/
@@ -423,7 +425,8 @@ NTSTATUS KdGetTraceInformation(PVOID SystemInformation, ULONG SystemInformationL
 Routine Description:
     This function gets data about an internal breakpoint and returns it in a buffer provided for it.
     It is designed to be called from NTQuerySystemInformation.
-    It is morally equivalent to GetInternalBP except that it communicates locally, and returns all the breakpoints at once.
+    It is morally equivalent to GetInternalBP except that it communicates locally,
+    and returns all the breakpoints at once.
 Arguments:
     SystemInforamtion - the buffer into which to write the result.
     SystemInformationLength - the maximum length to write
@@ -481,8 +484,9 @@ Arguments:
     messageHeader.Length = sizeof(*m);
     messageHeader.Buffer = (PCHAR)m;
 
-    for ( i = 0; i < KdpNumInternalBreakpoints; i++ ) {
-        if ( !(KdpInternalBPs[i].Flags & (DBGKD_INTERNAL_BP_FLAG_INVALID | DBGKD_INTERNAL_BP_FLAG_SUSPENDED)) && (KdpInternalBPs[i].Addr == m->u.GetInternalBreakpoint.BreakpointAddress) ) {
+    for (i = 0; i < KdpNumInternalBreakpoints; i++) {
+        if (!(KdpInternalBPs[i].Flags & (DBGKD_INTERNAL_BP_FLAG_INVALID | DBGKD_INTERNAL_BP_FLAG_SUSPENDED)) &&
+            (KdpInternalBPs[i].Addr == m->u.GetInternalBreakpoint.BreakpointAddress)) {
             bp = &KdpInternalBPs[i];
             break;
         }
@@ -513,7 +517,11 @@ Arguments:
 #endif // i386
 
 
-KCONTINUE_STATUS KdpSendWaitContinue (IN ULONG OutPacketType, IN PSTRING OutMessageHeader, IN PSTRING OutMessageData OPTIONAL, IN OUT PCONTEXT ContextRecord)
+KCONTINUE_STATUS KdpSendWaitContinue (IN ULONG OutPacketType, 
+                                      IN PSTRING OutMessageHeader, 
+                                      IN PSTRING OutMessageData OPTIONAL, 
+                                      IN OUT PCONTEXT ContextRecord
+)
 /*++
 Routine Description:
     This function sends a packet, and then waits for a continue message.
@@ -982,7 +990,8 @@ Arguments:
         m->ReturnStatus = STATUS_UNSUCCESSFUL;
     }
 
-    // Set the actual number of bytes written, initialize the message header, and send the reply packet to the host debugger.
+    // Set the actual number of bytes written, initialize the message header, 
+    // and send the reply packet to the host debugger.
     m->u.WriteMemory64.ActualBytesWritten = AdditionalData->Length - Length;
     MessageHeader.Length = sizeof(DBGKD_MANIPULATE_STATE64);
     MessageHeader.Buffer = (PCHAR)m;
@@ -1018,7 +1027,9 @@ Arguments:
         if (m->Processor == (USHORT)KeGetCurrentPrcb()->Number) {
             KdpQuickMoveMemory(AdditionalData->Buffer, (PCHAR)Context, sizeof(CONTEXT));
         } else {
-            KdpQuickMoveMemory(AdditionalData->Buffer, (PCHAR)&KiProcessorBlock[m->Processor]->ProcessorState.ContextFrame, sizeof(CONTEXT));
+            KdpQuickMoveMemory(AdditionalData->Buffer,
+                (PCHAR)&KiProcessorBlock[m->Processor]->ProcessorState.ContextFrame,
+                               sizeof(CONTEXT));
         }
     }
 
@@ -1052,7 +1063,9 @@ Arguments:
         if (m->Processor == (USHORT)KeGetCurrentPrcb()->Number) {
             KdpQuickMoveMemory((PCHAR)Context, AdditionalData->Buffer, sizeof(CONTEXT));
         } else {
-            KdpQuickMoveMemory((PCHAR)&KiProcessorBlock[m->Processor]->ProcessorState.ContextFrame, AdditionalData->Buffer, sizeof(CONTEXT));
+            KdpQuickMoveMemory((PCHAR)&KiProcessorBlock[m->Processor]->ProcessorState.ContextFrame,
+                               AdditionalData->Buffer,
+                               sizeof(CONTEXT));
         }
     }
 
@@ -1347,7 +1360,9 @@ BOOLEAN KdpCheckTracePoint(IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT
     else if (ExceptionRecord->ExceptionCode == STATUS_BREAKPOINT) {
         if (WatchStepOver && pc == WatchStepOverBreakAddr) {
             //  This is a breakpoint after completion of a "special call"
-            if ((WSOThread != (PVOID)KeGetCurrentThread()) || (WSOEsp + 0x20 < ContextRecord->Esp) || (ContextRecord->Esp + 0x20 < WSOEsp)) {
+            if ((WSOThread != (PVOID)KeGetCurrentThread()) || 
+                (WSOEsp + 0x20 < ContextRecord->Esp) || 
+                (ContextRecord->Esp + 0x20 < WSOEsp)) {
                 //  Here's the story up to this point: the traced thread cruised along until it it a special call.  The tracer
                 //  placed a breakpoint on the instruction immediately after the special call returns and restarted the traced thread
                 //  at full speed.  Then, some *other* thread hit the breakpoint.  So, to correct for this, we're going to
@@ -1372,8 +1387,9 @@ BOOLEAN KdpCheckTracePoint(IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT
             ContextRecord->EFlags |= 0x100L; // back to single step mode
             AfterSC = TRUE; // put us into the regular watchStep code
         } else {
-            for ( BpNum = 0; BpNum < (LONG) KdpNumInternalBreakpoints; BpNum++ ) {
-                if ( !(KdpInternalBPs[BpNum].Flags & (DBGKD_INTERNAL_BP_FLAG_INVALID | DBGKD_INTERNAL_BP_FLAG_SUSPENDED) ) && (KdpInternalBPs[BpNum].Addr == pc) ) {
+            for (BpNum = 0; BpNum < (LONG)KdpNumInternalBreakpoints; BpNum++) {
+                if (!(KdpInternalBPs[BpNum].Flags & (DBGKD_INTERNAL_BP_FLAG_INVALID | DBGKD_INTERNAL_BP_FLAG_SUSPENDED)) &&
+                    (KdpInternalBPs[BpNum].Addr == pc)) {
                     break;
                 }
             }
@@ -1401,8 +1417,9 @@ BOOLEAN KdpCheckTracePoint(IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT
 //      DPRINT(( "1: KdpCurrentSymbolStart %x  KdpCurrentSymbolEnd %x\n", KdpCurrentSymbolStart, KdpCurrentSymbolEnd ));
 //  }
 
-    if ((AfterSC || ExceptionRecord->ExceptionCode == STATUS_SINGLE_STEP) && KdpCurrentSymbolStart != 0 && ((KdpCurrentSymbolEnd == 0 && ContextRecord->Esp <= InitialSP) ||
-         (KdpCurrentSymbolStart <= pc && pc < KdpCurrentSymbolEnd))) {
+    if ((AfterSC || ExceptionRecord->ExceptionCode == STATUS_SINGLE_STEP) && 
+        KdpCurrentSymbolStart != 0 && 
+        ((KdpCurrentSymbolEnd == 0 && ContextRecord->Esp <= InitialSP) || (KdpCurrentSymbolStart <= pc && pc < KdpCurrentSymbolEnd))) {
         ULONG lc;
         BOOLEAN IsSpecialCall;
 
@@ -1449,7 +1466,8 @@ BOOLEAN KdpCheckTracePoint(IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT
 
     if ((AfterSC || (ExceptionRecord->ExceptionCode == STATUS_SINGLE_STEP)) && (KdpCurrentSymbolStart != 0)) {
         // We're WatchTracing, but have just changed symbol range.
-        // Fill in the call record and return to the debugger if either we're full or the pc is outside of the known symbol scopes.  Otherwise, resume stepping.
+        // Fill in the call record and return to the debugger if either we're full or the pc is outside of the known symbol scopes. 
+        // Otherwise, resume stepping.
         int lc;
         BOOLEAN IsSpecialCall;
 
@@ -1509,7 +1527,8 @@ BOOLEAN KdpCheckTracePoint(IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT
                 //  We are about to transfer to a special call routine.  Since we
                 //  cannot trace through this routine, we execute it atomically by setting a breakpoint at the next logical offset.
 
-                //  Note in the case of an indirect jump to a special call routine, the level change will be -1 and the next offset will be the ULONG that's on the top of the stack.
+                //  Note in the case of an indirect jump to a special call routine, 
+                //  the level change will be -1 and the next offset will be the ULONG that's on the top of the stack.
 
                 //  However, we've already adjusted the level based on this instruction.  We need to undo this except for the magic -1 call.
                 if (lc != -1) {
@@ -1552,12 +1571,13 @@ BOOLEAN KdpCheckTracePoint(IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT
 #endif // i386
 
 
-BOOLEAN KdpSwitchProcessor (IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT ContextRecord, IN BOOLEAN SecondChance)
+BOOLEAN KdpSwitchProcessor (IN PEXCEPTION_RECORD ExceptionRecord,
+                            IN OUT PCONTEXT ContextRecord, 
+                            IN BOOLEAN SecondChance)
 {
     BOOLEAN Status;
-
-    // Save port state
-    KdPortSave ();
+    
+    KdPortSave ();// Save port state
 
     // Process state change for this processor
     Status = KdpReportExceptionStateChange (ExceptionRecord, ContextRecord, SecondChance);
@@ -1568,7 +1588,10 @@ BOOLEAN KdpSwitchProcessor (IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEX
 }
 
 
-BOOLEAN KdpReportExceptionStateChange (IN PEXCEPTION_RECORD ExceptionRecord, IN OUT PCONTEXT ContextRecord, IN BOOLEAN SecondChance)
+BOOLEAN KdpReportExceptionStateChange (IN PEXCEPTION_RECORD ExceptionRecord,
+                                       IN OUT PCONTEXT ContextRecord,
+                                       IN BOOLEAN SecondChance
+)
 /*++
 Routine Description:
     This routine sends an exception state change packet to the kernel debugger and waits for a manipulate state message.
@@ -1611,7 +1634,11 @@ Return Value:
 }
 
 
-BOOLEAN KdpReportLoadSymbolsStateChange (IN PSTRING PathName, IN PKD_SYMBOLS_INFO SymbolInfo, IN BOOLEAN UnloadSymbols, IN OUT PCONTEXT ContextRecord)
+BOOLEAN KdpReportLoadSymbolsStateChange (IN PSTRING PathName, 
+                                         IN PKD_SYMBOLS_INFO SymbolInfo,
+                                         IN BOOLEAN UnloadSymbols, 
+                                         IN OUT PCONTEXT ContextRecord
+)
 /*++
 Routine Description:
     This routine sends a load symbols state change packet to the kernel debugger and waits for a manipulate state message.
@@ -1701,9 +1728,10 @@ Arguments:
     }
 
     // Since the MmDbgTranslatePhysicalAddress64 only maps in one physical page at a time (on non-alpha systems),
-    // we need to break the memory move up into smaller moves which don't cross page boundaries.  It is important that we
-    // access physical memory on naturally-aligned boundaries and with the
-    // largest size possible.  (We could be accessing memory-mapped I/O space).  These rules allow kdexts to read physical memory reliably.
+    // we need to break the memory move up into smaller moves which don't cross page boundaries. 
+    // It is important that we access physical memory on naturally-aligned boundaries and with the
+    // largest size possible.  (We could be accessing memory-mapped I/O space).
+    // These rules allow kdexts to read physical memory reliably.
     Source.QuadPart = a->TargetBaseAddress;
     Destination = AdditionalData->Buffer;
     while (Length > 0) {
@@ -1787,8 +1815,8 @@ Arguments:
 
     Length = a->TransferCount;
 
-    // The following code depends on the existence of the MmDbgTranslatePhysicalAddress64() routine.  This has only been
-    // implemented for Alpha.
+    // The following code depends on the existence of the MmDbgTranslatePhysicalAddress64() routine. 
+    // This has only been implemented for Alpha.
 
 
     // Since the MmDbgTranslatePhysicalAddress64 only maps in one physical page at a time, we need to break the memory move up into smaller
@@ -1924,7 +1952,8 @@ Arguments:
 
     // If the debugger is being initialized during boot, PsNtosImageBase and PsLoadedModuleList are not yet valid.  KdInitSystem got
     // the image base from the loader block.
-    // On the other hand, if the debugger was initialized by a bugcheck, it didn't get a loader block to look at, but the system was running so the other variables are valid.
+    // On the other hand, if the debugger was initialized by a bugcheck, it didn't get a loader block to look at,
+    // but the system was running so the other variables are valid.
     if (KdpNtosImageBase) {
         m->u.GetVersion64.KernBase = (ULONG64)(LONG64)(LONG_PTR)KdpNtosImageBase;
     } else {
@@ -1961,7 +1990,8 @@ Return Value:
     // send back our response
     KdpSendPacket(PACKET_TYPE_KD_STATE_MANIPULATE, &MessageHeader, NULL);
 
-    // return the caller's continue status value.  if this is a non-zero value the system is continued using this value as the continuestatus.
+    // return the caller's continue status value. 
+    // if this is a non-zero value the system is continued using this value as the continuestatus.
     return 0;
 } // KdpNotSupported
 
@@ -2044,7 +2074,8 @@ Return Value:
     KdpMoveMemory(AdditionalData->Buffer, (PUCHAR)BpBuf, a->BreakPointCount*sizeof(DBGKD_WRITE_BREAKPOINT64));
     KdpSendPacket(PACKET_TYPE_KD_STATE_MANIPULATE, &MessageHeader, AdditionalData);
 
-    // return the caller's continue status value.  if this is a non-zero value the system is continued using this value as the continuestatus.
+    // return the caller's continue status value. 
+    // if this is a non-zero value the system is continued using this value as the continuestatus.
     return a->ContinueStatus;
 }
 
@@ -2151,7 +2182,8 @@ VOID KdpSearchMemory(IN PDBGKD_MANIPULATE_STATE64 m, IN PSTRING AdditionalData, 
 /*++
 Routine Description:
     This function implements a memory pattern searcher.
-    This will find an instance of a pattern that begins in the range SearchAddress..SearchAddress+SearchLength.  The pattern may end outside of the range.
+    This will find an instance of a pattern that begins in the range SearchAddress..SearchAddress+SearchLength. 
+    The pattern may end outside of the range.
 Arguments:
     m - Supplies the state manipulation message.
     AdditionalData - Supplies the pattern to search for

@@ -58,10 +58,11 @@ static DWORD GetSystemThreadInfo (PPERFSYS_THREAD_DATA_BLOCK pTDB)
     pProcessBuffer = ALLOCMEM (hLibHeap, 0, ProcessBufSize);
     if (pProcessBuffer == NULL) {
         status = ERROR_OUTOFMEMORY;
-    } else {
-        while( (status = NtQuerySystemInformation(SystemProcessInformation, pProcessBuffer, ProcessBufSize, &dwReturnedBufferSize)) == STATUS_INFO_LENGTH_MISMATCH ) {
+    }
+    else {
+        while ((status = NtQuerySystemInformation(SystemProcessInformation, pProcessBuffer, ProcessBufSize, &dwReturnedBufferSize)) == STATUS_INFO_LENGTH_MISMATCH) {
             ProcessBufSize += INCREMENT_BUFFER_SIZE;
-            if ( !(pProcessBuffer = REALLOCMEM(hLibHeap, 0, pProcessBuffer, ProcessBufSize)) ) {
+            if (!(pProcessBuffer = REALLOCMEM(hLibHeap, 0, pProcessBuffer, ProcessBufSize))) {
                 status = ERROR_OUTOFMEMORY;
                 break;
             }
