@@ -53,15 +53,15 @@
 
 // event map implementation
 
-BEGIN_EVENT_HANDLER_MAP(CWindowAO,ImplIHTMLWindowEvents,CEvent)
+BEGIN_EVENT_HANDLER_MAP(CWindowAO, ImplIHTMLWindowEvents, CEvent)
 
-//  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONLOAD,EVENT_OBJECT_CREATE)
-    ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONUNLOAD,EVENT_OBJECT_DESTROY)
-//  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONRESIZE,EVENT_OBJECT_STATECHANGE)
-//  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONBEFOREUNLOAD,EVENT_OBJECT_STATECHANGE)
-//  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONFOCUS,EVENT_OBJECT_FOCUS)
-//  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONSCROLL,EVENT_OBJECT_STATECHANGE)
-//  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONBLUR,EVENT_OBJECT_STATECHANGE)
+    //  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONLOAD,EVENT_OBJECT_CREATE)
+    ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONUNLOAD, EVENT_OBJECT_DESTROY)
+    //  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONRESIZE,EVENT_OBJECT_STATECHANGE)
+    //  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONBEFOREUNLOAD,EVENT_OBJECT_STATECHANGE)
+    //  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONFOCUS,EVENT_OBJECT_FOCUS)
+    //  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONSCROLL,EVENT_OBJECT_STATECHANGE)
+    //  ON_DISPID_FIRE_EVENT(DISPID_HTMLWINDOWEVENTS_ONBLUR,EVENT_OBJECT_STATECHANGE)
 
 
 END_EVENT_HANDLER_MAP()
@@ -74,12 +74,12 @@ END_EVENT_HANDLER_MAP()
 
 
 CWindowAO::CWindowAO(CProxyManager * pProxyMgr, CTridentAO * pAOMParent, long nTOMIndex, long nUID, HWND hTridentWnd)
-: CTridentAO(pAOMParent,NULL,nTOMIndex,nUID,hTridentWnd)
-//  PARAMETERS:
-//      pAOMParent          pointer to the parent accessible object in the AOM tree
-//      nTOMIndex           index of the element from the TOM document.all collection.
-//      nUID                unique ID.
-//      hWndTrident         pointer to the window of the trident object that this object corresponds to.
+    : CTridentAO(pAOMParent, NULL, nTOMIndex, nUID, hTridentWnd)
+    //  PARAMETERS:
+    //      pAOMParent          pointer to the parent accessible object in the AOM tree
+    //      nTOMIndex           index of the element from the TOM document.all collection.
+    //      nUID                unique ID.
+    //      hWndTrident         pointer to the window of the trident object that this object corresponds to.
 {
     // the only reason that we needa a back pointer
     // to the proxy manager is to notify it of an
@@ -88,13 +88,13 @@ CWindowAO::CWindowAO(CProxyManager * pProxyMgr, CTridentAO * pAOMParent, long nT
     // events turned ON.
 
 #ifdef _MSAA_EVENTS
-    assert (pProxyMgr);
+    assert(pProxyMgr);
 #endif
 
     NULL_NOTIFY_EVENT_HANDLER_PTR(ImplIHTMLWindowEvents);
 
     m_pProxyMgr = pProxyMgr;
-    m_lRole     = ROLE_SYSTEM_CLIENT;
+    m_lRole = ROLE_SYSTEM_CLIENT;
 
 
     // Assign the delegating IUnknown to CTridentAE.
@@ -114,12 +114,12 @@ CWindowAO::CWindowAO(CProxyManager * pProxyMgr, CTridentAO * pAOMParent, long nT
     m_lAOMType = AOMITEM_WINDOW;
 
     // These are set in the Init()
-    m_pIHTMLWindow2     = NULL;
-    m_pAOMMgr           = NULL;
+    m_pIHTMLWindow2 = NULL;
+    m_pAOMMgr = NULL;
 
 #ifdef _DEBUG
     // set this string for debugging use
-    _tcscpy(m_szAOMName,_T("WindowAO"));
+    _tcscpy(m_szAOMName, _T("WindowAO"));
 #endif
 }
 
@@ -136,7 +136,7 @@ CWindowAO::~CWindowAO()
 {
     ReleaseTridentInterfaces();
 
-    if(m_pAOMMgr)
+    if (m_pAOMMgr)
     {
         delete m_pAOMMgr;
         m_pAOMMgr = NULL;
@@ -158,21 +158,21 @@ void CWindowAO::Detach()
 }
 
 
-void CWindowAO::ReleaseTridentInterfaces ()
+void CWindowAO::ReleaseTridentInterfaces()
 //  DESCRIPTION: Calls release on all CWindowAO-specific cached Trident
 //               object interface pointers.  Also calls the base class
 //               ReleaseTridentInterfaces().
 {
-    if ( m_pAOMMgr )
+    if (m_pAOMMgr)
         m_pAOMMgr->ReleaseTridentInterfaces();
 
-    if ( m_pIHTMLWindow2 )
+    if (m_pIHTMLWindow2)
     {
         m_pIHTMLWindow2->Release();
         m_pIHTMLWindow2 = NULL;
     }
 
-    if ( m_pTOMObjIUnk )
+    if (m_pTOMObjIUnk)
     {
         m_pTOMObjIUnk->Release();
         m_pTOMObjIUnk = NULL;
@@ -208,9 +208,9 @@ void CWindowAO::ReleaseTridentInterfaces ()
 //  done their specific initialization. derived classes should always implement
 //  their own interfaces before calling this method.
 
-HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
+HRESULT CWindowAO::Init(IUnknown * pTOMObjIUnk)
 {
-    HRESULT hr =E_FAIL;
+    HRESULT hr = E_FAIL;
     long lDocSourceIndex = 0;
 
 
@@ -220,8 +220,8 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
     //  on message registration failure.
 
     hr = registerHTMLGetObjectMsg();
-    if ( hr != S_OK )
-        return( hr );
+    if (hr != S_OK)
+        return(hr);
 
 
     // get the pointer and AddRef() to lock it
@@ -231,8 +231,8 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
     CComPtr<IHTMLWindow2> pIHTMLWindow2;
     CComPtr<IHTMLDocument2> pIHTMLDocument2;
 
-    if ( !SUCCEEDED(hr = getIHTMLWindow2Ptr( &pIHTMLWindow2, &pIHTMLDocument2 )) )
-        return( hr );
+    if (!SUCCEEDED(hr = getIHTMLWindow2Ptr(&pIHTMLWindow2, &pIHTMLDocument2)))
+        return(hr);
 
     m_pIHTMLWindow2 = pIHTMLWindow2;
     m_pIHTMLWindow2->AddRef();
@@ -241,7 +241,7 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
     // CWindowAO specific initialization.
 
 
-    if( m_lAOMType == AOMITEM_WINDOW)
+    if (m_lAOMType == AOMITEM_WINDOW)
     {
 
         // make sure that this is not a frame window.
@@ -249,7 +249,7 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
 
         assert(!m_pParent);
 
-        if(m_pParent)
+        if (m_pParent)
             return(E_FAIL);
 
 
@@ -259,7 +259,7 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
         // AddRef() happens implicitly.
 
 
-        if(hr = m_pIHTMLWindow2->QueryInterface(IID_IUnknown,(void **)&m_pTOMObjIUnk))
+        if (hr = m_pIHTMLWindow2->QueryInterface(IID_IUnknown, (void **)&m_pTOMObjIUnk))
             return(hr);
 
 
@@ -282,7 +282,7 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
         // are made from that interface to m_pDocAO)
 
 
-        if(hr = createMemberObjects())
+        if (hr = createMemberObjects())
             return(hr);
     }
 
@@ -291,7 +291,7 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
     // that pointer is cached for better performance.
 
 
-    if(hr = m_pAOMMgr->Init(pIHTMLDocument2))
+    if (hr = m_pAOMMgr->Init(pIHTMLDocument2))
         return(hr);
 
     CComPtr<IHTMLElement> pIHTMLElement;
@@ -301,28 +301,28 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
     // use it as the document's child ID.
 
 
-    if(hr = pIHTMLDocument2->get_body(&pIHTMLElement) )
+    if (hr = pIHTMLDocument2->get_body(&pIHTMLElement))
     {
         return(hr);
     }
 
-    if(hr = pIHTMLElement->get_sourceIndex(&lDocSourceIndex))
+    if (hr = pIHTMLElement->get_sourceIndex(&lDocSourceIndex))
     {
         return(hr);
     }
 
     CComPtr<IUnknown> pIUnknown(pIHTMLDocument2);
 
-    if ( !pIUnknown )
+    if (!pIUnknown)
     {
         m_pDocAO->Detach();
         m_pDocAO = NULL;
         return E_NOINTERFACE;
     }
 
-    hr = m_pDocAO->Init( m_hWnd,lDocSourceIndex,pIUnknown );
+    hr = m_pDocAO->Init(m_hWnd, lDocSourceIndex, pIUnknown);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
     {
         m_pDocAO->Detach();
         m_pDocAO = NULL;
@@ -339,8 +339,8 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
 
     IUnknown * pWindowObjIUnk;
 
-    hr = m_pIHTMLWindow2->QueryInterface(IID_IUnknown,(void **)&pWindowObjIUnk);
-    if(hr != S_OK)
+    hr = m_pIHTMLWindow2->QueryInterface(IID_IUnknown, (void **)&pWindowObjIUnk);
+    if (hr != S_OK)
         return(hr);
 
 
@@ -351,31 +351,31 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
     HRESULT hrEventInit = E_FAIL;
 
     hrEventInit = CREATE_NOTIFY_EVENT_HANDLER(ImplIHTMLWindowEvents);
-    if ( hrEventInit == S_OK )
-        hrEventInit = INIT_NOTIFY_EVENT_HANDLER(ImplIHTMLWindowEvents,m_pIUnknown,m_hWnd,m_nChildID,pWindowObjIUnk,this)
+    if (hrEventInit == S_OK)
+        hrEventInit = INIT_NOTIFY_EVENT_HANDLER(ImplIHTMLWindowEvents, m_pIUnknown, m_hWnd, m_nChildID, pWindowObjIUnk, this)
 
 #ifdef _DEBUG
 
-    //  If we are in debug mode, assert any
-    //  event handler initialization errors.
+        //  If we are in debug mode, assert any
+        //  event handler initialization errors.
 
-    //  (In release mode, just ignore.  This will allow
-    //  the object to be created, it just won't support
-    //  events.)
+        //  (In release mode, just ignore.  This will allow
+        //  the object to be created, it just won't support
+        //  events.)
 
 
-    assert( hrEventInit == S_OK );
+        assert(hrEventInit == S_OK);
 
-    if ( hrEventInit != S_OK )
-        OutputDebugString( _T("Event handler initialization in CWindowAO::Init() failed.\n") );
+    if (hrEventInit != S_OK)
+        OutputDebugString(_T("Event handler initialization in CWindowAO::Init() failed.\n"));
 
 #endif
 
-    if( hrEventInit != S_OK)
-            hr = hrEventInit;
+    if (hrEventInit != S_OK)
+        hr = hrEventInit;
 
     pWindowObjIUnk->Release();// release allocated pointer.
-    return( hr );
+    return(hr);
 }
 
 
@@ -402,7 +402,7 @@ HRESULT CWindowAO::Init( IUnknown * pTOMObjIUnk)
 
 STDMETHODIMP CWindowAO::QueryInterface(REFIID riid, void** ppv)
 {
-    if(!ppv)
+    if (!ppv)
         return(E_INVALIDARG);
 
     *ppv = NULL;
@@ -419,15 +419,15 @@ STDMETHODIMP CWindowAO::QueryInterface(REFIID riid, void** ppv)
         // this is the event interface for the window class.
 
 
-        ASSIGN_TO_NOTIFY_EVENT_HANDLER(ImplIHTMLWindowEvents,ppv,HTMLWindowEvents)
+        ASSIGN_TO_NOTIFY_EVENT_HANDLER(ImplIHTMLWindowEvents, ppv, HTMLWindowEvents)
     }
 #endif
     else
     {
-        return(CTridentAO::QueryInterface(riid,ppv));
+        return(CTridentAO::QueryInterface(riid, ppv));
     }
 
-    ((LPUNKNOWN) *ppv)->AddRef();
+    ((LPUNKNOWN)*ppv)->AddRef();
 
     return(NOERROR);
 }
@@ -461,7 +461,7 @@ HRESULT CWindowAO::GetAccName(long lChild, BSTR * pbstrName)
 
     assert(pbstrName);
 
-    if(!pbstrName)
+    if (!pbstrName)
         return(E_INVALIDARG);
 
 
@@ -501,7 +501,7 @@ HRESULT CWindowAO::GetAccDescription(long lChild, BSTR * pbstrDescription)
 
     assert(pbstrDescription);
 
-    if(!pbstrDescription)
+    if (!pbstrDescription)
         return(E_INVALIDARG);
 
     return GetResourceStringValue(IDS_WINDOW_DESCRIPTION, pbstrDescription);
@@ -539,9 +539,9 @@ HRESULT CWindowAO::GetAccFocus(IUnknown **ppIUnknown)
     //  Validate the parameters.
 
 
-    assert( ppIUnknown );
+    assert(ppIUnknown);
 
-    if ( !ppIUnknown )
+    if (!ppIUnknown)
         return E_INVALIDARG;
 
     *ppIUnknown = NULL;
@@ -550,9 +550,9 @@ HRESULT CWindowAO::GetAccFocus(IUnknown **ppIUnknown)
     //  Handle NULL m_pDocAO.
 
 
-    assert( m_pDocAO );
+    assert(m_pDocAO);
 
-    if ( !m_pDocAO )
+    if (!m_pDocAO)
         return DISP_E_MEMBERNOTFOUND;
 
 
@@ -565,10 +565,10 @@ HRESULT CWindowAO::GetAccFocus(IUnknown **ppIUnknown)
     BOOL        bBrowserWindowHasFocus;
     BOOL        bThisWindowHasFocus;
 
-    hr = IsFocused( &bBrowserWindowHasFocus, &bThisWindowHasFocus );
-    if ( hr == S_OK && bThisWindowHasFocus )
+    hr = IsFocused(&bBrowserWindowHasFocus, &bThisWindowHasFocus);
+    if (hr == S_OK && bThisWindowHasFocus)
     {
-       *ppIUnknown = (IUnknown *)m_pDocAO;
+        *ppIUnknown = (IUnknown *)m_pDocAO;
     }
 
     return hr;
@@ -605,31 +605,31 @@ HRESULT CWindowAO::GetAccFocus(IUnknown **ppIUnknown)
 //      E_NOTIMPL for base class version.
 
 
-HRESULT CWindowAO::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth,long * pcyHeight, long lChild)
+HRESULT CWindowAO::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth, long * pcyHeight, long lChild)
 {
 
     //  Validate the parameters.
 
 
-    assert( pxLeft && pyTop && pcxWidth && pcyHeight );
+    assert(pxLeft && pyTop && pcxWidth && pcyHeight);
 
-    if ( !pxLeft || !pyTop || !pcxWidth || !pcyHeight )
+    if (!pxLeft || !pyTop || !pcxWidth || !pcyHeight)
         return(E_INVALIDARG);
 
 
     //  Handle NULL m_pDocAO.
 
 
-    assert( m_pDocAO );
+    assert(m_pDocAO);
 
-    if ( !m_pDocAO )
+    if (!m_pDocAO)
         return(E_FAIL);
 
 
 
     //  Delegate to document child.
 
-    return( m_pDocAO->AccLocation(pxLeft,pyTop,pcxWidth,pcyHeight,lChild) );
+    return(m_pDocAO->AccLocation(pxLeft, pyTop, pcxWidth, pcyHeight, lChild));
 }
 
 
@@ -653,7 +653,7 @@ HRESULT CWindowAO::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth,long
 HRESULT CWindowAO::GetAccState(long lChild, long *plState)
 {
     LPUNKNOWN   lpUnk = NULL;
-    HRESULT     hr =    E_FAIL;
+    HRESULT     hr = E_FAIL;
 
 
     //  Validate the parameters.
@@ -661,7 +661,7 @@ HRESULT CWindowAO::GetAccState(long lChild, long *plState)
 
     assert(plState);
 
-    if(!plState)
+    if (!plState)
         return(E_INVALIDARG);
 
     *plState = 0;
@@ -669,12 +669,12 @@ HRESULT CWindowAO::GetAccState(long lChild, long *plState)
     BOOL        bBrowserWindowHasFocus;
     BOOL        bThisWindowHasFocus;
 
-    hr = IsFocused( &bBrowserWindowHasFocus, &bThisWindowHasFocus );
-    if ( hr == S_OK )
+    hr = IsFocused(&bBrowserWindowHasFocus, &bThisWindowHasFocus);
+    if (hr == S_OK)
     {
-        if ( bThisWindowHasFocus )
+        if (bThisWindowHasFocus)
             *plState = STATE_SYSTEM_FOCUSED | STATE_SYSTEM_FOCUSABLE;
-        else if ( bBrowserWindowHasFocus )
+        else if (bBrowserWindowHasFocus)
             *plState = STATE_SYSTEM_FOCUSABLE;
     }
 
@@ -698,7 +698,7 @@ HRESULT CWindowAO::GetAccState(long lChild, long *plState)
 
 //      HRESULT     DISP_E_MEMBERNOTFOUND
 
-HRESULT CWindowAO::GetAccSelection( IUnknown** ppIUnknown )
+HRESULT CWindowAO::GetAccSelection(IUnknown** ppIUnknown)
 {
     return DISP_E_MEMBERNOTFOUND;
 }
@@ -722,18 +722,18 @@ HRESULT CWindowAO::GetAccSelection( IUnknown** ppIUnknown )
 
 HRESULT CWindowAO::GetAccParent(IDispatch ** ppdispParent)
 {
-    assert( ppdispParent );
+    assert(ppdispParent);
 
     HRESULT hr;
 
-    if ( m_pParent )
-        hr = m_pParent->QueryInterface(IID_IDispatch,(void **)ppdispParent);
+    if (m_pParent)
+        hr = m_pParent->QueryInterface(IID_IDispatch, (void **)ppdispParent);
     else
-        hr = CreateStdAccessibleObject( m_hWnd, OBJID_WINDOW, IID_IDispatch, (void **) ppdispParent );
+        hr = CreateStdAccessibleObject(m_hWnd, OBJID_WINDOW, IID_IDispatch, (void **)ppdispParent);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
     {
-        assert( *ppdispParent == NULL );
+        assert(*ppdispParent == NULL);
 
         hr = S_FALSE;
     }
@@ -793,10 +793,10 @@ HRESULT CWindowAO::GetAOMMgr(CAOMMgr ** ppAOMMgr)
 
     assert(ppAOMMgr);
 
-    if(!ppAOMMgr)
+    if (!ppAOMMgr)
         return(E_INVALIDARG);
 
-    if(m_pAOMMgr)
+    if (m_pAOMMgr)
     {
         *ppAOMMgr = m_pAOMMgr;
         return(S_OK);
@@ -821,24 +821,24 @@ HRESULT CWindowAO::GetAOMMgr(CAOMMgr ** ppAOMMgr)
 
 //  S_OK | E_FAIL | E_INVALIDARG
 
-HRESULT CWindowAO::GetDocumentChild( CDocumentAO** ppDocAO )
+HRESULT CWindowAO::GetDocumentChild(CDocumentAO** ppDocAO)
 {
 
     //  Validate the parameter.
 
 
-    assert( ppDocAO );
+    assert(ppDocAO);
 
-    if ( !ppDocAO )
+    if (!ppDocAO)
         return E_INVALIDARG;
 
 
     //  Handle NULL m_pDocAO.
 
 
-    assert( m_pDocAO );
+    assert(m_pDocAO);
 
-    if ( !m_pDocAO )
+    if (!m_pDocAO)
         return E_FAIL;
 
 
@@ -879,7 +879,7 @@ HRESULT CWindowAO::GetAccessibleObjectFromID(long lObjectID, CAccElement **ppAE)
     // validate inputs
 
 
-    if(!ppAE)
+    if (!ppAE)
         return(E_INVALIDARG);
 
     *ppAE = NULL;
@@ -891,7 +891,7 @@ HRESULT CWindowAO::GetAccessibleObjectFromID(long lObjectID, CAccElement **ppAE)
     // dont build the tree if we don't have to.
 
 
-    if(lObjectID == OBJID_WINDOW || lObjectID == OBJID_CLIENT)
+    if (lObjectID == OBJID_WINDOW || lObjectID == OBJID_CLIENT)
     {
         *ppAE = this;
         return(S_OK);
@@ -909,9 +909,9 @@ HRESULT CWindowAO::GetAccessibleObjectFromID(long lObjectID, CAccElement **ppAE)
     //  info refer to IE5 bug 28935.
 
 
-    if(lObjectID == OBJID_ZOMBIFYTREE)
+    if (lObjectID == OBJID_ZOMBIFYTREE)
     {
-        m_pDocAO->SetReadyToDetach( TRUE );
+        m_pDocAO->SetReadyToDetach(TRUE);
         Zombify();
 
         return S_FALSE;
@@ -922,7 +922,7 @@ HRESULT CWindowAO::GetAccessibleObjectFromID(long lObjectID, CAccElement **ppAE)
     // MUST be called prior to this method.
 
 
-    if(!(m_pAOMMgr))
+    if (!(m_pAOMMgr))
     {
         return(E_FAIL);
     }
@@ -930,7 +930,7 @@ HRESULT CWindowAO::GetAccessibleObjectFromID(long lObjectID, CAccElement **ppAE)
 
     // actual finding/building is done by AOMMgr
 
-    hr = m_pAOMMgr->GetAccessibleObjectFromID(this,lObjectID,ppAE);
+    hr = m_pAOMMgr->GetAccessibleObjectFromID(this, lObjectID, ppAE);
     return(hr);
 }
 
@@ -950,18 +950,18 @@ HRESULT CWindowAO::GetAccessibleObjectFromID(long lObjectID, CAccElement **ppAE)
 
 void CWindowAO::Notify(DISPID idEvent)
 {
-    switch(idEvent)
+    switch (idEvent)
     {
     case DISPID_HTMLWINDOWEVENTS_ONUNLOAD:
         if (!IsDetached())
         {
             // in the frame case it is possible that the window will already be
             // detached, by the time this arrives.
-             m_pDocAO->SetReadyToDetach( TRUE );
+            m_pDocAO->SetReadyToDetach(TRUE);
 
-             // this causes ReleaseTridentInteraces to be called
-             //   on this entire tree();
-             Zombify();
+            // this causes ReleaseTridentInteraces to be called
+            //   on this entire tree();
+            Zombify();
         }
         break;
     default:
@@ -985,10 +985,10 @@ void CWindowAO::Notify(DISPID idEvent)
 //  S_OK if it has the focus, else S_FALSE if it doesnt, else
 //  standard COM error.
 
-HRESULT CWindowAO::IsFocused( LPBOOL pbIsBrowserWindowFocused, LPBOOL pbIsThisWindowFocused )
+HRESULT CWindowAO::IsFocused(LPBOOL pbIsBrowserWindowFocused, LPBOOL pbIsThisWindowFocused)
 {
-    HWND    hwndCurrent     = NULL;
-    HWND    hwndTarget      = NULL;
+    HWND    hwndCurrent = NULL;
+    HWND    hwndTarget = NULL;
 
     *pbIsBrowserWindowFocused = FALSE;
     *pbIsThisWindowFocused = FALSE;
@@ -999,9 +999,9 @@ HRESULT CWindowAO::IsFocused( LPBOOL pbIsBrowserWindowFocused, LPBOOL pbIsThisWi
 
     hwndCurrent = m_hWnd;
     hwndTarget = GetForegroundWindow();
-    while(hwndCurrent)
+    while (hwndCurrent)
     {
-        if(hwndTarget == hwndCurrent)
+        if (hwndTarget == hwndCurrent)
             break;
 
         hwndCurrent = ::GetParent(hwndCurrent);
@@ -1013,7 +1013,7 @@ HRESULT CWindowAO::IsFocused( LPBOOL pbIsBrowserWindowFocused, LPBOOL pbIsThisWi
     // **NOTE** this handles uninitialized frames also.
 
 
-    if ( hwndCurrent )
+    if (hwndCurrent)
     {
         *pbIsBrowserWindowFocused = TRUE;
         *pbIsThisWindowFocused = (GetFocus() == m_hWnd);
@@ -1027,7 +1027,7 @@ HRESULT CWindowAO::IsFocused( LPBOOL pbIsBrowserWindowFocused, LPBOOL pbIsThisWi
 // protected methods
 
 
-HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocument2** ppTridentDoc )
+HRESULT CWindowAO::getIHTMLWindow2Ptr(IHTMLWindow2** ppTridentWnd, IHTMLDocument2** ppTridentDoc)
 //  CWindowAO::getIHTMLWindow2Ptr()
 //  DESCRIPTION:
 //      Obtains the Trident window interface pointer.
@@ -1051,7 +1051,7 @@ HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocumen
     //  valid window (e.g., the Trident window could
     //  be closed before this method is called).
 
-    if ( IsWindow( m_hWnd ) )
+    if (IsWindow(m_hWnd))
     {
         wParam = WMOBJ_ID;
 
@@ -1060,7 +1060,7 @@ HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocumen
         //  marshalling/unmarshalling.
 
 
-        if ( GetWindowThreadProcessId( m_hWnd, NULL ) == GetCurrentThreadId() )
+        if (GetWindowThreadProcessId(m_hWnd, NULL) == GetCurrentThreadId())
             wParam |= WMOBJ_SAMETHREAD;
 
 
@@ -1070,15 +1070,15 @@ HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocumen
         //  if Trident is in a well "hung" state.
 
 
-        lRetVal = SendMessageTimeout( m_hWnd, m_nMsgHTMLGetObject, wParam, 0L, SMTO_ABORTIFHUNG, 10000, (LPDWORD)&ref );
+        lRetVal = SendMessageTimeout(m_hWnd, m_nMsgHTMLGetObject, wParam, 0L, SMTO_ABORTIFHUNG, 10000, (LPDWORD)&ref);
 
 
         //  If SendMessageTimeout() returns failure,
         //  return the associated Win32 error code.
-        if ( lRetVal == FALSE )
+        if (lRetVal == FALSE)
         {
-            DWORD   dw = GetLastError();            
-            return( E_FAIL );// BUGBUG: return last error???
+            DWORD   dw = GetLastError();
+            return(E_FAIL);// BUGBUG: return last error???
         }
 
         //  If SendMessageTimeout() doesn't return error
@@ -1087,7 +1087,7 @@ HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocumen
         //  BUGBUG: Is this safe to type cast LRESULT to
         //   HRESULT?
 
-        else if ( FAILED( (HRESULT)ref ) )
+        else if (FAILED((HRESULT)ref))
             return (HRESULT)ref;
 
 
@@ -1095,7 +1095,7 @@ HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocumen
         //  and Trident returns a positive LRESULT, assume
         //  that the LRESULT maps to the IHTMLWindow2* that has been marshalled via LresultFromObject().
         //   To get the interface pointer, the LRESULT must be unmarshalled by calling ObjectFromLresult().
-        else if ( ref )
+        else if (ref)
         {
             // [arunj 8/9/97] the message now returns
             // IID_IHTMLDocument2 interface (post 1106 builds)
@@ -1103,23 +1103,23 @@ HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocumen
 
             HRESULT     hr;
 
-            IUnknown*   pUnk = (IUnknown*) ref;
+            IUnknown*   pUnk = (IUnknown*)ref;
             pUnk->AddRef();
 
-            hr = ObjectFromLresult( ref, IID_IHTMLDocument2, wParam, (void**) ppTridentDoc );
-            if ( hr == E_NOINTERFACE )
-                hr = getDocumentFromTridentHost( pUnk, ppTridentDoc );
+            hr = ObjectFromLresult(ref, IID_IHTMLDocument2, wParam, (void**)ppTridentDoc);
+            if (hr == E_NOINTERFACE)
+                hr = getDocumentFromTridentHost(pUnk, ppTridentDoc);
 
             pUnk->Release();
 
-            if ( hr != S_OK )
+            if (hr != S_OK)
                 return hr;
 
-            assert( *ppTridentDoc );
+            assert(*ppTridentDoc);
 
-            hr = (*ppTridentDoc)->get_parentWindow( ppTridentWnd );
+            hr = (*ppTridentDoc)->get_parentWindow(ppTridentWnd);
             // assign input parameter to NULL upon failure
-            if(hr != S_OK)
+            if (hr != S_OK)
             {
                 *ppTridentWnd = NULL;
             }
@@ -1145,11 +1145,11 @@ HRESULT CWindowAO::getIHTMLWindow2Ptr( IHTMLWindow2** ppTridentWnd, IHTMLDocumen
     //  are called.
 
 
-    return( E_FAIL );
+    return(E_FAIL);
 }
 
 
-HRESULT CWindowAO::getDocumentFromTridentHost( /* in */ IUnknown* pUnk, /* out */ IHTMLDocument2** ppTridentDoc )
+HRESULT CWindowAO::getDocumentFromTridentHost( /* in */ IUnknown* pUnk, /* out */ IHTMLDocument2** ppTridentDoc)
 //  PARAMETERS:
 //      IUnknown*           [in]
 //      IHTMLDocument2**    [out]
@@ -1158,23 +1158,23 @@ HRESULT CWindowAO::getDocumentFromTridentHost( /* in */ IUnknown* pUnk, /* out *
 {
     HRESULT hr = E_NOINTERFACE;
 
-    CComQIPtr<IHTMLDocument,&IID_IHTMLDocument> pIHTMLDocument(pUnk);
+    CComQIPtr<IHTMLDocument, &IID_IHTMLDocument> pIHTMLDocument(pUnk);
 
-    if ( pIHTMLDocument )
+    if (pIHTMLDocument)
     {
         CComPtr<IDispatch>  pDisp;
 
-        hr = pIHTMLDocument->get_Script( &pDisp );
-        if ( hr == S_OK )
+        hr = pIHTMLDocument->get_Script(&pDisp);
+        if (hr == S_OK)
         {
-            assert( pDisp );
+            assert(pDisp);
 
-            CComQIPtr<IHTMLWindow2,&IID_IHTMLWindow2> pWindow( pDisp );
+            CComQIPtr<IHTMLWindow2, &IID_IHTMLWindow2> pWindow(pDisp);
 
-            if ( !pWindow )
+            if (!pWindow)
                 hr = E_NOINTERFACE;
             else
-                hr = pWindow->get_document( ppTridentDoc );
+                hr = pWindow->get_document(ppTridentDoc);
         }
     }
 
@@ -1205,17 +1205,17 @@ HRESULT CWindowAO::getDocumentFromTridentHost( /* in */ IUnknown* pUnk, /* out *
 
 //      This method calls the Win32 API RegisterWindowMessage().
 
-HRESULT CWindowAO::registerHTMLGetObjectMsg( void )
+HRESULT CWindowAO::registerHTMLGetObjectMsg(void)
 {
-    if ( m_nMsgHTMLGetObject == 0 )
+    if (m_nMsgHTMLGetObject == 0)
     {
-        m_nMsgHTMLGetObject = RegisterWindowMessage( MSGNAME_WM_HTML_GETOBJECT );
+        m_nMsgHTMLGetObject = RegisterWindowMessage(MSGNAME_WM_HTML_GETOBJECT);
 
-        if ( m_nMsgHTMLGetObject == 0 )
-            return( E_FAIL );
+        if (m_nMsgHTMLGetObject == 0)
+            return(E_FAIL);
     }
 
-    return( S_OK );
+    return(S_OK);
 }
 
 
@@ -1241,13 +1241,13 @@ HRESULT CWindowAO::createMemberObjects(void)
     // AOMMgr sticks around for the lifetime of this object.
 
 
-    if(! (m_pAOMMgr = new CAOMMgr(this)) )
+    if (!(m_pAOMMgr = new CAOMMgr(this)))
         return(E_OUTOFMEMORY);
 
-    if(!(m_pDocAO = new CDocumentAO( this,
-            DUMMY_SOURCEINDEX,
-            m_pAOMMgr->GetAOMID(),
-            m_hWnd )))
+    if (!(m_pDocAO = new CDocumentAO(this,
+                                     DUMMY_SOURCEINDEX,
+                                     m_pAOMMgr->GetAOMID(),
+                                     m_hWnd)))
         return(E_OUTOFMEMORY);
 
 

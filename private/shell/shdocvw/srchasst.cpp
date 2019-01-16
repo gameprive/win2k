@@ -12,7 +12,7 @@ BOOL
 WINAPI
 InternetInitializeAutoProxyDll(
     DWORD dwReserved
-    );
+);
 
 
 // CSearchAssistantOC
@@ -44,12 +44,12 @@ STDAPI_(VARIANT_BOOL) UseCustomInternetSearch()
     DWORD cbVal = sizeof(dwVal);
 
     if ((SHGetValueW(HKEY_CURRENT_USER,
-                    REG_SZ_IE_MAIN,
-                    REG_SZ_USECUSTOM,
-                    NULL,
-                    &dwVal,
-                    &cbVal) == ERROR_SUCCESS) &&
-        (FALSE != dwVal))
+                     REG_SZ_IE_MAIN,
+                     REG_SZ_USECUSTOM,
+                     NULL,
+                     &dwVal,
+                     &cbVal) == ERROR_SUCCESS) &&
+                     (FALSE != dwVal))
     {
         bRet = VARIANT_TRUE;
     }
@@ -107,7 +107,7 @@ STDAPI_(BOOL) GetDefaultInternetSearchUrlW(LPWSTR pwszUrl, int cchUrl, BOOL bSub
         //  First try the user specific value
         cb = cchUrl * sizeof(TCHAR);
         bResult = SHGetValueW(HKEY_CURRENT_USER, REG_SZ_IE_MAIN, REG_SZ_SEARCHBAR,
-                             NULL, (BYTE *)pwszUrl, &cb) == ERROR_SUCCESS;
+                              NULL, (BYTE *)pwszUrl, &cb) == ERROR_SUCCESS;
     }
 
     if (!bResult)
@@ -162,15 +162,15 @@ void SetDefaultInternetSearchUrlW(LPCWSTR pwszUrl)
 }
 
 //  GUID string helper:
-HRESULT _BstrVariantFromGUID( REFGUID refguid, VARIANT* pvarGuid )
+HRESULT _BstrVariantFromGUID(REFGUID refguid, VARIANT* pvarGuid)
 {
     WCHAR wszGuid[GUIDSTR_MAX];
-    HRESULT hr = SHStringFromGUIDW( refguid, wszGuid, ARRAYSIZE(wszGuid) );
+    HRESULT hr = SHStringFromGUIDW(refguid, wszGuid, ARRAYSIZE(wszGuid));
     if (FAILED(hr))
         return hr;
 
     pvarGuid->vt = VT_EMPTY;
-    if (NULL == (pvarGuid->bstrVal = SysAllocString( wszGuid )))
+    if (NULL == (pvarGuid->bstrVal = SysAllocString(wszGuid)))
         return E_OUTOFMEMORY;
 
     pvarGuid->vt = VT_BSTR;
@@ -187,7 +187,7 @@ HRESULT CSearch_Create(GUID *pguid, BSTR bstrTitle, BSTR bstrUrl, ISearch **ppSe
     if (bstrTitle && bstrUrl && pguid)
     {
         BSTR _bstrTitle = SysAllocString(bstrTitle);
-        BSTR _bstrUrl   = SysAllocString(bstrUrl);
+        BSTR _bstrUrl = SysAllocString(bstrUrl);
 
         if (_bstrTitle && _bstrUrl)
         {
@@ -214,7 +214,7 @@ HRESULT CSearch_Create(GUID *pguid, BSTR bstrTitle, BSTR bstrUrl, ISearch **ppSe
 }
 
 CSearch::CSearch(GUID *pguid, BSTR bstrTitle, BSTR bstrUrl) : _cRef(1), _bstrTitle(bstrTitle), _bstrUrl(bstrUrl),
-                                                 CImpIDispatch(&IID_ISearch)
+CImpIDispatch(&IID_ISearch)
 {
     SHStringFromGUID(*pguid, _szId, ARRAYSIZE(_szId));
 }
@@ -373,7 +373,7 @@ STDMETHODIMP CSearchCollection::get_Count(long *plCount)
 
     if (_hdsaItems)
     {
-        *plCount =  DSA_GetItemCount(_hdsaItems);
+        *plCount = DSA_GetItemCount(_hdsaItems);
     }
     return S_OK;
 }
@@ -397,25 +397,25 @@ STDMETHODIMP CSearchCollection::Item(VARIANT index, ISearch **ppid)
 
     switch (index.vt)
     {
-        case VT_I2:
-            index.lVal = (long)index.iVal;
-            // And fall through...
+    case VT_I2:
+        index.lVal = (long)index.iVal;
+        // And fall through...
 
-        case VT_I4:
-            if ((index.lVal >= 0) && (index.lVal < DSA_GetItemCount(_hdsaItems)))
-            {
-                LPURLSEARCH pus;
+    case VT_I4:
+        if ((index.lVal >= 0) && (index.lVal < DSA_GetItemCount(_hdsaItems)))
+        {
+            LPURLSEARCH pus;
 
-                pus = (LPURLSEARCH)DSA_GetItemPtr(_hdsaItems, index.lVal);
-                ASSERT(pus);
+            pus = (LPURLSEARCH)DSA_GetItemPtr(_hdsaItems, index.lVal);
+            ASSERT(pus);
 
-                hres = CSearch_Create(&pus->guid, pus->wszName, pus->wszUrl, ppid);
-            }
+            hres = CSearch_Create(&pus->guid, pus->wszName, pus->wszUrl, ppid);
+        }
 
-            break;
+        break;
 #if 0
         // BUGBUG: should we worry about this one?
-        case VT_BSTR:
+    case VT_BSTR:
 #endif
     }
 
@@ -430,7 +430,7 @@ STDMETHODIMP CSearchCollection::_NewEnum(IUnknown **ppunk)
 
 
 CSearchAssistantOC::CSearchAssistantOC()
-    :   m_punkSite(NULL)
+    : m_punkSite(NULL)
 {
 #ifdef UNIX
     m_dwSafety = 0;
@@ -456,7 +456,7 @@ STDMETHODIMP CSearchAssistantOC::SetClientSite(IOleClientSite *pClientSite)
         IWebBrowser2 *pWebBrowser2;
 
         hr = IUnknown_QueryService(pClientSite, SID_SWebBrowserApp, IID_IWebBrowser2,
-                                   (void **)&pWebBrowser2);
+            (void **)&pWebBrowser2);
         if (SUCCEEDED(hr))
         {
             BSTR bstrProp = SysAllocString(c_wszThisBandIsYourBand);
@@ -473,7 +473,7 @@ STDMETHODIMP CSearchAssistantOC::SetClientSite(IOleClientSite *pClientSite)
                     ATOMICRELEASE(m_pSearchBandTBHelper);
 
                     hr = var.punkVal->QueryInterface(IID_ISearchBandTBHelper,
-                                                     (void **)&m_pSearchBandTBHelper);
+                        (void **)&m_pSearchBandTBHelper);
                     ASSERT(SUCCEEDED(hr));
 
                     if (NULL != m_pSearchBandTBHelper)
@@ -522,36 +522,36 @@ STDMETHODIMP CSearchAssistantOC::Exec(const GUID *pguidCmdGroup,
     {
         switch (nCmdID)
         {
-            case SBID_SEARCH_NEXT:
-                if ((NULL != pvaIn) && (pvaIn->vt == VT_I4))
-                {
-                    Fire_OnNextMenuSelect(pvaIn->lVal);
+        case SBID_SEARCH_NEXT:
+            if ((NULL != pvaIn) && (pvaIn->vt == VT_I4))
+            {
+                Fire_OnNextMenuSelect(pvaIn->lVal);
 
-                    hr = S_OK;
-                }
-                else
-                {
-                    hr = E_INVALIDARG;
-                }
-                break;
+                hr = S_OK;
+            }
+            else
+            {
+                hr = E_INVALIDARG;
+            }
+            break;
 
-            case SBID_SEARCH_NEW:
-                if (NULL != pvaOut)
-                {
-                    m_bEventHandled = VARIANT_FALSE;
+        case SBID_SEARCH_NEW:
+            if (NULL != pvaOut)
+            {
+                m_bEventHandled = VARIANT_FALSE;
 
-                    Fire_OnNewSearch();
+                Fire_OnNewSearch();
 
-                    pvaOut->vt = VT_BOOL;
-                    pvaOut->boolVal = m_bEventHandled;
+                pvaOut->vt = VT_BOOL;
+                pvaOut->boolVal = m_bEventHandled;
 
-                    hr = S_OK;
-                }
-                else
-                {
-                    hr = E_INVALIDARG;
-                }
-                break;
+                hr = S_OK;
+            }
+            else
+            {
+                hr = E_INVALIDARG;
+            }
+            break;
         }
     }
 
@@ -628,7 +628,7 @@ STDMETHODIMP CSearchAssistantOC::NavigateToDefaultSearch()
     IWebBrowser2 *pWebBrowser2;
 
     hr = IUnknown_QueryService(m_spClientSite, SID_SWebBrowserApp, IID_IWebBrowser2,
-                               (void **)&pWebBrowser2);
+        (void **)&pWebBrowser2);
     if (SUCCEEDED(hr))
     {
         WCHAR wszUrl[INTERNET_MAX_URL_LENGTH];
@@ -693,7 +693,7 @@ HRESULT CSearchAssistantOC::IsRestricted(BSTR bstrGuid, VARIANT_BOOL *pVal)
                     //{&SRCID_SFindPrinter, REST_NOFINDPRINTER},
                 };
 
-                for (int i=0; i < ARRAYSIZE(agr); i++)
+                for (int i = 0; i < ARRAYSIZE(agr); i++)
                 {
                     if (IsEqualGUID(guid, *agr[i].pguid))
                     {
@@ -778,7 +778,7 @@ STDMETHODIMP CSearchAssistantOC::get_Searches(ISearches **ppid)
             hr = psp->QueryService(SID_SExplorerToolbar, IID_IOleCommandTarget, (void **)&pct);
             if (SUCCEEDED(hr))
             {
-                VARIANTARG var = {0};
+                VARIANTARG var = { 0 };
 
                 hr = pct->Exec(&CGID_PrivCITCommands, CITIDM_GETFOLDERSEARCHES, 0, NULL, &var);
                 if (SUCCEEDED(hr))
@@ -1188,7 +1188,7 @@ BOOL CSearchAssistantOC::IsTrustedSite()
                         DWORD cbData = SIZEOF(wszData);
                         DWORD cchValue = ARRAYSIZE(wszValue);
 
-                        for (int i=0; RegEnumValueW(hkey, i, wszValue, &cchValue, NULL, NULL, (LPBYTE)wszData, &cbData) == ERROR_SUCCESS; i++)
+                        for (int i = 0; RegEnumValueW(hkey, i, wszValue, &cchValue, NULL, NULL, (LPBYTE)wszData, &cbData) == ERROR_SUCCESS; i++)
                         {
                             if (SHExpandEnvironmentStringsW(wszData, wszExpandedUrl, ARRAYSIZE(wszExpandedUrl)) > 0)
                             {
@@ -1198,7 +1198,7 @@ BOOL CSearchAssistantOC::IsTrustedSite()
                                     if (cchValue > 0)
                                     {
                                         BOOL bRet;
-                                        if (wszExpandedUrl[cchValue-1] == L'*')
+                                        if (wszExpandedUrl[cchValue - 1] == L'*')
                                         {
                                             bRet = StrCmpNIW(bstrUrl, wszExpandedUrl, cchValue - 1) == 0;
                                         }
@@ -1241,104 +1241,104 @@ HRESULT CSearchAssistantOC::UpdateRegistry(BOOL bRegister)
 
 STDMETHODIMP CSearchAssistantOC::FindOnWeb()
 {
-    if (!IsTrustedSite() && m_punkSite==NULL)
-        return E_ACCESSDENIED ;
+    if (!IsTrustedSite() && m_punkSite == NULL)
+        return E_ACCESSDENIED;
 
-    return ShowSearchBand( SRCID_SWebSearch ) ;
+    return ShowSearchBand(SRCID_SWebSearch);
 }
 
 STDMETHODIMP CSearchAssistantOC::FindFilesOrFolders()
 {
-    if (!IsTrustedSite() && m_punkSite==NULL)
-        return E_ACCESSDENIED ;
+    if (!IsTrustedSite() && m_punkSite == NULL)
+        return E_ACCESSDENIED;
 
-    return ShowSearchBand( SRCID_SFileSearch ) ;
+    return ShowSearchBand(SRCID_SFileSearch);
 }
 
 STDMETHODIMP CSearchAssistantOC::FindComputer()
 {
-    if (!IsTrustedSite() && m_punkSite==NULL)
-        return E_ACCESSDENIED ;
+    if (!IsTrustedSite() && m_punkSite == NULL)
+        return E_ACCESSDENIED;
 
-    return ShowSearchBand( SRCID_SFindComputer ) ;
+    return ShowSearchBand(SRCID_SFindComputer);
 }
 
 STDMETHODIMP CSearchAssistantOC::FindPrinter()
 {
-    if (!IsTrustedSite() && m_punkSite==NULL)
-        return E_ACCESSDENIED ;
+    if (!IsTrustedSite() && m_punkSite == NULL)
+        return E_ACCESSDENIED;
 
     HRESULT hr = E_FAIL;
     IShellDispatch2* psd2;
-    if( SUCCEEDED( (hr = CoCreateInstance( CLSID_Shell, NULL, CLSCTX_INPROC_SERVER, IID_IShellDispatch2, (void**)&psd2 )) ) )
+    if (SUCCEEDED((hr = CoCreateInstance(CLSID_Shell, NULL, CLSCTX_INPROC_SERVER, IID_IShellDispatch2, (void**)&psd2))))
     {
-        hr = psd2->FindPrinter( NULL, NULL, NULL ) ;
+        hr = psd2->FindPrinter(NULL, NULL, NULL);
         psd2->Release();
     }
-    return hr ;
+    return hr;
 }
 
 STDMETHODIMP CSearchAssistantOC::FindPeople()
 {
-    if (!IsTrustedSite() && m_punkSite==NULL)
-        return E_ACCESSDENIED ;
+    if (!IsTrustedSite() && m_punkSite == NULL)
+        return E_ACCESSDENIED;
 
     //  Odd-ball shellexecute...
 
     HRESULT      hr;
     LPITEMIDLIST pidl = NULL;
 
-    if (SUCCEEDED( (hr = SHGetSpecialFolderLocation(NULL, CSIDL_PROGRAM_FILES, &pidl )) ))
+    if (SUCCEEDED((hr = SHGetSpecialFolderLocation(NULL, CSIDL_PROGRAM_FILES, &pidl))))
     {
         TCHAR szDir[MAX_PATH];
-        if (SUCCEEDED( (hr = SHGetPathFromIDList(pidl, szDir)) ))
+        if (SUCCEEDED((hr = SHGetPathFromIDList(pidl, szDir))))
         {
-            ULONG_PTR dwErr = (ULONG_PTR) ShellExecute(HWND_DESKTOP, TEXT("open"), TEXT("wab.exe"),
-                                                       TEXT("/find"), szDir, SW_SHOWNORMAL);
+            ULONG_PTR dwErr = (ULONG_PTR)ShellExecute(HWND_DESKTOP, TEXT("open"), TEXT("wab.exe"),
+                                                      TEXT("/find"), szDir, SW_SHOWNORMAL);
             if (dwErr <= 32)
             {
                 switch (dwErr)
                 {
-                    case ERROR_FILE_NOT_FOUND:
-                    case ERROR_PATH_NOT_FOUND:
-                    case ERROR_BAD_FORMAT:
-                        hr = HRESULT_FROM_WIN32(dwErr) ;
-                        break ;
+                case ERROR_FILE_NOT_FOUND:
+                case ERROR_PATH_NOT_FOUND:
+                case ERROR_BAD_FORMAT:
+                    hr = HRESULT_FROM_WIN32(dwErr);
+                    break;
 
-                    case SE_ERR_ASSOCINCOMPLETE:
-                    case SE_ERR_NOASSOC:
-                        hr = HRESULT_FROM_WIN32(ERROR_NO_ASSOCIATION) ;
-                        break ;
+                case SE_ERR_ASSOCINCOMPLETE:
+                case SE_ERR_NOASSOC:
+                    hr = HRESULT_FROM_WIN32(ERROR_NO_ASSOCIATION);
+                    break;
 
-                    case SE_ERR_DLLNOTFOUND:
-                        hr = HRESULT_FROM_WIN32(ERROR_DLL_NOT_FOUND) ;
-                        break ;
+                case SE_ERR_DLLNOTFOUND:
+                    hr = HRESULT_FROM_WIN32(ERROR_DLL_NOT_FOUND);
+                    break;
 
-                    case SE_ERR_ACCESSDENIED:
-                        hr = E_ACCESSDENIED ;
-                        break ;
+                case SE_ERR_ACCESSDENIED:
+                    hr = E_ACCESSDENIED;
+                    break;
 
-                    case SE_ERR_OOM:
-                        hr = E_OUTOFMEMORY ;
-                        break ;
+                case SE_ERR_OOM:
+                    hr = E_OUTOFMEMORY;
+                    break;
 
-                    case SE_ERR_SHARE:
-                        hr = HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION);
-                        break ;
+                case SE_ERR_SHARE:
+                    hr = HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION);
+                    break;
 
-                    case SE_ERR_DDEBUSY:
-                    case SE_ERR_DDEFAIL:
-                    case SE_ERR_DDETIMEOUT:
-                        hr = HRESULT_FROM_WIN32(ERROR_DDE_FAIL) ;
-                        break ;
+                case SE_ERR_DDEBUSY:
+                case SE_ERR_DDEFAIL:
+                case SE_ERR_DDETIMEOUT:
+                    hr = HRESULT_FROM_WIN32(ERROR_DDE_FAIL);
+                    break;
                 }
             }
             else
-                hr = S_OK ;
+                hr = S_OK;
         }
-        ILFree(pidl) ;
+        ILFree(pidl);
     }
-    return hr ;
+    return hr;
 }
 
 // Wininet helper method to retry autodetection
@@ -1347,7 +1347,7 @@ STDMETHODIMP CSearchAssistantOC::FindPeople()
 // the local computer.
 // stolen from the zones code by joshco
 
-STDMETHODIMP CSearchAssistantOC::LocalZoneCheck( )
+STDMETHODIMP CSearchAssistantOC::LocalZoneCheck()
 {
     HRESULT hr = E_ACCESSDENIED;
 
@@ -1408,91 +1408,91 @@ STDMETHODIMP CSearchAssistantOC::NETDetectNextNavigate()
 {
     HRESULT hr = S_FALSE;
 
- CHAR  szConnectionName[100];
- DWORD dwBufLen;
- DWORD dwFlags;
- BOOL fResult;
+    CHAR  szConnectionName[100];
+    DWORD dwBufLen;
+    DWORD dwFlags;
+    BOOL fResult;
 
- if (  LocalZoneCheck() != S_OK ) {
-     // some security problem.. time to bail.
-    hr=E_ACCESSDENIED;
-    goto error;
+    if (LocalZoneCheck() != S_OK) {
+        // some security problem.. time to bail.
+        hr = E_ACCESSDENIED;
+        goto error;
     }
 
- dwBufLen = sizeof(szConnectionName);
+    dwBufLen = sizeof(szConnectionName);
 
-       // find the connection name via internetconnected state
+    // find the connection name via internetconnected state
 
- fResult = InternetGetConnectedStateExA(&dwFlags,  szConnectionName,dwBufLen, 0 );
+    fResult = InternetGetConnectedStateExA(&dwFlags, szConnectionName, dwBufLen, 0);
 
- INTERNET_PER_CONN_OPTION_LISTA list;
- INTERNET_PER_CONN_OPTIONA option;
+    INTERNET_PER_CONN_OPTION_LISTA list;
+    INTERNET_PER_CONN_OPTIONA option;
 
- list.dwSize = sizeof(INTERNET_PER_CONN_OPTION_LISTA);
- if(dwFlags & INTERNET_CONNECTION_LAN)
+    list.dwSize = sizeof(INTERNET_PER_CONN_OPTION_LISTA);
+    if (dwFlags & INTERNET_CONNECTION_LAN)
     {
         list.pszConnection = NULL;
     }
     else
     {
-        list.pszConnection =  szConnectionName;
+        list.pszConnection = szConnectionName;
     }
 
- list.dwOptionCount = 1;
- list.pOptions = &option;
- option.dwOption = INTERNET_PER_CONN_FLAGS;
- dwBufLen= sizeof(list);
+    list.dwOptionCount = 1;
+    list.pOptions = &option;
+    option.dwOption = INTERNET_PER_CONN_FLAGS;
+    dwBufLen = sizeof(list);
 
-   // now call internetsetoption to do it..
-   // first set this connectoid to enable autodetect
- if ( ! InternetQueryOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION ,
-         &list,&dwBufLen) )
+    // now call internetsetoption to do it..
+    // first set this connectoid to enable autodetect
+    if (!InternetQueryOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION,
+                              &list, &dwBufLen))
     {
-           goto error;
+        goto error;
     }
 
- option.Value.dwValue |= PROXY_TYPE_AUTO_DETECT ;
+    option.Value.dwValue |= PROXY_TYPE_AUTO_DETECT;
 
- if ( ! InternetSetOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION ,
-        &list,sizeof(list)))
-   {
-         goto error;
-   }
-
- if ( ! InternetInitializeAutoProxyDll(0) ) {
-         goto error;
-   }
-
- //  Now set the autodetect flags for this connectoid to
- //  do a passive detect and shut itself off if it doesnt work
- option.dwOption = INTERNET_PER_CONN_AUTODISCOVERY_FLAGS;
-
- if ( ! InternetQueryOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION ,
-         &list,&dwBufLen) )
+    if (!InternetSetOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION,
+                            &list, sizeof(list)))
     {
-           goto error;
+        goto error;
     }
 
- option.Value.dwValue &= ~(AUTO_PROXY_FLAG_DETECTION_RUN) ;
+    if (!InternetInitializeAutoProxyDll(0)) {
+        goto error;
+    }
 
- if ( ! InternetSetOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION ,
-        &list,sizeof(list)))
-   {
-         goto error;
-   }
+    //  Now set the autodetect flags for this connectoid to
+    //  do a passive detect and shut itself off if it doesnt work
+    option.dwOption = INTERNET_PER_CONN_AUTODISCOVERY_FLAGS;
+
+    if (!InternetQueryOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION,
+                              &list, &dwBufLen))
+    {
+        goto error;
+    }
+
+    option.Value.dwValue &= ~(AUTO_PROXY_FLAG_DETECTION_RUN);
+
+    if (!InternetSetOptionA(NULL, INTERNET_OPTION_PER_CONNECTION_OPTION,
+                            &list, sizeof(list)))
+    {
+        goto error;
+    }
 
 
 
- if ( ! InternetSetOptionA(NULL, INTERNET_OPTION_SETTINGS_CHANGED,NULL, 0) ) {
-         goto error;
-   }
+    if (!InternetSetOptionA(NULL, INTERNET_OPTION_SETTINGS_CHANGED, NULL, 0)) {
+        goto error;
+    }
 
 
 
- hr=S_OK;
- error: ;
+    hr = S_OK;
+error:;
 
- return hr;
+    return hr;
 }
 
 STDMETHODIMP CSearchAssistantOC::PutFindText(BSTR FindText)
@@ -1503,16 +1503,11 @@ STDMETHODIMP CSearchAssistantOC::PutFindText(BSTR FindText)
     {
         IServiceProvider *pServiceProvider;
 
-        hr = IUnknown_QueryService(m_pSearchBandTBHelper,
-                                   SID_SProxyBrowser,
-                                   IID_IServiceProvider,
-                                   (void **)&pServiceProvider);
+        hr = IUnknown_QueryService(m_pSearchBandTBHelper, SID_SProxyBrowser, IID_IServiceProvider, (void **)&pServiceProvider);
         if (SUCCEEDED(hr))
         {
             IWebBrowser2 *pWebBrowser2;
-            hr = pServiceProvider->QueryService(SID_SWebBrowserApp,
-                                                IID_IWebBrowser2,
-                                                (void **)&pWebBrowser2);
+            hr = pServiceProvider->QueryService(SID_SWebBrowserApp, IID_IWebBrowser2, (void **)&pWebBrowser2);
             if (SUCCEEDED(hr))
             {
                 ::PutFindText(pWebBrowser2, FindText);
@@ -1559,12 +1554,12 @@ inline int x_hex_digit(int c)
 */
 static const unsigned char isAcceptable[96] =
 /*   0 1 2 3 4 5 6 7 8 9 A B C D E F */
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0,    /* 2x   !"#$%&'()*+,-./  */
+{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0,    /* 2x   !"#$%&'()*+,-./  */
  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,    /* 3x  0123456789:;<=>?  */
  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    /* 4x  @ABCDEFGHIJKLMNO  */
  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1,    /* 5x  PQRSTUVWXYZ[\]^_  */
  0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    /* 6x  `abcdefghijklmno  */
- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0};   /* 7x  pqrstuvwxyz{\}~
+ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };   /* 7x  pqrstuvwxyz{\}~
 DEL */
 
 // Performs URL-encoding of null-terminated strings. Pass NULL in pbOut
@@ -1664,7 +1659,7 @@ STDMETHODIMP CSearchAssistantOC::EncodeString(BSTR bstrValue, BSTR bstrCharSet, 
                 uiCodePage = CP_ACP;
 
                 hr = pMultiLanguage2->QueryInterface(IID_IMLangCodePages,
-                                                     (void **)&pMLangCodePages);
+                    (void **)&pMLangCodePages);
                 if (SUCCEEDED(hr))
                 {
                     DWORD dwCodePages = 0;
@@ -1737,10 +1732,10 @@ STDMETHODIMP CSearchAssistantOC::EncodeString(BSTR bstrValue, BSTR bstrCharSet, 
                                                     *pbstrResult, cchResult);
                             }
 
-                            delete [] pszEncVal;
+                            delete[] pszEncVal;
                         }
                     }
-                    delete [] pszValue;
+                    delete[] pszValue;
                 }
             }
             pMultiLanguage2->Release();
@@ -1765,11 +1760,11 @@ STDMETHODIMP CSearchAssistantOC::get_ShowFindPrinter(VARIANT_BOOL *pbShowFindPri
 
             if (SUCCEEDED(CoCreateInstance(CLSID_Shell, 0, CLSCTX_INPROC_SERVER, IID_IShellDispatch2, (void**)&psd)))
             {
-                BSTR bstrName = SysAllocString( L"DirectoryServiceAvailable");
+                BSTR bstrName = SysAllocString(L"DirectoryServiceAvailable");
 
                 if (bstrName)
                 {
-                    VARIANT varRet = {0};
+                    VARIANT varRet = { 0 };
 
                     if (SUCCEEDED(psd->GetSystemInformation(bstrName, &varRet)))
                     {
@@ -1838,21 +1833,21 @@ HRESULT GetSearchURLs(
     IN DWORD cch,
     OUT OPTIONAL LPTSTR pszUrlNavNew,
     OUT DWORD cchNavNew,
-    OUT BOOL *pfRunInProcess )
+    OUT BOOL *pfRunInProcess)
 {
-    HRESULT hr = E_FAIL ;
-    DWORD   cb ;
-    DWORD   dwType ;
-    DWORD   dwErr ;
+    HRESULT hr = E_FAIL;
+    DWORD   cb;
+    DWORD   dwType;
+    DWORD   dwErr;
 
-    *pfRunInProcess = FALSE ;
-    if( pszUrlNavNew && cchNavNew )
-        *pszUrlNavNew = 0 ;
+    *pfRunInProcess = FALSE;
+    if (pszUrlNavNew && cchNavNew)
+        *pszUrlNavNew = 0;
 
-    if( IsEqualGUID( guidSearch, SRCID_SWebSearch ) )
+    if (IsEqualGUID(guidSearch, SRCID_SWebSearch))
     {
-        if( GetDefaultInternetSearchUrlW( pszUrl, cch, TRUE ) )
-            hr = S_OK ;
+        if (GetDefaultInternetSearchUrlW(pszUrl, cch, TRUE))
+            hr = S_OK;
     }
     else
     {
@@ -1862,31 +1857,31 @@ HRESULT GetSearchURLs(
 
         TCHAR szSubKey[32];
         HKEY  hkey, hkeySub;
-        if( (dwErr = RegOpenKeyEx( HKEY_LOCAL_MACHINE, REG_SZ_SHELL_SEARCH, 0, KEY_READ, &hkey )) != ERROR_SUCCESS )
-            return HRESULT_FROM_WIN32( dwErr ) ;
+        if ((dwErr = RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_SZ_SHELL_SEARCH, 0, KEY_READ, &hkey)) != ERROR_SUCCESS)
+            return HRESULT_FROM_WIN32(dwErr);
 
-        hr = E_FAIL ;
+        hr = E_FAIL;
 
-        for( int i = 0;
-             wnsprintf( szSubKey, ARRAYSIZE(szSubKey), TEXT("%d"), i ), RegOpenKey(hkey, szSubKey, &hkeySub) == ERROR_SUCCESS ;
-             i++ )
+        for (int i = 0;
+             wnsprintf(szSubKey, ARRAYSIZE(szSubKey), TEXT("%d"), i), RegOpenKey(hkey, szSubKey, &hkeySub) == ERROR_SUCCESS;
+             i++)
         {
             TCHAR szSearchGuid[MAX_PATH];
 
             cb = SIZEOF(szSearchGuid);
 
-            if( SHGetValue( hkeySub, TEXT("SearchGUID"), NULL, &dwType, (BYTE*)szSearchGuid, &cb ) == ERROR_SUCCESS )
+            if (SHGetValue(hkeySub, TEXT("SearchGUID"), NULL, &dwType, (BYTE*)szSearchGuid, &cb) == ERROR_SUCCESS)
             {
                 GUID guid;
                 SHCLSIDFromString(szSearchGuid, &guid);
 
-                if( IsEqualGUID( guid, guidSearch ) )
+                if (IsEqualGUID(guid, guidSearch))
                 {
                     cb = cch * sizeof(TCHAR);
-                    if( SHGetValue( hkeySub, TEXT("SearchGUID\\Url"), NULL,
-                                    &dwType, (BYTE*)pszUrl, &cb ) == ERROR_SUCCESS )
+                    if (SHGetValue(hkeySub, TEXT("SearchGUID\\Url"), NULL,
+                                   &dwType, (BYTE*)pszUrl, &cb) == ERROR_SUCCESS)
                     {
-                        if( pszUrlNavNew && cchNavNew )
+                        if (pszUrlNavNew && cchNavNew)
                         {
                             // See if there is a secondary URL that we should navigate to
                             cb = cchNavNew * sizeof(TCHAR);
@@ -1894,71 +1889,71 @@ HRESULT GetSearchURLs(
                         }
 
                         // try to grab the RunInProcess flag
-                        *pfRunInProcess = (BOOL)SHRegGetIntW( hkeySub, L"RunInProcess", 0 );
+                        *pfRunInProcess = (BOOL)SHRegGetIntW(hkeySub, L"RunInProcess", 0);
 
                         RegCloseKey(hkeySub);
-                        hr = S_OK ;
+                        hr = S_OK;
                         break;
                     }
                 }
             }
             RegCloseKey(hkeySub);
         }
-        RegCloseKey( hkey ) ;
+        RegCloseKey(hkey);
     }
-    return hr ;
+    return hr;
 }
 
-STDMETHODIMP _IsShellSearchBand( REFGUID guidSearch )
+STDMETHODIMP _IsShellSearchBand(REFGUID guidSearch)
 {
-    if (IsEqualGUID( guidSearch, SRCID_SFileSearch ) ||
-        IsEqualGUID( guidSearch, SRCID_SFindComputer ) ||
-        IsEqualGUID( guidSearch, SRCID_SFindPrinter ) )
+    if (IsEqualGUID(guidSearch, SRCID_SFileSearch) ||
+        IsEqualGUID(guidSearch, SRCID_SFindComputer) ||
+        IsEqualGUID(guidSearch, SRCID_SFindPrinter))
         return S_OK;
     return S_FALSE;
 }
 
 
 //  Establishes the correct shell search dialog, etc.
-STDMETHODIMP _ShowShellSearchBand( IWebBrowser2* pwb2, REFGUID guidSearch )
+STDMETHODIMP _ShowShellSearchBand(IWebBrowser2* pwb2, REFGUID guidSearch)
 {
-    ASSERT( pwb2 );
-    ASSERT( S_OK == _IsShellSearchBand( guidSearch ) );
+    ASSERT(pwb2);
+    ASSERT(S_OK == _IsShellSearchBand(guidSearch));
 
     HRESULT hr;
     VARIANT varBand;
-    if (SUCCEEDED( (hr = _BstrVariantFromGUID( CLSID_FileSearchBand, &varBand )) ))
+    if (SUCCEEDED((hr = _BstrVariantFromGUID(CLSID_FileSearchBand, &varBand))))
     {
         //  Retrieve the FileSearchBand's unknown from the browser frame as a VT_UNKNOWN property;
         //  (FileSearchBand initialized and this when he was created and hosted.)
         VARIANT varFsb;
-        VariantInit( &varFsb );
-        if (SUCCEEDED( (hr = pwb2->GetProperty( varBand.bstrVal, &varFsb )) ))
+        VariantInit(&varFsb);
+        if (SUCCEEDED((hr = pwb2->GetProperty(varBand.bstrVal, &varFsb))))
         {
-            if (VT_UNKNOWN == varFsb.vt && varFsb.punkVal != NULL )
+            if (VT_UNKNOWN == varFsb.vt && varFsb.punkVal != NULL)
             {
                 //  Retrieve the IFileSearchBand interface
                 IFileSearchBand* pfsb;
-                if (SUCCEEDED( (hr = varFsb.punkVal->QueryInterface( IID_IFileSearchBand, (LPVOID*)&pfsb )) ))
+                if (SUCCEEDED((hr = varFsb.punkVal->QueryInterface(IID_IFileSearchBand, (LPVOID*)&pfsb))))
                 {
                     //  Assign the correct search type to the band
                     VARIANT varSearchID;
-                    if (SUCCEEDED( (hr = _BstrVariantFromGUID( guidSearch, &varSearchID )) ))
+                    if (SUCCEEDED((hr = _BstrVariantFromGUID(guidSearch, &varSearchID))))
                     {
                         VARIANT      varNil;
-                        VARIANT_BOOL bNavToResults = VARIANT_FALSE ;
-                            // Note [scotthan]: we only navigate to results when we create a
-                            // new frame for the search, which we never do from srchasst.
-                        VariantInit( &varNil );
-                        pfsb->SetSearchParameters( &varSearchID.bstrVal, bNavToResults, &varNil, &varNil );
-                        VariantClear( &varSearchID );
+                        VARIANT_BOOL bNavToResults = VARIANT_FALSE;
+                        // Note [scotthan]: we only navigate to results when we create a
+                        // new frame for the search, which we never do from srchasst.
+                        VariantInit(&varNil);
+                        pfsb->SetSearchParameters(&varSearchID.bstrVal, bNavToResults, &varNil, &varNil);
+                        VariantClear(&varSearchID);
                     }
                     pfsb->Release();
                 }
             }
-            VariantClear( &varFsb );
+            VariantClear(&varFsb);
         }
-        VariantClear( &varBand );
+        VariantClear(&varBand);
     }
     return hr;
 }
@@ -1966,7 +1961,7 @@ STDMETHODIMP _ShowShellSearchBand( IWebBrowser2* pwb2, REFGUID guidSearch )
 
 //  The goop to show a search band in the current browser frame.
 //  6/1
-HRESULT CSearchAssistantOC::ShowSearchBand( REFGUID guidSearch )
+HRESULT CSearchAssistantOC::ShowSearchBand(REFGUID guidSearch)
 {
     HRESULT           hr = E_FAIL;
     TCHAR             szUrl[MAX_URL_STRING];
@@ -1975,14 +1970,14 @@ HRESULT CSearchAssistantOC::ShowSearchBand( REFGUID guidSearch )
     BOOL              fShellSearchBand = FALSE;
     BOOL              fRunInProcess = FALSE;
     IUnknown*         punkSite = m_punkSite ? m_punkSite : (IUnknown*)m_spClientSite;
-    IServiceProvider* psp  = NULL;
+    IServiceProvider* psp = NULL;
     IWebBrowser2*     pwb2 = NULL;
 
-    if( !punkSite )
-        return E_UNEXPECTED ;
+    if (!punkSite)
+        return E_UNEXPECTED;
 
     //  Determine band class and whether the band supports navigation
-    if( (fShellSearchBand = (S_OK == _IsShellSearchBand( guidSearch ))) )
+    if ((fShellSearchBand = (S_OK == _IsShellSearchBand(guidSearch))))
     {
         if (SHRestricted(REST_NOFIND) && IsEqualGUID(guidSearch, SRCID_SFileSearch))
             return E_ACCESSDENIED;
@@ -1993,56 +1988,56 @@ HRESULT CSearchAssistantOC::ShowSearchBand( REFGUID guidSearch )
     {
         clsidBand = CLSID_SearchBand;
         //  we need to navigate to a search URL, grope the registry for that special URL
-        if( FAILED( (hr= GetSearchURLs( guidSearch, szUrl, ARRAYSIZE(szUrl),
-                                        szUrlNavNew, ARRAYSIZE(szUrlNavNew),
-                                        &fRunInProcess )) ) )
+        if (FAILED((hr = GetSearchURLs(guidSearch, szUrl, ARRAYSIZE(szUrl),
+                                       szUrlNavNew, ARRAYSIZE(szUrlNavNew),
+                                       &fRunInProcess))))
             return hr;
     }
 
     //  BUGBUG [scotthan]: this function will fail unless invoked from within a browser.
     //  This sits fine for now since SearchAsst is designed as a browser band.
-    hr = IUnknown_QueryService( punkSite, SID_STopLevelBrowser, IID_IServiceProvider, (LPVOID*)&psp );
-    if( SUCCEEDED( hr ) )
+    hr = IUnknown_QueryService(punkSite, SID_STopLevelBrowser, IID_IServiceProvider, (LPVOID*)&psp);
+    if (SUCCEEDED(hr))
     {
-        hr = psp->QueryService( SID_SWebBrowserApp, IID_IWebBrowser2, (LPVOID*)&pwb2 );
-        if( SUCCEEDED( hr ) )
+        hr = psp->QueryService(SID_SWebBrowserApp, IID_IWebBrowser2, (LPVOID*)&pwb2);
+        if (SUCCEEDED(hr))
         {
             ASSERT(pwb2);
-            WCHAR    *pwszBand ;
-            if( SUCCEEDED( (hr = StringFromCLSID( clsidBand, &pwszBand )) ) )
+            WCHAR    *pwszBand;
+            if (SUCCEEDED((hr = StringFromCLSID(clsidBand, &pwszBand))))
             {
                 VARIANT  var;
-                VARIANT  varNil = {0};
-                var.bstrVal = SysAllocString( pwszBand ) ;
-                var.vt = VT_BSTR ;
-                CoTaskMemFree( pwszBand ) ;
+                VARIANT  varNil = { 0 };
+                var.bstrVal = SysAllocString(pwszBand);
+                var.vt = VT_BSTR;
+                CoTaskMemFree(pwszBand);
 
                 // show a search bar
                 hr = pwb2->ShowBrowserBar(&var, &varNil, &varNil);
-                VariantClear( &var );
+                VariantClear(&var);
 
-                if( SUCCEEDED( hr ) )
+                if (SUCCEEDED(hr))
                 {
                     VARIANT varFlags;
-                    if( fShellSearchBand )
+                    if (fShellSearchBand)
                     {
-                        hr= _ShowShellSearchBand( pwb2, guidSearch );
+                        hr = _ShowShellSearchBand(pwb2, guidSearch);
                     }
                     else
                     {
                         varFlags.vt = VT_I4;
                         varFlags.lVal = navBrowserBar;
-                        var.bstrVal = SysAllocString( T2W( szUrl ) ) ;
-                        var.vt = VT_BSTR ;
+                        var.bstrVal = SysAllocString(T2W(szUrl));
+                        var.vt = VT_BSTR;
 
                         // navigate the search bar to the correct url
                         hr = pwb2->Navigate2(&var, &varFlags, &varNil, &varNil, &varNil);
-                        VariantClear( &var );
-                        VariantClear( &varFlags );
+                        VariantClear(&var);
+                        VariantClear(&varFlags);
 
-                        if( SUCCEEDED( hr ) )
+                        if (SUCCEEDED(hr))
                         {
-                            hr = pwb2->put_Visible( TRUE ) ;
+                            hr = pwb2->put_Visible(TRUE);
                         }
                     }
                 }
@@ -2054,17 +2049,17 @@ HRESULT CSearchAssistantOC::ShowSearchBand( REFGUID guidSearch )
     return hr;
 }
 
-STDMETHODIMP CSearchAssistantOC::SetSite( IUnknown* punkSite )
+STDMETHODIMP CSearchAssistantOC::SetSite(IUnknown* punkSite)
 {
     ATOMICRELEASE(m_punkSite);
     if ((m_punkSite = punkSite) != NULL)
-        m_punkSite->AddRef() ;
-    return S_OK ;
+        m_punkSite->AddRef();
+    return S_OK;
 }
 
-STDMETHODIMP CSearchAssistantOC::GetSite( REFIID riid, void** ppvSite )
+STDMETHODIMP CSearchAssistantOC::GetSite(REFIID riid, void** ppvSite)
 {
-    if( !m_punkSite )
-        return E_FAIL ;
-    return m_punkSite->QueryInterface( riid, ppvSite ) ;
+    if (!m_punkSite)
+        return E_FAIL;
+    return m_punkSite->QueryInterface(riid, ppvSite);
 }

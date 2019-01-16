@@ -41,9 +41,9 @@
 
 STDAPI CDelegateMalloc_Create(void *pv, SIZE_T cbSize, WORD wOuter, IMalloc **ppmalloc);
 
-const VARIANT c_vaEmpty = {0};
+const VARIANT c_vaEmpty = { 0 };
 
-const TCHAR c_szRegKeyTypedURLs[]     = TEXT("Software\\Microsoft\\Internet Explorer\\TypedURLs");
+const TCHAR c_szRegKeyTypedURLs[] = TEXT("Software\\Microsoft\\Internet Explorer\\TypedURLs");
 
 #define DM_SESSIONCOUNT     0
 
@@ -53,10 +53,10 @@ int     g_cxSmIcon = 0;
 int     g_cySmIcon = 0;
 
 
-const DISPPARAMS c_dispparamsNoArgs = {NULL, NULL, 0, 0};
+const DISPPARAMS c_dispparamsNoArgs = { NULL, NULL, 0, 0 };
 const LARGE_INTEGER c_li0 = { 0, 0 };
 
-const ITEMIDLIST s_idlNULL = { 0 } ;
+const ITEMIDLIST s_idlNULL = { 0 };
 
 
 int InitColorDepth(void)
@@ -107,7 +107,7 @@ void LoadCommonIcons(void)
         if (hinst)
         {
             int lrFlags = InitColorDepth();
-            g_hiconSplat   = (HICON)LoadImage(hinst, MAKEINTRESOURCE(IDI_URL_SPLAT), IMAGE_ICON, g_cxIcon, g_cyIcon, lrFlags);
+            g_hiconSplat = (HICON)LoadImage(hinst, MAKEINTRESOURCE(IDI_URL_SPLAT), IMAGE_ICON, g_cxIcon, g_cyIcon, lrFlags);
             g_hiconSplatSm = (HICON)LoadImage(hinst, MAKEINTRESOURCE(IDI_URL_SPLAT), IMAGE_ICON, g_cxSmIcon, g_cySmIcon, lrFlags);
 
             FreeLibrary(hinst);
@@ -138,13 +138,13 @@ STDAPI_(BOOL) UrlHitsNetW(LPCWSTR pszURL)
         break;
 
     default:
-        {
+    {
         DWORD fHitsNet;
         DWORD dwSize;
         fResult = SUCCEEDED(CoInternetQueryInfo(
-                            pszURL, QUERY_USES_NETWORK,
-                            0, &fHitsNet, sizeof(fHitsNet), &dwSize, 0)) && fHitsNet;
-        }
+            pszURL, QUERY_USES_NETWORK,
+            0, &fHitsNet, sizeof(fHitsNet), &dwSize, 0)) && fHitsNet;
+    }
     }
 
     return fResult;
@@ -155,8 +155,8 @@ STDAPI_(BOOL) CallCoInternetQueryInfo(LPCTSTR pszURL, QUERYOPTION QueryOption)
     DWORD fRetVal;
     DWORD dwSize;
     return SUCCEEDED(CoInternetQueryInfo(
-                        pszURL, QueryOption,
-                        0, &fRetVal, sizeof(fRetVal), &dwSize, 0)) && fRetVal;
+        pszURL, QueryOption,
+        0, &fRetVal, sizeof(fRetVal), &dwSize, 0)) && fRetVal;
 }
 
 // see if a given URL is in the cache
@@ -248,7 +248,7 @@ BOOL IsTopFrameBrowser(IServiceProvider *psp, IUnknown *punk)
     ASSERT(punk);
 
     BOOL fRet = FALSE;
-    if(SUCCEEDED(psp->QueryService(SID_STopFrameBrowser, IID_IShellBrowser, (void **)&psb)))
+    if (SUCCEEDED(psp->QueryService(SID_STopFrameBrowser, IID_IShellBrowser, (void **)&psb)))
     {
         fRet = IsSameObject(psb, punk);
         psb->Release();
@@ -294,24 +294,24 @@ BOOL StringIsUTF8A(LPCSTR psz, DWORD cb)
     DWORD dwCnt;
     DWORD dwUTF8Cnt;
 
-    if(!psz || !(*psz) || cb == 0)
+    if (!psz || !(*psz) || cb == 0)
         return(FALSE);
 
     pb = (CHAR*)psz;
-    while(cb-- && *pb)
+    while (cb-- && *pb)
     {
-        if((*pb & 0xc0) == 0xc0) // bit pattern starts with 11
+        if ((*pb & 0xc0) == 0xc0) // bit pattern starts with 11
         {
             dwCnt = dwUTF8Cnt = 0;
             b = *pb;
-            while((b & 0xc0) == 0xc0)
+            while ((b & 0xc0) == 0xc0)
             {
                 dwCnt++;
-                if((*(pb+dwCnt) & 0xc0) == 0x80)   // bits at dwCnt bytes from current offset in str aren't 10
+                if ((*(pb + dwCnt) & 0xc0) == 0x80)   // bits at dwCnt bytes from current offset in str aren't 10
                     dwUTF8Cnt++;
                 b = (b << 1) & 0xff;
             }
-            if(dwCnt == dwUTF8Cnt)
+            if (dwCnt == dwUTF8Cnt)
                 fRC = TRUE;       // Found UTF8 encoded chars
 
             pb += ++dwCnt;
@@ -334,27 +334,27 @@ BOOL StringIsUTF8W(LPCWSTR pwz, DWORD cb)
     DWORD dwCnt;
     DWORD dwUTF8Cnt;
 
-    if(!pwz || !(*pwz) || cb == 0)
+    if (!pwz || !(*pwz) || cb == 0)
         return(FALSE);
 
     pb = (WCHAR*)pwz;
-    while(cb-- && *pb)
+    while (cb-- && *pb)
     {
-        if(*pb > 255)   // Non ansi so bail
+        if (*pb > 255)   // Non ansi so bail
             return(FALSE);
 
-        if((*pb & 0xc0) == 0xc0) // bit pattern starts with 11
+        if ((*pb & 0xc0) == 0xc0) // bit pattern starts with 11
         {
             dwCnt = dwUTF8Cnt = 0;
             b = *pb;
-            while((b & 0xc0) == 0xc0)
+            while ((b & 0xc0) == 0xc0)
             {
                 dwCnt++;
-                if((*(pb+dwCnt) & 0xc0) == 0x80)   // bits at dwCnt bytes from current offset in str aren't 10
+                if ((*(pb + dwCnt) & 0xc0) == 0x80)   // bits at dwCnt bytes from current offset in str aren't 10
                     dwUTF8Cnt++;
                 b = (b << 1) & 0xff;
             }
-            if(dwCnt == dwUTF8Cnt)
+            if (dwCnt == dwUTF8Cnt)
                 fRC = TRUE;       // Found UTF8 encoded chars
 
             pb += ++dwCnt;
@@ -406,7 +406,7 @@ BOOL UTF8Enabled(VOID)
     static DWORD   dwIE = URL_ENCODING_NONE;
     DWORD   dwOutLen = sizeof(DWORD);
 
-    if(dwIE == URL_ENCODING_NONE)
+    if (dwIE == URL_ENCODING_NONE)
         UrlMkGetSessionOption(URLMON_OPTION_URL_ENCODING, &dwIE, sizeof(DWORD), &dwOutLen, NULL);
     return(dwIE == URL_ENCODING_ENABLE_UTF8);
 }
@@ -458,9 +458,9 @@ HRESULT PrepareURLForDisplayUTF8W(LPCWSTR pwz, LPWSTR pwzOut, LPDWORD pcchOut, B
     CHAR    szBuf[MAX_URL_STRING];
     CHAR    *pszBuf = szBuf;
 
-    if(!pwz || !pwzOut || !pcchOut)
+    if (!pwz || !pwzOut || !pcchOut)
     {
-        if(pcchOut)
+        if (pcchOut)
             *pcchOut = 0;
         return(hr);
     }
@@ -468,13 +468,13 @@ HRESULT PrepareURLForDisplayUTF8W(LPCWSTR pwz, LPWSTR pwzOut, LPDWORD pcchOut, B
     cch = *pcchOut;
     cch1 = ARRAYSIZE(szBuf);
     hr = UrlUnescapeW((LPWSTR)pwz, pwzOut, pcchOut, 0);
-    if(SUCCEEDED(hr))
+    if (SUCCEEDED(hr))
     {
         if (fUTF8Enabled && StringIsUTF8W(pwzOut, cch))
         {
-            if(*pcchOut > ARRAYSIZE(szBuf)) // Internal buffer not big enough so alloc one
+            if (*pcchOut > ARRAYSIZE(szBuf)) // Internal buffer not big enough so alloc one
             {
-                if((pszBuf = (CHAR *)LocalAlloc(LPTR, ((*pcchOut)+1) * sizeof(CHAR))) == NULL)
+                if ((pszBuf = (CHAR *)LocalAlloc(LPTR, ((*pcchOut) + 1) * sizeof(CHAR))) == NULL)
                 {
                     *pcchOut = 0;
                     return(E_OUTOFMEMORY);
@@ -485,9 +485,9 @@ HRESULT PrepareURLForDisplayUTF8W(LPCWSTR pwz, LPWSTR pwzOut, LPDWORD pcchOut, B
             // Compress wide string
             CHAR *pIn = (CHAR *)pwzOut;
             CHAR *pOut = pszBuf;
-            while((*pIn != '\0') || (*(pIn+1) != '\0') && --cch1)
+            while ((*pIn != '\0') || (*(pIn + 1) != '\0') && --cch1)
             {
-                if(*pIn != '\0')
+                if (*pIn != '\0')
                 {
                     *pOut = *pIn;
                     pOut++;
@@ -497,7 +497,7 @@ HRESULT PrepareURLForDisplayUTF8W(LPCWSTR pwz, LPWSTR pwzOut, LPDWORD pcchOut, B
             *pOut = '\0';
 
             // Convert to UTF8 wide string
-            if((cch1 = SHAnsiToUnicodeCP(CP_UTF8, pszBuf, pwzOut, cch)) != 0)
+            if ((cch1 = SHAnsiToUnicodeCP(CP_UTF8, pszBuf, pwzOut, cch)) != 0)
             {
                 hr = S_OK;
                 *pcchOut = cch1;
@@ -506,7 +506,7 @@ HRESULT PrepareURLForDisplayUTF8W(LPCWSTR pwz, LPWSTR pwzOut, LPDWORD pcchOut, B
             // SHAnsiToUnicode doesn't tell us if it has truncated the convertion to fit the output buffer
             RIPMSG(cch1 != cch, "PrepareUrlForDisplayUTF8: Passed in size of out buf equal to converted size; buffer might be truncated");
 
-            if((pszBuf != NULL) && (pszBuf != szBuf))
+            if ((pszBuf != NULL) && (pszBuf != szBuf))
                 LocalFree((CHAR *)pszBuf);
         }
         else
@@ -527,9 +527,9 @@ HRESULT PrepareURLForDisplayUTF8W(LPCWSTR pwz, LPWSTR pwzOut, LPDWORD pcchOut, B
 //  BUGBUGCOMPAT - for IE30 compatibility reasons, we have to Unescape all Urls - zekel - 1-JUL-97
 //  before passing them to an APP.  this does limit their use, but
 //  people already depend on this behavior.  specifically MS Chat.
-BOOL PrepareURLForExternalApp (LPCWSTR psz, LPWSTR pszOut, LPDWORD pcchOut)
+BOOL PrepareURLForExternalApp(LPCWSTR psz, LPWSTR pszOut, LPDWORD pcchOut)
 {
-    if(IsFileUrlW(psz))
+    if (IsFileUrlW(psz))
         return SUCCEEDED(PathCreateFromUrl(psz, pszOut, pcchOut, 0));
     else
         return SUCCEEDED(UrlUnescape((LPWSTR)psz, pszOut, pcchOut, 0));
@@ -537,7 +537,7 @@ BOOL PrepareURLForExternalApp (LPCWSTR psz, LPWSTR pszOut, LPDWORD pcchOut)
 }
 
 
-BOOL ParseURLFromOutsideSourceW (LPCWSTR psz, LPWSTR pszOut, LPDWORD pcchOut, LPBOOL pbWasSearchURL)
+BOOL ParseURLFromOutsideSourceW(LPCWSTR psz, LPWSTR pszOut, LPDWORD pcchOut, LPBOOL pbWasSearchURL)
 {
     // This is our hardest case.  Users and outside applications might
     // type fully-escaped, partially-escaped, or unescaped URLs at us.
@@ -562,10 +562,10 @@ BOOL ParseURLFromOutsideSourceW (LPCWSTR psz, LPWSTR pszOut, LPDWORD pcchOut, LP
 
     return TRUE;
 } // ParseURLFromOutsideSource
-BOOL ParseURLFromOutsideSourceA (LPCSTR psz, LPSTR pszOut, LPDWORD pcchOut, LPBOOL pbWasSearchURL)
+BOOL ParseURLFromOutsideSourceA(LPCSTR psz, LPSTR pszOut, LPDWORD pcchOut, LPBOOL pbWasSearchURL)
 {
     SHSTRW strw;
-    DWORD cch ;
+    DWORD cch;
 
     ASSERT(psz);
     ASSERT(pszOut);
@@ -575,8 +575,8 @@ BOOL ParseURLFromOutsideSourceA (LPCSTR psz, LPSTR pszOut, LPDWORD pcchOut, LPBO
     //  BUGBUG we arent guaranteed to have the correct cch's here - zekel - 27-jan-97
     //  but for now this is adequate.
 
-    if(SUCCEEDED(strw.SetStr(psz)) && SUCCEEDED(strw.SetSize(cch = *pcchOut)) &&
-        ParseURLFromOutsideSourceW((LPCWSTR) strw, (LPWSTR) strw, pcchOut, pbWasSearchURL))
+    if (SUCCEEDED(strw.SetStr(psz)) && SUCCEEDED(strw.SetSize(cch = *pcchOut)) &&
+        ParseURLFromOutsideSourceW((LPCWSTR)strw, (LPWSTR)strw, pcchOut, pbWasSearchURL))
     {
         return SHUnicodeToAnsi((LPCWSTR)strw, pszOut, cch);
     }
@@ -627,7 +627,7 @@ void AlphaWarning(HWND hwnd)
 
     fShown = TRUE;
 
-    while(MLLoadShellLangString (i++, szTemp, ARRAYSIZE(szTemp))) {
+    while (MLLoadShellLangString(i++, szTemp, ARRAYSIZE(szTemp))) {
         StrCatBuff(szFull, szTemp, ARRAYSIZE(szFull));
     }
 
@@ -664,12 +664,12 @@ BOOL InitHistoryList(HWND hwndCB)
     UINT nTrys;
     UINT nCount = 0;
     TCHAR szValueName[10];   // big enough for "url99"
-    TCHAR szAddress[MAX_URL_STRING+1];
+    TCHAR szAddress[MAX_URL_STRING + 1];
     DWORD dwAddress;
 
     for (nTrys = 0; nTrys < MAX_SAVE_TYPED_URLS; nTrys++) {
         // make a value name a la "url1" (1-based for historical reasons)
-        wnsprintf(szValueName, ARRAYSIZE(szValueName), TEXT("url%u"), nTrys+1);
+        wnsprintf(szValueName, ARRAYSIZE(szValueName), TEXT("url%u"), nTrys + 1);
 
         dwAddress = ARRAYSIZE(szAddress);
         if (RegQueryValueEx(hKey, szValueName, NULL, NULL, (LPBYTE)szAddress,
@@ -704,12 +704,12 @@ BOOL SaveHistoryList(HWND hwndCB)
 
     int nTrys;
     TCHAR szValueName[10];   // big enough for "url99"
-    TCHAR szAddress[MAX_URL_STRING+1];
+    TCHAR szAddress[MAX_URL_STRING + 1];
 
     // loop through every potential saved URL in registry.
     for (nTrys = 0; nTrys < MAX_SAVE_TYPED_URLS; nTrys++) {
         // make a value name a la "url1" (1-based for historical reasons)
-        wnsprintf(szValueName,ARRAYSIZE(szValueName), TEXT("url%u"),nTrys+1);
+        wnsprintf(szValueName, ARRAYSIZE(szValueName), TEXT("url%u"), nTrys + 1);
 
         // for every combo box item we have, get the corresponding
         // text and save it in the registry
@@ -717,8 +717,8 @@ BOOL SaveHistoryList(HWND hwndCB)
             // get text from combo box
             if (ComboBox_GetLBText(hwndCB, nTrys, szAddress)) {
                 // store it in registry
-                RegSetValueEx(hKey,szValueName,0,REG_SZ,(LPBYTE)
-                              szAddress,(lstrlen(szAddress)*sizeof(TCHAR))+1);
+                RegSetValueEx(hKey, szValueName, 0, REG_SZ, (LPBYTE)
+                              szAddress, (lstrlen(szAddress) * sizeof(TCHAR)) + 1);
                 continue;
             }
         }
@@ -726,7 +726,7 @@ BOOL SaveHistoryList(HWND hwndCB)
         // if we get here, we've run out of combo box items (or
         // failed to retrieve text for one of them).  Delete any
         // extra items that may be lingering in the registry.
-        RegDeleteValue(hKey,szValueName);
+        RegDeleteValue(hKey, szValueName);
     }
 
     RegCloseKey(hKey);
@@ -777,7 +777,7 @@ BOOL SHIsRegisteredClient(LPCTSTR pszClient)
 
     wnsprintf(szKey, ARRAYSIZE(szKey), TEXT("Software\\Clients\\%s"), pszClient);
     return (RegQueryValue(HKEY_LOCAL_MACHINE, szKey, NULL, &cbSize) == ERROR_SUCCESS) &&
-           (cbSize > sizeof(TCHAR));
+        (cbSize > sizeof(TCHAR));
 }
 
 // Exporting by ordinal is not available on UNIX.
@@ -793,7 +793,7 @@ ULONG RegisterNotify(HWND hwnd, UINT nMsg, LPCITEMIDLIST pidl, DWORD dwEvents, U
     SHChangeNotifyEntry fsne;
 
     // See if we need to still figure out which version of SHChange Notify to call?
-    if  (g_pfnSHChangeNotifyDeregister == NULL)
+    if (g_pfnSHChangeNotifyDeregister == NULL)
     {
 
         HMODULE hmodShell32 = ::GetModuleHandle(TEXT("SHELL32"));
@@ -812,7 +812,7 @@ ULONG RegisterNotify(HWND hwnd, UINT nMsg, LPCITEMIDLIST pidl, DWORD dwEvents, U
             g_pfnSHChangeNotifyDeregister = (PFNSHCHANGENOTIFYDEREGISTER)GET_PRIVATE_PROC_ADDRESS(hmodShell32, "SHChangeNotifyDeregister", (LPSTR)4);
         }
 
-        if  (g_pfnSHChangeNotifyDeregister == NULL)
+        if (g_pfnSHChangeNotifyDeregister == NULL)
             return 0;   // Could not get either to work...
     }
 
@@ -941,7 +941,7 @@ void IEPlaySound(LPCTSTR pszSound, BOOL fSysSound)
 void* DataObj_GetDataOfType(IDataObject* pdtobj, UINT cfType, STGMEDIUM *pstg)
 {
     void * pret = NULL;
-    FORMATETC fmte = {cfType, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    FORMATETC fmte = { cfType, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 
     if (pdtobj->GetData(&fmte, pstg) == S_OK) {
         pret = GlobalLock(pstg->hGlobal);
@@ -982,7 +982,7 @@ STDAPI_(LPITEMIDLIST) IEILCreate(UINT cbSize)
 DWORD CommonDragEnter(IDataObject *pdtobj, DWORD grfKeyState, POINTL pt)
 {
     DWORD dwEffect = DROPEFFECT_NONE;
-    FORMATETC fmte = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    FORMATETC fmte = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 
     if (pdtobj->QueryGetData(&fmte) == S_OK)
         dwEffect = DROPEFFECT_COPY | DROPEFFECT_LINK;
@@ -1040,9 +1040,9 @@ HRESULT SHMapNbspToSp(LPCWSTR lpwszIn, LPSTR lpszOut, int cbszOut)
         p = pwsz;
         while (*p)
         {
-            if (*p== nbsp)
+            if (*p == nbsp)
             {
-                *p= 0x0020; // replace with space
+                *p = 0x0020; // replace with space
                 if (!fFoundNbsp)
                     fFoundNbsp = TRUE;
             }
@@ -1071,11 +1071,11 @@ HRESULT SHMapNbspToSp(LPCWSTR lpwszIn, LPSTR lpszOut, int cbszOut)
 
 int PropBag_ReadInt4(IPropertyBag* pPropBag, LPWSTR pszKey, int iDefault)
 {
-    VARIANT var = {VT_I4};      // VT_I4 (not 0) so get coercion
+    VARIANT var = { VT_I4 };      // VT_I4 (not 0) so get coercion
 
     HRESULT hres = pPropBag->Read(pszKey, &var, NULL);
-    if (hres==S_OK) {
-        if (var.vt==VT_I4) {
+    if (hres == S_OK) {
+        if (var.vt == VT_I4) {
             iDefault = var.lVal;
         }
         else {
@@ -1094,7 +1094,7 @@ HRESULT _SetPreferedDropEffect(IDataObject *pdtobj, DWORD dwEffect)
     if (pdw)
     {
         STGMEDIUM medium;
-        FORMATETC fmte = {g_cfPreferedEffect, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+        FORMATETC fmte = { g_cfPreferedEffect, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
         *pdw = dwEffect;
 
         medium.tymed = TYMED_HGLOBAL;
@@ -1227,7 +1227,7 @@ void _GenerateIEIcons(void)
         }
         g_IEIcons[nIndex].nIEIcon = Shell_GetCachedImageIndex(szModule, g_IEIcons[nIndex].nIconResourceNum, 0);
 
-        switch(g_IEIcons[nIndex].dwType)
+        switch (g_IEIcons[nIndex].dwType)
         {
         case IEICONTYPE_GETFILEINFO:
             sfi.iIcon = 0;
@@ -1238,14 +1238,14 @@ void _GenerateIEIcons(void)
             break;
 
         case IEICONTYPE_DEFAULTICON:
-            {
-                TCHAR szPath[MAX_PATH];
-                DWORD cbSize = SIZEOF(szPath);
+        {
+            TCHAR szPath[MAX_PATH];
+            DWORD cbSize = SIZEOF(szPath);
 
-                SHGetValue(HKEY_CLASSES_ROOT, g_IEIcons[nIndex].szFileExt, TEXT(""), NULL, szPath, &cbSize);
-                g_IEIcons[nIndex].nDefaultIcon = Shell_GetCachedImageIndex(szPath, PathParseIconLocation(szPath), 0);
-            }
-            break;
+            SHGetValue(HKEY_CLASSES_ROOT, g_IEIcons[nIndex].szFileExt, TEXT(""), NULL, szPath, &cbSize);
+            g_IEIcons[nIndex].nDefaultIcon = Shell_GetCachedImageIndex(szPath, PathParseIconLocation(szPath), 0);
+        }
+        break;
         }
     }
 }
@@ -1260,7 +1260,7 @@ int IEMapPIDLToSystemImageListIndex(IShellFolder *psfParent, LPCITEMIDLIST pidlC
 
     for (nIndex = 0; nIndex < ARRAYSIZE(g_IEIcons); nIndex++)
     {
-        if((nIcon == g_IEIcons[nIndex].nDefaultIcon) ||
+        if ((nIcon == g_IEIcons[nIndex].nDefaultIcon) ||
             (piSelectedImage && *piSelectedImage == g_IEIcons[nIndex].nDefaultIcon))
         {
             nIcon = g_IEIcons[nIndex].nIEIcon;
@@ -1293,7 +1293,7 @@ BOOL IsWininetLoadedAnywhere()
     HANDLE hMutex = NULL;
     BOOL fRet;
 
-    if(g_fWininetLoadedSomeplace)
+    if (g_fWininetLoadedSomeplace)
         return TRUE;
 
 
@@ -1301,7 +1301,7 @@ BOOL IsWininetLoadedAnywhere()
     // wininet is ansi and created this mutex with CreateMutexA
     hMutex = OpenMutexA(SYNCHRONIZE, FALSE, WININET_STARTUP_MUTEX);
 
-    if(hMutex)
+    if (hMutex)
     {
         fRet = TRUE;
         g_fWininetLoadedSomeplace = TRUE;
@@ -1322,16 +1322,16 @@ BOOL SHIsGlobalOffline(void)
     DWORD   dwState = 0, dwSize = sizeof(DWORD);
     BOOL    fRet = FALSE;
 
-    if(!IsWininetLoadedAnywhere())
+    if (!IsWininetLoadedAnywhere())
         return FALSE;
 
     // Since wininet is already loaded someplace
     // We have to load wininet to check if offline
 
-    if(InternetQueryOptionA(NULL, INTERNET_OPTION_CONNECTED_STATE, &dwState,
-        &dwSize))
+    if (InternetQueryOptionA(NULL, INTERNET_OPTION_CONNECTED_STATE, &dwState,
+                             &dwSize))
     {
-        if(dwState & INTERNET_STATE_DISCONNECTED_BY_USER)
+        if (dwState & INTERNET_STATE_DISCONNECTED_BY_USER)
             fRet = TRUE;
     }
 
@@ -1343,10 +1343,11 @@ void SetGlobalOffline(BOOL fOffline)
     INTERNET_CONNECTED_INFO ci;
 
     memset(&ci, 0, sizeof(ci));
-    if(fOffline) {
+    if (fOffline) {
         ci.dwConnectedState = INTERNET_STATE_DISCONNECTED_BY_USER;
         ci.dwFlags = ISO_FORCE_DISCONNECTED;
-    } else {
+    }
+    else {
         ci.dwConnectedState = INTERNET_STATE_CONNECTED;
     }
 
@@ -1361,11 +1362,11 @@ extern "C"
 void SetShellOfflineState(BOOL fPutOffline)
 {
     BOOL fWasOffline = SHIsGlobalOffline();
-    if(fWasOffline != fPutOffline)
+    if (fWasOffline != fPutOffline)
     {
         SetGlobalOffline(fPutOffline); // Set the state
         // Tell all browser windows to update their title
-        SendShellIEBroadcastMessage(WM_WININICHANGE,0,0, 1000);
+        SendShellIEBroadcastMessage(WM_WININICHANGE, 0, 0, 1000);
     }
 }
 
@@ -1507,8 +1508,8 @@ const TCHAR c_szExplorerKey[] = TEXT("Explorer");
 
 // The browser policy location that SP2 used
 const TCHAR c_szBrowserBase[] = TEXT("Software\\Policies\\Microsoft\\Internet Explorer");
-const TCHAR c_szBrowserKey[]  = TEXT("Restrictions");
-const TCHAR c_szToolbarKey[]  = TEXT("Toolbars\\Restrictions");
+const TCHAR c_szBrowserKey[] = TEXT("Restrictions");
+const TCHAR c_szToolbarKey[] = TEXT("Toolbars\\Restrictions");
 
 const SHRESTRICTIONITEMS c_rgRestrictionItems[] =
 {
@@ -1761,7 +1762,7 @@ void GetWebLocaleAsRFC1766(LPTSTR pszLocale, int cchLocale)
     if ((SHGetValue(HKEY_CURRENT_USER, REGSTR_PATH_INTERNATIONAL,
                     REGSTR_VAL_ACCEPT_LANGUAGE,
                     &dwType, szValue, &cbVal) == ERROR_SUCCESS) &&
-        (REG_SZ == dwType))
+                    (REG_SZ == dwType))
     {
         TCHAR *psz = szValue;
 
@@ -1810,7 +1811,7 @@ HRESULT URLSubstitution(LPCWSTR pszUrlIn, LPWSTR pszUrlOut, DWORD cchSize, DWORD
                 TCHAR szSubStr[MAX_SUBSTR_SIZE];  // The Substitution
 
                 // Copy URL Before Substitution.
-                StrCpyN(szCopyUrl, szTempUrl, (int)(pszTag-szTempUrl+1));
+                StrCpyN(szCopyUrl, szTempUrl, (int)(pszTag - szTempUrl + 1));
                 pszTag += lstrlen(c_UrlSub[dwIndex].szTag);
 
                 switch (c_UrlSub[dwIndex].dwType)
@@ -1822,7 +1823,7 @@ HRESULT URLSubstitution(LPCWSTR pszUrlIn, LPWSTR pszUrlOut, DWORD cchSize, DWORD
                     LCID lcid = GetUserDefaultLCID();
                     wnsprintf(szSubStr, ARRAYSIZE(szSubStr), TEXT("%#04lx"), lcid);
                 }
-                    break;
+                break;
                 case URLSUB_PRD:
                     MLLoadString(IDS_SUBSTR_PRD, szSubStr, ARRAYSIZE(szSubStr));
                     break;
@@ -1875,7 +1876,7 @@ HRESULT URLSubstitution(LPCWSTR pszUrlIn, LPWSTR pszUrlOut, DWORD cchSize, DWORD
 
 // inetcpl.cpl uses this.
 STDAPI URLSubRegQueryA(LPCSTR pszKey, LPCSTR pszValue, BOOL fUseHKCU,
-                           LPSTR pszUrlOut, DWORD cchSizeOut, DWORD dwSubstitutions)
+                       LPSTR pszUrlOut, DWORD cchSizeOut, DWORD dwSubstitutions)
 {
     HRESULT hr;
     TCHAR szKey[MAX_PATH];
@@ -1892,13 +1893,13 @@ STDAPI URLSubRegQueryA(LPCSTR pszKey, LPCSTR pszValue, BOOL fUseHKCU,
 
 
 HRESULT URLSubRegQueryW(LPCWSTR pszKey, LPCWSTR pszValue, BOOL fUseHKCU,
-                           LPWSTR pszUrlOut, DWORD cchSizeOut, DWORD dwSubstitutions)
+                        LPWSTR pszUrlOut, DWORD cchSizeOut, DWORD dwSubstitutions)
 {
     HRESULT hr = E_FAIL;
     WCHAR szTempUrl[MAX_URL_STRING];
     DWORD ccbSize = sizeof(szTempUrl);
     if (ERROR_SUCCESS == SHRegGetUSValueW(pszKey, pszValue, NULL, szTempUrl,
-                                &ccbSize, !fUseHKCU, NULL, NULL))
+                                          &ccbSize, !fUseHKCU, NULL, NULL))
     {
         hr = URLSubstitution(szTempUrl, pszUrlOut, cchSizeOut, dwSubstitutions);
     }
@@ -1960,9 +1961,9 @@ BOOL ILIsWeb(LPCITEMIDLIST pidl)
             TCHAR szPath[MAX_PATH];
 
             fIsWeb = (!ILIsRooted(pidl)
-            && SUCCEEDED(SHGetPathFromIDList(pidl, szPath))
-            && (PathIsHTMLFile(szPath) ||
-                 PathIsContentType(szPath, TEXT("text/xml"))));
+                      && SUCCEEDED(SHGetPathFromIDList(pidl, szPath))
+                      && (PathIsHTMLFile(szPath) ||
+                          PathIsContentType(szPath, TEXT("text/xml"))));
         }
     }
 
@@ -2089,7 +2090,7 @@ int GetColorComponent(LPTSTR *ppsz)
         iColor = StrToInt(pBuf);
 
         // find the next comma
-        while(pBuf && *pBuf && *pBuf!=TEXT(','))
+        while (pBuf && *pBuf && *pBuf != TEXT(','))
             pBuf++;
 
         // if valid and not NULL...
@@ -2102,7 +2103,7 @@ int GetColorComponent(LPTSTR *ppsz)
 }
 
 // Read the registry for a string (REG_SZ) of comma separated RGB values
-COLORREF RegGetColorRefString( HKEY hkey, LPTSTR RegValue, COLORREF Value)
+COLORREF RegGetColorRefString(HKEY hkey, LPTSTR RegValue, COLORREF Value)
 {
     TCHAR SmallBuf[80];
     TCHAR *pBuf;
@@ -2120,9 +2121,9 @@ COLORREF RegGetColorRefString( HKEY hkey, LPTSTR RegValue, COLORREF Value)
         iBlue = GetColorComponent(&pBuf);
 
         // make sure all values are valid
-        iRed    %= 256;
-        iGreen  %= 256;
-        iBlue   %= 256;
+        iRed %= 256;
+        iGreen %= 256;
+        iBlue %= 256;
 
         Value = RGB(iRed, iGreen, iBlue);
     }
@@ -2157,64 +2158,64 @@ int SearchDW(DWORD *pdwBuf, int cbBuf, DWORD dwVal)
 
 // this is the NEW SHCNE_UPDATEIMAGE stuff, it passes renough data so that the recieving process
 // has a vague chance that it can find the right index to refresh.
-extern "C" void WINAPI _SHUpdateImageA( LPCSTR pszHashItem, int iIndex, UINT uFlags, int iImageIndex )
+extern "C" void WINAPI _SHUpdateImageA(LPCSTR pszHashItem, int iIndex, UINT uFlags, int iImageIndex)
 {
     WCHAR szWHash[MAX_PATH];
 
-    MultiByteToWideChar( CP_ACP, 0, pszHashItem, -1, szWHash, MAX_PATH );
+    MultiByteToWideChar(CP_ACP, 0, pszHashItem, -1, szWHash, MAX_PATH);
 
-    _SHUpdateImageW( szWHash, iIndex, uFlags, iImageIndex );
+    _SHUpdateImageW(szWHash, iIndex, uFlags, iImageIndex);
 }
 
-extern "C" void WINAPI _SHUpdateImageW( LPCWSTR pszHashItem, int iIndex, UINT uFlags, int iImageIndex )
+extern "C" void WINAPI _SHUpdateImageW(LPCWSTR pszHashItem, int iIndex, UINT uFlags, int iImageIndex)
 {
     SHChangeUpdateImageIDList rgPidl;
     SHChangeDWORDAsIDList rgDWord;
 
-    int cLen = MAX_PATH - (lstrlenW( pszHashItem ) + 1);
-    cLen *= sizeof( WCHAR );
+    int cLen = MAX_PATH - (lstrlenW(pszHashItem) + 1);
+    cLen *= sizeof(WCHAR);
 
-    if ( cLen < 0 )
+    if (cLen < 0)
         cLen = 0;
 
     // make sure we send a valid index
-    if ( iImageIndex == -1 )
+    if (iImageIndex == -1)
         iImageIndex = II_DOCUMENT;
 
     rgPidl.dwProcessID = GetCurrentProcessId();
     rgPidl.iIconIndex = iIndex;
     rgPidl.iCurIndex = iImageIndex;
     rgPidl.uFlags = uFlags;
-    StrCpyNW( rgPidl.szName, pszHashItem, MAX_PATH );
-    rgPidl.cb = (USHORT)(sizeof( rgPidl ) - cLen);
-    _ILNext( (LPITEMIDLIST) &rgPidl )->mkid.cb = 0;
+    StrCpyNW(rgPidl.szName, pszHashItem, MAX_PATH);
+    rgPidl.cb = (USHORT)(sizeof(rgPidl) - cLen);
+    _ILNext((LPITEMIDLIST)&rgPidl)->mkid.cb = 0;
 
-    rgDWord.cb = (unsigned short) PtrDiff(&rgDWord.cbZero, &rgDWord);
-    rgDWord.dwItem1 = (DWORD) iImageIndex;
+    rgDWord.cb = (unsigned short)PtrDiff(&rgDWord.cbZero, &rgDWord);
+    rgDWord.dwItem1 = (DWORD)iImageIndex;
     rgDWord.dwItem2 = 0;
     rgDWord.cbZero = 0;
 
     // pump it as an extended event
-    SHChangeNotify( SHCNE_UPDATEIMAGE, SHCNF_IDLIST, &rgDWord, &rgPidl );
+    SHChangeNotify(SHCNE_UPDATEIMAGE, SHCNF_IDLIST, &rgDWord, &rgPidl);
 }
 
 // ancient shell API wrapper...
 extern "C" int _WorA_Shell_GetCachedImageIndex(LPCWSTR pszIconPath, int iIconIndex, UINT uIconFlags);
 
 #ifndef POSTPOSTSPLIT
-extern "C" int WINAPI _SHHandleUpdateImage( LPCITEMIDLIST pidlExtra )
+extern "C" int WINAPI _SHHandleUpdateImage(LPCITEMIDLIST pidlExtra)
 {
-    SHChangeUpdateImageIDList * pUs = (SHChangeUpdateImageIDList*) pidlExtra;
+    SHChangeUpdateImageIDList * pUs = (SHChangeUpdateImageIDList*)pidlExtra;
 
-    if ( !pUs )
+    if (!pUs)
     {
         return -1;
     }
 
     // if in the same process, or an old style notification
-    if ( pUs->dwProcessID == GetCurrentProcessId())
+    if (pUs->dwProcessID == GetCurrentProcessId())
     {
-        return (int) pUs->iCurIndex;
+        return (int)pUs->iCurIndex;
     }
     else
     {
@@ -2222,27 +2223,27 @@ extern "C" int WINAPI _SHHandleUpdateImage( LPCITEMIDLIST pidlExtra )
         int iIconIndex = *(int UNALIGNED *)((BYTE *)&pUs->iIconIndex);
         UINT uFlags = *(UINT UNALIGNED *)((BYTE *)&pUs->uFlags);
 
-        ualstrcpynW( szBuffer, pUs->szName, ARRAYSIZE(szBuffer) );
+        ualstrcpynW(szBuffer, pUs->szName, ARRAYSIZE(szBuffer));
 
         // we are in a different process, look up the hash in our index to get the right one...
 
-        return _WorA_Shell_GetCachedImageIndex( szBuffer, iIconIndex, uFlags );
+        return _WorA_Shell_GetCachedImageIndex(szBuffer, iIconIndex, uFlags);
     }
 }
 #endif
 
 HRESULT FormatUrlForDisplay(LPWSTR pwzURL, LPWSTR pwzFriendly, UINT cchBuf, BOOL fSeperate, DWORD dwCodePage)
 {
-    const   DWORD       dwMaxPathLen        = 32;
-    const   DWORD       dwMaxHostLen        = 32;
-    const   DWORD       dwMaxTemplateLen    = 64;
-    const   DWORD       dwElipsisLen        = 3;
-    const   CHAR        rgchElipsis[]       = "...";
+    const   DWORD       dwMaxPathLen = 32;
+    const   DWORD       dwMaxHostLen = 32;
+    const   DWORD       dwMaxTemplateLen = 64;
+    const   DWORD       dwElipsisLen = 3;
+    const   CHAR        rgchElipsis[] = "...";
 
     HRESULT hrRC = E_FAIL;
     HRESULT hr;
 
-    if (pwzURL==NULL || pwzFriendly==NULL)
+    if (pwzURL == NULL || pwzFriendly == NULL)
         return E_POINTER;
 
     *pwzFriendly = '\0';
@@ -2262,7 +2263,7 @@ HRESULT FormatUrlForDisplay(LPWSTR pwzURL, LPWSTR pwzFriendly, UINT cchBuf, BOOL
     LPSTR  pszURL;
     DWORD  dwLen;
 
-    if((pszURL = (LPSTR)LocalAlloc(LPTR, (cchBuf*2) * sizeof(CHAR))) != NULL)
+    if ((pszURL = (LPSTR)LocalAlloc(LPTR, (cchBuf * 2) * sizeof(CHAR))) != NULL)
     {
         SHUnicodeToAnsiCP(dwCodePage, pwzURL, pszURL, cchBuf);
 
@@ -2293,19 +2294,19 @@ HRESULT FormatUrlForDisplay(LPWSTR pwzURL, LPWSTR pwzFriendly, UINT cchBuf, BOOL
                 ZeroMemory(rgchHostForDisplay, sizeof(rgchHostForDisplay));
                 ZeroMemory(rgchPathForDisplay, sizeof(rgchPathForDisplay));
 
-                if (dwHostLen>dwMaxHostLen)
+                if (dwHostLen > dwMaxHostLen)
                 {
                     DWORD   dwOverFlow = dwHostLen - dwMaxHostLen + dwElipsisLen + 1;
-                    wnsprintfA(rgchHostForDisplay, ARRAYSIZE(rgchHostForDisplay), "%s%s", rgchElipsis, rgchHostName+dwOverFlow);
+                    wnsprintfA(rgchHostForDisplay, ARRAYSIZE(rgchHostForDisplay), "%s%s", rgchElipsis, rgchHostName + dwOverFlow);
                     dwHostLen = dwMaxHostLen;
                 }
                 else
                     StrCpyNA(rgchHostForDisplay, rgchHostName, ARRAYSIZE(rgchHostForDisplay));
 
-                if (dwPathLen>dwMaxPathLen)
+                if (dwPathLen > dwMaxPathLen)
                 {
                     DWORD   dwOverFlow = dwPathLen - dwMaxPathLen + dwElipsisLen;
-                    wnsprintfA(rgchPathForDisplay, ARRAYSIZE(rgchPathForDisplay), "/%s%s", rgchElipsis, rgchUrlPath+dwOverFlow);
+                    wnsprintfA(rgchPathForDisplay, ARRAYSIZE(rgchPathForDisplay), "/%s%s", rgchElipsis, rgchUrlPath + dwOverFlow);
                     dwPathLen = dwMaxPathLen;
                 }
                 else
@@ -2343,7 +2344,7 @@ HRESULT FormatUrlForDisplay(LPWSTR pwzURL, LPWSTR pwzFriendly, UINT cchBuf, BOOL
                             PathRemoveFileSpecW(rgwchHostForDisplay);
                         }
 
-                        if (dwPathLen+lstrlenW(rgwchTemplate)+dwHostLen <= cchBuf)
+                        if (dwPathLen + lstrlenW(rgwchTemplate) + dwHostLen <= cchBuf)
                         {
                             _FormatMessage(rgwchTemplate, pwzFriendly, cchBuf, pwzFileName, rgwchHostForDisplay);
                             hrRC = S_OK;
@@ -2352,7 +2353,7 @@ HRESULT FormatUrlForDisplay(LPWSTR pwzURL, LPWSTR pwzFriendly, UINT cchBuf, BOOL
                 }
                 else    // !fSeperate
                 {
-                    if (3+dwPathLen+dwHostLen+dwSchemeLen < cchBuf)
+                    if (3 + dwPathLen + dwHostLen + dwSchemeLen < cchBuf)
                     {
                         wnsprintf(pwzFriendly, cchBuf, TEXT("%ws://%ws%ws"), rgwchScheme, rgwchHostForDisplay, rgwchPathForDisplay);
                         hrRC = S_OK;
@@ -2390,16 +2391,16 @@ HRESULT NavToUrlUsingIEW(LPCWSTR wszUrl, BOOL fNewWindow)
     if (!EVAL(wszUrl))
         return E_INVALIDARG;
 
-    if(IsIEDefaultBrowser() && !fNewWindow)
+    if (IsIEDefaultBrowser() && !fNewWindow)
     {
         // ShellExecute navigates to the Url using the same browser window,
         // if one is already open.
 
-        SHELLEXECUTEINFOW sei = {0};
+        SHELLEXECUTEINFOW sei = { 0 };
 
         sei.cbSize = sizeof(sei);
         sei.lpFile = wszUrl;
-        sei.nShow  = SW_SHOWNORMAL;
+        sei.nShow = SW_SHOWNORMAL;
 
         ShellExecuteExW(&sei);
 
@@ -2410,9 +2411,9 @@ HRESULT NavToUrlUsingIEW(LPCWSTR wszUrl, BOOL fNewWindow)
 #ifndef UNIX
         hr = CoCreateInstance(CLSID_InternetExplorer, NULL, CLSCTX_LOCAL_SERVER, IID_IWebBrowser2, (LPVOID*)&pwb2);
 #else
-        hr = CoCreateInternetExplorer( IID_IWebBrowser2, CLSCTX_LOCAL_SERVER, (LPVOID*) &pwb2 );
+        hr = CoCreateInternetExplorer(IID_IWebBrowser2, CLSCTX_LOCAL_SERVER, (LPVOID*)&pwb2);
 #endif
-        if(SUCCEEDED(hr))
+        if (SUCCEEDED(hr))
         {
             SA_BSTR sstrURL;
             StrCpyNW(sstrURL.wsz, wszUrl, ARRAYSIZE(sstrURL.wsz));
@@ -2428,7 +2429,7 @@ HRESULT NavToUrlUsingIEW(LPCWSTR wszUrl, BOOL fNewWindow)
 
             hr = pwb2->Navigate2(&varURL, &varFlags, PVAREMPTY, PVAREMPTY, PVAREMPTY);
             ASSERT(SUCCEEDED(hr)); // mikesh sez there's no way for Navigate2 to fail
-            hr = pwb2->put_Visible( TRUE );
+            hr = pwb2->put_Visible(TRUE);
             pwb2->Release();
         }
     }
@@ -2453,7 +2454,7 @@ STDAPI_(BSTR) SysAllocStringA(LPCSTR pszAnsiStr)
     if (!pszAnsiStr)
         return NULL;    // What the hell do you expect?
 
-    pwzTemp = (LPWSTR) LocalAlloc(LPTR, cchSize * sizeof(WCHAR));
+    pwzTemp = (LPWSTR)LocalAlloc(LPTR, cchSize * sizeof(WCHAR));
     if (pwzTemp)
     {
         SHAnsiToUnicode(pszAnsiStr, pwzTemp, cchSize);
@@ -2482,60 +2483,60 @@ int _AnsiToUnicode(UINT uiCP, LPCSTR pstr, LPWSTR pwstr, int cch)
 
     switch (uiCP)
     {
-        case 1200:                      // UCS-2 (Unicode)
-            uiCP = 65001;
-            // fall through
-        case 50000:                     // "User Defined"
-        case 65000:                     // UTF-7
-        case 65001:                     // UTF-8
+    case 1200:                      // UCS-2 (Unicode)
+        uiCP = 65001;
+        // fall through
+    case 50000:                     // "User Defined"
+    case 65000:                     // UTF-7
+    case 65001:                     // UTF-8
+    {
+        INT cchSrc, cchSrcOriginal;
+
+        cchSrc = cchSrcOriginal = lstrlenA(pstr) + 1;
+        cchDst = cch;
+
+        if (SUCCEEDED(ConvertINetMultiByteToUnicode(NULL, uiCP, pstr,
+                                                    &cchSrc, pwstr, &cchDst)) &&
+            cchSrc < cchSrcOriginal)
         {
-            INT cchSrc, cchSrcOriginal;
-
-            cchSrc = cchSrcOriginal = lstrlenA(pstr) + 1;
-            cchDst = cch;
-
-            if (SUCCEEDED(ConvertINetMultiByteToUnicode(NULL, uiCP, pstr,
-                &cchSrc, pwstr, &cchDst)) &&
-                cchSrc < cchSrcOriginal)
+            LPWSTR pwsz = (LPWSTR)LocalAlloc(LPTR, cchDst * SIZEOF(WCHAR));
+            if (pwsz)
             {
-                LPWSTR pwsz = (LPWSTR)LocalAlloc(LPTR, cchDst * SIZEOF(WCHAR));
-                if (pwsz)
+                if (SUCCEEDED(ConvertINetMultiByteToUnicode(NULL, uiCP, pstr,
+                                                            &cchSrcOriginal, pwsz, &cchDst)))
                 {
-                    if (SUCCEEDED(ConvertINetMultiByteToUnicode( NULL, uiCP, pstr,
-                        &cchSrcOriginal, pwsz, &cchDst )))
-                    {
-                        StrCpyNW( pwstr, pwsz, cch );
-                        cchDst = cch;
-                    }
-                    LocalFree(pwsz);
+                    StrCpyNW(pwstr, pwsz, cch);
+                    cchDst = cch;
                 }
+                LocalFree(pwsz);
             }
-            break;
         }
+        break;
+    }
 
-        default:
-            cchDst = MultiByteToWideChar(uiCP, 0, pstr, -1, pwstr, cch);
-            if (!cchDst) {
+    default:
+        cchDst = MultiByteToWideChar(uiCP, 0, pstr, -1, pwstr, cch);
+        if (!cchDst) {
 
-                // failed.
+            // failed.
 
-                if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-                    int cchNeeded = MultiByteToWideChar(uiCP, 0, pstr, -1, NULL, 0);
+            if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+                int cchNeeded = MultiByteToWideChar(uiCP, 0, pstr, -1, NULL, 0);
 
-                    if (cchNeeded) {
-                        LPWSTR pwsz = (LPWSTR)LocalAlloc(LPTR, cchNeeded * SIZEOF(WCHAR));
-                        if (pwsz) {
-                            cchDst = MultiByteToWideChar(uiCP, 0, pstr, -1, pwsz, cchNeeded);
-                            if (cchDst) {
-                                StrCpyNW(pwstr, pwsz, cch);
-                                cchDst = cch;
-                            }
-                            LocalFree(pwsz);
+                if (cchNeeded) {
+                    LPWSTR pwsz = (LPWSTR)LocalAlloc(LPTR, cchNeeded * SIZEOF(WCHAR));
+                    if (pwsz) {
+                        cchDst = MultiByteToWideChar(uiCP, 0, pstr, -1, pwsz, cchNeeded);
+                        if (cchDst) {
+                            StrCpyNW(pwstr, pwsz, cch);
+                            cchDst = cch;
                         }
+                        LocalFree(pwsz);
                     }
                 }
             }
-            break;
+        }
+        break;
     }
     return cchDst;
 }
@@ -2613,7 +2614,7 @@ HANDLE GetSessionCountSemaphoreHandle()
         {
             ASSERT(GetLastError() == ERROR_ALREADY_EXISTS);
             g_hSemBrowserCount = OpenSemaphoreA(SEMAPHORE_ALL_ACCESS,
-                                 FALSE, SESSION_COUNT_SEMAPHORE_NAME);
+                                                FALSE, SESSION_COUNT_SEMAPHORE_NAME);
         }
     }
     return g_hSemBrowserCount;
@@ -2625,7 +2626,7 @@ LONG GetSessionCount()
     HANDLE hSem = GetSessionCountSemaphoreHandle();
 
     ASSERT(hSem);
-    if(hSem)
+    if (hSem)
     {
         ReleaseSemaphore(hSem, 1, &lPrevCount);
         WaitForSingleObject(hSem, 0);
@@ -2641,7 +2642,7 @@ LONG IncrementSessionCount()
     HANDLE hSem = GetSessionCountSemaphoreHandle();
 
     ASSERT(hSem);
-    if(hSem)
+    if (hSem)
     {
         ReleaseSemaphore(hSem, 1, &lPrevCount);
     }
@@ -2653,12 +2654,12 @@ LONG DecrementSessionCount()
     LONG lPrevCount = 0x7FFFFFFF;
     HANDLE hSem = GetSessionCountSemaphoreHandle();
     ASSERT(hSem);
-    if(hSem)
+    if (hSem)
     {
         ReleaseSemaphore(hSem, 1, &lPrevCount); // increment first to make sure deadlock
                                                  // never occurs
         ASSERT(lPrevCount > 0);
-        if(lPrevCount > 0)
+        if (lPrevCount > 0)
         {
             WaitForSingleObject(hSem, 0);
             WaitForSingleObject(hSem, 0);
@@ -2687,88 +2688,88 @@ long SetQueryNetSessionCount(enum SessionOp Op)
 {
     long lCount = 0;
 
-    switch(Op) {
-        case SESSION_QUERY:
-            lCount = GetSessionCount();
-            TraceMsg(DM_SESSIONCOUNT, "SetQueryNetSessionCount SessionCount=%d (query)", lCount);
-            break;
+    switch (Op) {
+    case SESSION_QUERY:
+        lCount = GetSessionCount();
+        TraceMsg(DM_SESSIONCOUNT, "SetQueryNetSessionCount SessionCount=%d (query)", lCount);
+        break;
 
-        case SESSION_INCREMENT_NODEFAULTBROWSERCHECK:
-        case SESSION_INCREMENT:
-            lCount = IncrementSessionCount();
-            TraceMsg(DM_SESSIONCOUNT, "SetQueryNetSessionCount SessionCount=%d (incr)", lCount);
+    case SESSION_INCREMENT_NODEFAULTBROWSERCHECK:
+    case SESSION_INCREMENT:
+        lCount = IncrementSessionCount();
+        TraceMsg(DM_SESSIONCOUNT, "SetQueryNetSessionCount SessionCount=%d (incr)", lCount);
 
 
-            if ((PLATFORM_INTEGRATED == WhichPlatform()))
+        if ((PLATFORM_INTEGRATED == WhichPlatform()))
+        {
+            // Weird name here... But in integrated mode we make every new browser window
+            // look like a new session wrt how we use the cache. Basically this is the way things appear to the
+            // user. This effects the way we look for new pages vs doing an if modified
+            // since.  The ie3/ie4 switch says "look for new pages on each session start"
+            // but wininet folks implemented this as a end session name. Woops.
+            // Note that things like authentication etc aren't reset by this, but rather
+            // only when all browsers are closed via the INTERNET_OPTION_END_BROWSER_SESSION option.
+            InternetSetOption(NULL, INTERNET_OPTION_RESET_URLCACHE_SESSION, NULL, 0);
+        }
+
+        if (!lCount && (Op == SESSION_INCREMENT))
+        {
+            // this forces a reload of the title
+            DetectAndFixAssociations();
+        }
+        break;
+
+    case SESSION_DECREMENT:
+        lCount = DecrementSessionCount();
+        TraceMsg(DM_SESSIONCOUNT, "SetQueryNetSessionCount SessionCount=%d (decr)", lCount);
+
+        if (!lCount) {
+            // if we've closed all the net browsers, we need to flush the cache
+            InternetSetOption(NULL, INTERNET_OPTION_END_BROWSER_SESSION, NULL, 0);
+            InternetSetOption(NULL, INTERNET_OPTION_RESET_URLCACHE_SESSION, NULL, 0);
+
+            // flush the Java VM cache too (if the Java VM is loaded in this process
+            // and we're in integrated mode)
+            if (WhichPlatform() == PLATFORM_INTEGRATED)
             {
-                // Weird name here... But in integrated mode we make every new browser window
-                // look like a new session wrt how we use the cache. Basically this is the way things appear to the
-                // user. This effects the way we look for new pages vs doing an if modified
-                // since.  The ie3/ie4 switch says "look for new pages on each session start"
-                // but wininet folks implemented this as a end session name. Woops.
-                // Note that things like authentication etc aren't reset by this, but rather
-                // only when all browsers are closed via the INTERNET_OPTION_END_BROWSER_SESSION option.
-                InternetSetOption(NULL, INTERNET_OPTION_RESET_URLCACHE_SESSION, NULL, 0);
-            }
-
-            if (!lCount && (Op == SESSION_INCREMENT))
-            {
-                // this forces a reload of the title
-                DetectAndFixAssociations();
-            }
-            break;
-
-        case SESSION_DECREMENT:
-            lCount = DecrementSessionCount();
-            TraceMsg(DM_SESSIONCOUNT, "SetQueryNetSessionCount SessionCount=%d (decr)", lCount);
-
-            if(!lCount) {
-                // if we've closed all the net browsers, we need to flush the cache
-                InternetSetOption(NULL, INTERNET_OPTION_END_BROWSER_SESSION, NULL, 0);
-                InternetSetOption(NULL, INTERNET_OPTION_RESET_URLCACHE_SESSION, NULL, 0);
-
-                // flush the Java VM cache too (if the Java VM is loaded in this process
-                // and we're in integrated mode)
-                if (WhichPlatform() == PLATFORM_INTEGRATED)
+                HMODULE hmod = GetModuleHandle(TEXT("msjava.dll"));
+                if (hmod)
                 {
-                    HMODULE hmod = GetModuleHandle(TEXT("msjava.dll"));
-                    if (hmod)
+                    typedef HRESULT(*PFNNOTIFYBROWSERSHUTDOWN)(LPVOID);
+                    FARPROC fp = GetProcAddress(hmod, "NotifyBrowserShutdown");
+                    if (fp)
                     {
-                        typedef HRESULT (*PFNNOTIFYBROWSERSHUTDOWN)(LPVOID);
-                        FARPROC fp = GetProcAddress(hmod, "NotifyBrowserShutdown");
-                        if (fp)
-                        {
-                            HRESULT hr = ((PFNNOTIFYBROWSERSHUTDOWN)fp)(NULL);
-                            ASSERT(SUCCEEDED(hr));
-                        }
+                        HRESULT hr = ((PFNNOTIFYBROWSERSHUTDOWN)fp)(NULL);
+                        ASSERT(SUCCEEDED(hr));
                     }
                 }
-
-                // Inform dial monitor that it's a good time to hang up
-                HWND hwndMonitorWnd = FindWindow(TEXT("MS_AutodialMonitor"),NULL);
-                if (hwndMonitorWnd) {
-                    PostMessage(hwndMonitorWnd,WM_IEXPLORER_EXITING,0,0);
-                }
-                hwndMonitorWnd = FindWindow(TEXT("MS_WebcheckMonitor"),NULL);
-                if (hwndMonitorWnd) {
-                    PostMessage(hwndMonitorWnd,WM_IEXPLORER_EXITING,0,0);
-                }
-
-                // reset offline mode on all platforms except Win2K.
-                OSVERSIONINFOA vi;
-                vi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
-                GetVersionExA(&vi);
-                if( vi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS ||
-                    vi.dwMajorVersion < 5)
-                {
-                    // wininet is loaded - tell it to go online
-                    INTERNET_CONNECTED_INFO ci;
-                    memset(&ci, 0, sizeof(ci));
-                    ci.dwConnectedState = INTERNET_STATE_CONNECTED;
-                    InternetSetOption(NULL, INTERNET_OPTION_CONNECTED_STATE, &ci, sizeof(ci));
-                }
             }
-            break;
+
+            // Inform dial monitor that it's a good time to hang up
+            HWND hwndMonitorWnd = FindWindow(TEXT("MS_AutodialMonitor"), NULL);
+            if (hwndMonitorWnd) {
+                PostMessage(hwndMonitorWnd, WM_IEXPLORER_EXITING, 0, 0);
+            }
+            hwndMonitorWnd = FindWindow(TEXT("MS_WebcheckMonitor"), NULL);
+            if (hwndMonitorWnd) {
+                PostMessage(hwndMonitorWnd, WM_IEXPLORER_EXITING, 0, 0);
+            }
+
+            // reset offline mode on all platforms except Win2K.
+            OSVERSIONINFOA vi;
+            vi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
+            GetVersionExA(&vi);
+            if (vi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS ||
+                vi.dwMajorVersion < 5)
+            {
+                // wininet is loaded - tell it to go online
+                INTERNET_CONNECTED_INFO ci;
+                memset(&ci, 0, sizeof(ci));
+                ci.dwConnectedState = INTERNET_STATE_CONNECTED;
+                InternetSetOption(NULL, INTERNET_OPTION_CONNECTED_STATE, &ci, sizeof(ci));
+            }
+        }
+        break;
     }
 
     return lCount;
@@ -2850,7 +2851,7 @@ void IEWriteErrorLog(const EXCEPTION_RECORD* pexr)
         PathAppend(szWindows, TEXT("IE4 Error Log.txt"));
         HANDLE hfile = CreateFile(szWindows, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-        if(hfile != INVALID_HANDLE_VALUE)
+        if (hfile != INVALID_HANDLE_VALUE)
         {
             const static CHAR c_szCRLF[] = "\r\n";
             DWORD cbWritten;
@@ -2866,9 +2867,9 @@ void IEWriteErrorLog(const EXCEPTION_RECORD* pexr)
             SystemTimeToFileTime(&st, &ft);
             SHFormatDateTimeA(&ft, NULL, szBuf, SIZECHARS(szBuf));
             const static CHAR c_szCurrentTime[] = "CurrentTime: ";
-            WriteFile(hfile, c_szCurrentTime, SIZEOF(c_szCurrentTime)-1, &cbWritten, NULL);
+            WriteFile(hfile, c_szCurrentTime, SIZEOF(c_szCurrentTime) - 1, &cbWritten, NULL);
             WriteFile(hfile, szBuf, lstrlenA(szBuf), &cbWritten, NULL);
-            WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF)-1, &cbWritten, NULL);
+            WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF) - 1, &cbWritten, NULL);
 
             if (pexr) {
                 const static CHAR c_szExcCode[] = "Exception Info: Code=%x Flags=%x Address=%x\r\n";
@@ -2877,15 +2878,15 @@ void IEWriteErrorLog(const EXCEPTION_RECORD* pexr)
                 WriteFile(hfile, szBuf, lstrlenA(szBuf), &cbWritten, NULL);
 
                 if (pexr->NumberParameters) {
-                    WriteFile(hfile, c_szExcParam, SIZEOF(c_szExcParam)-1, &cbWritten, NULL);
-                    for (UINT iParam=0; iParam<pexr->NumberParameters; iParam++) {
+                    WriteFile(hfile, c_szExcParam, SIZEOF(c_szExcParam) - 1, &cbWritten, NULL);
+                    for (UINT iParam = 0; iParam < pexr->NumberParameters; iParam++) {
                         wnsprintfA(szBuf, ARRAYSIZE(szBuf), " %x", pexr->ExceptionInformation[iParam]);
                         WriteFile(hfile, szBuf, lstrlenA(szBuf), &cbWritten, NULL);
                     }
                 }
 
-                WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF)-1, &cbWritten, NULL);
-                WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF)-1, &cbWritten, NULL);
+                WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF) - 1, &cbWritten, NULL);
+                WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF) - 1, &cbWritten, NULL);
             }
 
             IUrlHistoryStg* pUrlHistStg;
@@ -2902,13 +2903,13 @@ void IEWriteErrorLog(const EXCEPTION_RECORD* pexr)
                         if (hdpa) {
                             STATURL stat;
                             stat.cbSize = SIZEOF(stat.cbSize);
-                            while(penum->Next(1, &stat, NULL)==S_OK && stat.pwcsUrl) {
+                            while (penum->Next(1, &stat, NULL) == S_OK && stat.pwcsUrl) {
                                 DSA_AppendItem(hdsa, &stat);
-                                DPA_AppendPtr(hdpa, (LPVOID)(DSA_GetItemCount(hdsa)-1));
+                                DPA_AppendPtr(hdpa, (LPVOID)(DSA_GetItemCount(hdsa) - 1));
                             }
 
                             DPA_Sort(hdpa, WELCompare, (LPARAM)hdsa);
-                            for (int i=0; i<10 && i<DPA_GetPtrCount(hdpa) ; i++) {
+                            for (int i = 0; i < 10 && i < DPA_GetPtrCount(hdpa); i++) {
                                 // Sundown: typecast to long is OK
                                 STATURL* pstat = (STATURL*)DSA_GetItemPtr(hdsa, PtrToLong(DPA_GetPtr(hdpa, i)));
                                 if (pstat && pstat->pwcsUrl) {
@@ -2916,40 +2917,43 @@ void IEWriteErrorLog(const EXCEPTION_RECORD* pexr)
                                     SHFormatDateTimeA(&pstat->ftLastVisited, NULL, szBuf, SIZECHARS(szBuf));
                                     WriteFile(hfile, szBuf, lstrlenA(szBuf), &cbWritten, NULL);
                                     const static TCHAR c_szColumn[] = TEXT(" -- ");
-                                    WriteFile(hfile, c_szColumn, SIZEOF(c_szColumn)-1, &cbWritten, NULL);
+                                    WriteFile(hfile, c_szColumn, SIZEOF(c_szColumn) - 1, &cbWritten, NULL);
 
                                     WideCharToMultiByte(CP_ACP, 0, pstat->pwcsUrl, -1,
                                                         szBuf, ARRAYSIZE(szBuf), NULL, NULL);
                                     WriteFile(hfile, szBuf, lstrlenA(szBuf), &cbWritten, NULL);
 
-                                    WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF)-1, &cbWritten, NULL);
-                                } else {
-                                    ASSERT(0);
+                                    WriteFile(hfile, c_szCRLF, SIZEOF(c_szCRLF) - 1, &cbWritten, NULL);
                                 }
-                            }
+ else {
+  ASSERT(0);
+}
+}
 
-                            DPA_Destroy(hdpa);
-                        }
-                        DSA_DestroyCallback(hdsa, WELCallback, NULL);
-                    }
-                    penum->Release();
-                } else {
-                    ASSERT(0);
-                }
-                pUrlHistStg->Release();
-            } else {
-                ASSERT(0);
-            }
+DPA_Destroy(hdpa);
+}
+DSA_DestroyCallback(hdsa, WELCallback, NULL);
+}
+penum->Release();
+}
+else {
+ ASSERT(0);
+}
+pUrlHistStg->Release();
+}
+else {
+ ASSERT(0);
+}
 
-            CloseHandle( hfile );
-            hfile = INVALID_HANDLE_VALUE;
-        }
+CloseHandle(hfile);
+hfile = INVALID_HANDLE_VALUE;
+}
     }
-    _except((SetErrorMode(SEM_NOGPFAULTERRORBOX), _CopyExceptionInfo(GetExceptionInformation()), UnhandledExceptionFilter(GetExceptionInformation())))
+        _except((SetErrorMode(SEM_NOGPFAULTERRORBOX), _CopyExceptionInfo(GetExceptionInformation()), UnhandledExceptionFilter(GetExceptionInformation())))
     {
         // We hit an exception while handling an exception.
         // Do nothing; we have already displayed the error dialog box.
-        if(hfile != INVALID_HANDLE_VALUE) {
+        if (hfile != INVALID_HANDLE_VALUE) {
             CloseHandle(hfile);
         }
     }
@@ -2982,7 +2986,7 @@ IStream* SHGetViewStream(LPCITEMIDLIST pidl, DWORD grfMode, LPCTSTR pszName, LPC
     DWORD dwSize = sizeof(s_dwMRUSize);
 
     if ((0 == s_dwMRUSize) &&
-        (ERROR_SUCCESS != SHGetValue(HKEY_CURRENT_USER, pszStreamMRU, TEXT("MRU Size"), NULL, (LPVOID) &s_dwMRUSize, &dwSize)))
+        (ERROR_SUCCESS != SHGetValue(HKEY_CURRENT_USER, pszStreamMRU, TEXT("MRU Size"), NULL, (LPVOID)&s_dwMRUSize, &dwSize)))
     {
         s_dwMRUSize = 200;          // The default.
     }
@@ -3013,7 +3017,7 @@ IStream* SHGetViewStream(LPCITEMIDLIST pidl, DWORD grfMode, LPCTSTR pszName, LPC
         return NULL;
 
     // Did we find the item?
-    if (iFoundSlot < 0 && ((grfMode & (STGM_READ|STGM_WRITE|STGM_READWRITE)) == STGM_READ))
+    if (iFoundSlot < 0 && ((grfMode & (STGM_READ | STGM_WRITE | STGM_READWRITE)) == STGM_READ))
     {
         // Do not  create the stream if it does not exist and we are
         // only reading
@@ -3116,8 +3120,8 @@ HRESULT _SendOrPostDispatchMessage(HWND hwnd, WPARAM wParam, LPARAM lParam, BOOL
             //  sync or we are querying the windows readiness
             ULONG_PTR result;
             if (SendMessageTimeoutA(hwnd, WMC_DISPATCH, (fCheckFirst ? DSID_NOACTION : wParam),
-                lParam, SMTO_ABORTIFHUNG, 400, &result))
-                hr = (HRESULT) result;
+                                    lParam, SMTO_ABORTIFHUNG, 400, &result))
+                hr = (HRESULT)result;
         }
 
         //  handle the post only if the window was ready
@@ -3141,7 +3145,7 @@ HRESULT FindBrowserWindowOfClass(LPCTSTR pszClass, WPARAM wParam, LPARAM lParam,
     HRESULT hr = E_FAIL;
 
     while (FAILED(hr)
-        && (hwnd = FindWindowEx(NULL, hwnd, pszClass, NULL)) != NULL)
+           && (hwnd = FindWindowEx(NULL, hwnd, pszClass, NULL)) != NULL)
     {
         hr = _SendOrPostDispatchMessage(hwnd, wParam, lParam, fPostMessage, fPostMessage);
     }
@@ -3223,16 +3227,16 @@ HRESULT CDDEAuto_Navigate(BSTR str, HWND *phwnd, long) //the long is for lTransI
                //         know what state we are in - don't force reuse
                 hres = CDDEAuto_get_LocationURL(&bstrUrl, *phwnd);
 
-                if(FAILED(hres) ||
-                   (!bstrUrl)   ||
-                   (SUCCEEDED(hres) && (*bstrUrl == L'\0')))
+                if (FAILED(hres) ||
+                    (!bstrUrl) ||
+                    (SUCCEEDED(hres) && (*bstrUrl == L'\0')))
                 {
                     fForceWindowReuse = TRUE;
                 }
-                if(bstrUrl)
+                if (bstrUrl)
                     SysFreeString(bstrUrl);
 
-                if( !(GetAsyncKeyState(VK_SHIFT) < 0)
+                if (!(GetAsyncKeyState(VK_SHIFT) < 0)
                     && (fForceWindowReuse || SHRegGetBoolUSValue(REGSTR_PATH_MAIN, TEXT("AllowWindowReuse"), FALSE, TRUE)))
                 {
                     hres = CDDEAuto_Common(DSID_NAVIGATEIEBROWSER, (LPARAM)pddens, phwnd, FALSE);
@@ -3248,7 +3252,7 @@ HRESULT CDDEAuto_Navigate(BSTR str, HWND *phwnd, long) //the long is for lTransI
                 SetForegroundWindow(*phwnd);
 
                 if (IsIconic(*phwnd))
-                    ShowWindowAsync(*phwnd,SW_RESTORE);
+                    ShowWindowAsync(*phwnd, SW_RESTORE);
             }
 
 
@@ -3388,7 +3392,7 @@ class CDelagateMalloc : public IMalloc
 {
 public:
     // IUnknown
-    virtual STDMETHODIMP QueryInterface(REFIID,void **);
+    virtual STDMETHODIMP QueryInterface(REFIID, void **);
     virtual STDMETHODIMP_(ULONG) AddRef(void);
     virtual STDMETHODIMP_(ULONG) Release(void);
 
@@ -3471,9 +3475,9 @@ ULONG CDelagateMalloc::Release()
 void *CDelagateMalloc::Alloc(SIZE_T cb)
 {
     WORD cbActualSize = (WORD)(
-                        SIZEOF(DELEGATEITEMID) - 1 +    // header (-1 sizeof(rgb[0])
-                        cb +                            // inner
-                        _cb);                           // outer data
+        SIZEOF(DELEGATEITEMID) - 1 +    // header (-1 sizeof(rgb[0])
+        cb +                            // inner
+        _cb);                           // outer data
 
     PDELEGATEITEMID pidl = (PDELEGATEITEMID)SHAlloc(cbActualSize + 2);  // +2 for pidl term
     if (pidl)
@@ -3603,7 +3607,7 @@ HRESULT SearchForElementInHead
                 // First see if it's the desired element type
 
                 if (SUCCEEDED(pDispItem->QueryInterface(iidDesired,
-                                                    (void **)&punk)))
+                    (void **)&punk)))
                 {
 
                     // Next see if it has the desired attribute
@@ -3617,7 +3621,7 @@ HRESULT SearchForElementInHead
 
                         if (SUCCEEDED(pElement->getAttribute(bstrAttribName, FALSE, &varAttrib)) &&
                             (V_VT(&varAttrib) == VT_BSTR) && varAttrib.bstrVal &&
-                            (StrCmpIW(varAttrib.bstrVal, pszAttrib) == 0) )
+                            (StrCmpIW(varAttrib.bstrVal, pszAttrib) == 0))
                         {
                             // Found it!
                             *ppunkDesired = punk;
@@ -3639,7 +3643,7 @@ HRESULT SearchForElementInHead
                 // Next check for the body tag
 
                 else if (SUCCEEDED(pDispItem->QueryInterface(IID_IHTMLBodyElement,
-                                                    (void **)&pBodyElement)) )
+                    (void **)&pBodyElement)))
                 {
                     // Found a body tag, so terminate the search
                     lItem = lItemCnt;
@@ -3649,7 +3653,7 @@ HRESULT SearchForElementInHead
                 // Finally, check for a frameset tag
 
                 else if (SUCCEEDED(pDispItem->QueryInterface(IID_IHTMLFrameSetElement,
-                                                    (void **)&pFrameSetElement)) )
+                    (void **)&pFrameSetElement)))
                 {
                     // Found a frameset tag, so terminate the search
                     lItem = lItemCnt;
@@ -3731,10 +3735,10 @@ BOOL CreateFromDesktop(PNEWFOLDERINFO pfi)
         }
         else if (!PathIsURLA(pfi->pszPath))
         {
-           CHAR szTemp[MAX_PATH];
-           GetCurrentDirectoryA(ARRAYSIZE(szTemp), szTemp);
-           PathCombineA(szTemp, szTemp, pfi->pszPath);
-           Str_SetPtrA(&(pfi->pszPath), szTemp);
+            CHAR szTemp[MAX_PATH];
+            GetCurrentDirectoryA(ARRAYSIZE(szTemp), szTemp);
+            PathCombineA(szTemp, szTemp, pfi->pszPath);
+            Str_SetPtrA(&(pfi->pszPath), szTemp);
         }
     }
 
@@ -3756,7 +3760,7 @@ int IsVK_TABCycler(MSG *pMsg)
 
     if (pMsg->message != WM_KEYDOWN)
         return 0;
-    if (! (pMsg->wParam == VK_TAB || pMsg->wParam == VK_F6))
+    if (!(pMsg->wParam == VK_TAB || pMsg->wParam == VK_F6))
         return 0;
 
     return (GetKeyState(VK_SHIFT) < 0) ? -1 : 1;
@@ -3863,17 +3867,17 @@ STDAPI GetCacheLocation(LPTSTR pszCacheLocation, DWORD dwSize)
 
     while (TRUE)
     {
-        if ((lpCCI = (LPINTERNET_CACHE_CONFIG_INFO) LocalAlloc(LPTR,
-                                                        dwCCISize)) == NULL)
+        if ((lpCCI = (LPINTERNET_CACHE_CONFIG_INFO)LocalAlloc(LPTR,
+                                                              dwCCISize)) == NULL)
         {
             hr = E_OUTOFMEMORY;
             goto cleanup;
         }
 
         if (!GetUrlCacheConfigInfo(lpCCI, &dwCCISize,
-                                            CACHE_CONFIG_CONTENT_PATHS_FC))
+                                   CACHE_CONFIG_CONTENT_PATHS_FC))
         {
-            if ((dwLastErr = GetLastError()) != ERROR_INSUFFICIENT_BUFFER  ||
+            if ((dwLastErr = GetLastError()) != ERROR_INSUFFICIENT_BUFFER ||
                 fOnceErrored)
             {
                 hr = HRESULT_FROM_WIN32(dwLastErr);
@@ -3895,7 +3899,7 @@ STDAPI GetCacheLocation(LPTSTR pszCacheLocation, DWORD dwSize)
             PathRemoveBackslash(pszPath);
             iLen = lstrlen(pszPath) + 1;        // + 1 is for the null char
 
-            if ((DWORD) iLen < dwSize)
+            if ((DWORD)iLen < dwSize)
             {
                 StrCpyN(pszCacheLocation, pszPath, iLen);
             }
@@ -3972,7 +3976,7 @@ STDAPI_(HCURSOR) LoadHandCursor(DWORD dwRes)
 BOOL MayBeUnavailableOffline(LPTSTR pszUrl)
 {
     BOOL fRet = FALSE;
-    URL_COMPONENTS uc = {0};
+    URL_COMPONENTS uc = { 0 };
     uc.dwStructSize = sizeof(uc);
 
     if (SUCCEEDED(InternetCrackUrl(pszUrl, 0, 0, &uc)))
@@ -4102,7 +4106,7 @@ int GetAvgCharWidth(HWND hwnd)
     {
         HDC hdc = GetDC(NULL);
 
-        if(hdc)
+        if (hdc)
         {
             HFONT hfontOld = (HFONT)SelectObject(hdc, hfont);
 
@@ -4133,7 +4137,7 @@ void FixAmpersands(LPWSTR pszToFix, UINT cchMax)
     LPWSTR pszSrc = pszToFix;
     UINT cch = 0;
 
-    while (*pszSrc && cch < ARRAYSIZE(szBuf)-2)
+    while (*pszSrc && cch < ARRAYSIZE(szBuf) - 2)
     {
         if (*pszSrc == '&')
         {
@@ -4280,14 +4284,14 @@ BOOL IsInetcplRestricted(LPWSTR pszCommand)
     DWORD dwType;
 
     if (ERROR_SUCCESS == SHRegGetUSValue(
-                            SZ_REGKEY_INETCPL_POLICIES,
-                            pszCommand,
-                            &dwType,
-                            (LPVOID)&dwData,
-                            &dwSize,
-                            FALSE,
-                            NULL,
-                            0))
+        SZ_REGKEY_INETCPL_POLICIES,
+        pszCommand,
+        &dwType,
+        (LPVOID)&dwData,
+        &dwSize,
+        FALSE,
+        NULL,
+        0))
     {
         fDisabled = dwData;
     }
@@ -4436,16 +4440,16 @@ HRESULT IExtractIcon_Extract(
 }
 
 
-typedef EXECUTION_STATE (__stdcall *PFNSTES) (EXECUTION_STATE);
+typedef EXECUTION_STATE(__stdcall *PFNSTES) (EXECUTION_STATE);
 
 EXECUTION_STATE _SetThreadExecutionState(EXECUTION_STATE esFlags)
 {
     static PFNSTES _pfnSetThreadExecutionState = (PFNSTES)0xffffffff;
 
-    if(_pfnSetThreadExecutionState == (PFNSTES)0xffffffff)
+    if (_pfnSetThreadExecutionState == (PFNSTES)0xffffffff)
         _pfnSetThreadExecutionState = (PFNSTES)GetProcAddress(GetModuleHandleA("kernel32.dll"), "SetThreadExecutionState");
 
-    if(_pfnSetThreadExecutionState != (PFNSTES)NULL)
+    if (_pfnSetThreadExecutionState != (PFNSTES)NULL)
         return(_pfnSetThreadExecutionState(esFlags));
     else
         return((EXECUTION_STATE)NULL);
@@ -4484,8 +4488,8 @@ void GetPathOtherFormA(LPSTR lpszPath, LPSTR lpszNewPath, DWORD dwSize)
         bQuotes = TRUE;
 
         szStart = lpszPath + 1;
-        szEnd   = lpszPath + lstrlenA(lpszPath) - 1; // Point to the last "
-        *szEnd  = '\0';
+        szEnd = lpszPath + lstrlenA(lpszPath) - 1; // Point to the last "
+        *szEnd = '\0';
 
         szNewStart = lpszNewPath + 1;  // So that we can insert the " in it.
         dwSize = dwSize - 2;  // for the two double quotes to be added.
@@ -4568,13 +4572,17 @@ BOOL AccessAllowed(LPCWSTR pwszURL1, LPCWSTR pwszURL2)
     BOOL fRet = FALSE;
     IInternetSecurityManager *pSecMgr = NULL;
 
-    if (pwszURL1 && pwszURL2 && SUCCEEDED(CoCreateInstance(CLSID_InternetSecurityManager, NULL, CLSCTX_INPROC_SERVER, IID_IInternetSecurityManager, (void **)&pSecMgr)))
+    if (pwszURL1 && pwszURL2 && SUCCEEDED(CoCreateInstance(CLSID_InternetSecurityManager, 
+                                                           NULL, 
+                                                           CLSCTX_INPROC_SERVER,
+                                                           IID_IInternetSecurityManager,
+                                                           (void **)&pSecMgr)))
     {
         BYTE reqSid[MAX_SIZE_SECURITY_ID], docSid[MAX_SIZE_SECURITY_ID];
         DWORD cbReqSid = ARRAYSIZE(reqSid);
         DWORD cbDocSid = ARRAYSIZE(docSid);
 
-        if (   SUCCEEDED(pSecMgr->GetSecurityId(pwszURL1, reqSid, &cbReqSid, 0))
+        if (SUCCEEDED(pSecMgr->GetSecurityId(pwszURL1, reqSid, &cbReqSid, 0))
             && SUCCEEDED(pSecMgr->GetSecurityId(pwszURL2, docSid, &cbDocSid, 0))
             && (cbReqSid == cbDocSid)
             && (memcmp(reqSid, docSid, cbReqSid) == 0))

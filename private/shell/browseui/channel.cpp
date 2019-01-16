@@ -120,7 +120,7 @@ void NavigateBrowserBarToChannels(IWebBrowser2* pwb)
             {
                 VARIANT varFlags;
 
-                varFlags.vt   = VT_I4;
+                varFlags.vt = VT_I4;
                 varFlags.lVal = navBrowserBar;
 
                 pwb->Navigate2(&varPath, &varFlags, PVAREMPTY, PVAREMPTY, PVAREMPTY);
@@ -219,7 +219,7 @@ HRESULT Channel_QuickLaunch(void)
 
 
 class CProxyWin95Desktop :
-   public IOleWindow
+    public IOleWindow
 {
 public:
     // *** IUnknown ***
@@ -266,7 +266,7 @@ HRESULT CProxyWin95Desktop::QueryInterface(REFIID riid, LPVOID * ppvObj)
     if (IsEqualIID(riid, IID_IUnknown) ||
         IsEqualIID(riid, IID_IOleWindow) ||
         IsEqualIID(riid, SID_SShellDesktop)  // private hack for deskbar.cpp
-       ) {
+        ) {
         *ppvObj = SAFECAST(this, IOleWindow*);
     }
     else
@@ -299,9 +299,9 @@ void Channels_InitState(IUnknown* punkBar)
 
         cis.iVer = 1;  // set version number to 1
         SystemParametersInfoA(SPI_GETWORKAREA, 0, prc, 0);
-        prc->bottom = min(prc->bottom - 20, prc->top + 12*38 + 28); // 12 icons + caption
+        prc->bottom = min(prc->bottom - 20, prc->top + 12 * 38 + 28); // 12 icons + caption
 
-        if(IS_BIDI_LOCALIZED_SYSTEM())
+        if (IS_BIDI_LOCALIZED_SYSTEM())
         {
             prc->right = prc->left + 90;
             OffsetRect(prc, 20, 10);
@@ -314,7 +314,7 @@ void Channels_InitState(IUnknown* punkBar)
 
         // query registry for persisted state
         SHRegGetUSValue(SZ_REGKEY_CHANBAR, SZ_REGVALUE_CHANBAR, NULL,
-                        (LPVOID)&cis, &cbSize, FALSE, (LPVOID)&cis, cbSize);
+            (LPVOID)&cis, &cbSize, FALSE, (LPVOID)&cis, cbSize);
 
         // set ppb by prc
         ppb->SetDataDWORD(PROPDATA_MODE, WBM_FLOATING | WBMF_BROWSER);
@@ -354,7 +354,7 @@ void Channels_SetBandInfoSFB(IUnknown* punkBand)
 }
 
 // from isfband.cpp
-extern IDeskBand * ChannelBand_Create( LPCITEMIDLIST pidl );
+extern IDeskBand * ChannelBand_Create(LPCITEMIDLIST pidl);
 
 // this does the desktop channel in browser only mode
 void DesktopChannel()
@@ -384,7 +384,7 @@ void DesktopChannel()
 
     LPITEMIDLIST pidl = Channel_GetFolderPidl();
     if (pidl) {
-        IUnknown* punk = (IUnknown *) ChannelBand_Create( pidl );
+        IUnknown* punk = (IUnknown *)ChannelBand_Create(pidl);
         if (punk) {
 
             Channels_SetBandInfoSFB(punk);
@@ -443,7 +443,7 @@ HRESULT Channels_OpenBrowser(IWebBrowser2 **ppwb, BOOL fInPlace)
 #ifndef UNIX
         hres = CoCreateInstance(CLSID_InternetExplorer, NULL, CLSCTX_LOCAL_SERVER, IID_IWebBrowser2, (void **)&pwb);
 #else
-        hres = CoCreateInternetExplorer( IID_IWebBrowser2, CLSCTX_LOCAL_SERVER, (LPVOID*) &pwb );
+        hres = CoCreateInternetExplorer(IID_IWebBrowser2, CLSCTX_LOCAL_SERVER, (LPVOID*)&pwb);
 #endif
     }
 
@@ -458,7 +458,7 @@ HRESULT Channels_OpenBrowser(IWebBrowser2 **ppwb, BOOL fInPlace)
         //BOOL fTheater = SHRegGetBoolUSValue(TEXT("Software\\Microsoft\\Internet Explorer\\Channels"),
         BOOL fTheater = SHRegGetBoolUSValue(TEXT("Software\\Microsoft\\Internet Explorer\\Main"),
                                             TEXT("FullScreen"), FALSE, FALSE);
-        pwb->put_TheaterMode( fTheater ? VARIANT_TRUE : VARIANT_FALSE);
+        pwb->put_TheaterMode(fTheater ? VARIANT_TRUE : VARIANT_FALSE);
         pwb->put_Visible(VARIANT_TRUE);
 
 
@@ -542,7 +542,7 @@ class ChannelBand : public SUPERCLASS
 public:
     virtual STDMETHODIMP QueryInterface(REFIID riid, LPVOID * ppvObj);
     virtual STDMETHODIMP OnChange(LONG lEvent, LPCITEMIDLIST pidl1, LPCITEMIDLIST pidl2);
-    virtual HRESULT OnDropDDT (IDropTarget *pdt, IDataObject *pdtobj, DWORD * pgrfKeyState, POINTL pt, DWORD *pdwEffect);
+    virtual HRESULT OnDropDDT(IDropTarget *pdt, IDataObject *pdtobj, DWORD * pgrfKeyState, POINTL pt, DWORD *pdwEffect);
 
 protected:
     ChannelBand();
@@ -557,7 +557,7 @@ protected:
     virtual void _Dropped(int nIndex, BOOL fDroppedOnSource);
     virtual HRESULT _AfterLoad();
     virtual void _OnDragBegin(int iItem, DWORD dwPreferedEffect);
-} ;
+};
 
 
 #define COLORBK     RGB(0,0,0)
@@ -644,7 +644,7 @@ HRESULT ChannelBand::OnChange(LONG lEvent, LPCITEMIDLIST pidl1, LPCITEMIDLIST pi
     case SHCNE_EXTENDED_EVENT:
     {
         SHChangeMenuAsIDList UNALIGNED * pdwidl = (SHChangeMenuAsIDList UNALIGNED *)pidl1;
-        if ( pdwidl->dwItem1 == SHCNEE_ORDERCHANGED )
+        if (pdwidl->dwItem1 == SHCNEE_ORDERCHANGED)
         {
             if (SHChangeMenuWasSentByMe(this, pidl1))
             {
@@ -710,21 +710,21 @@ LRESULT ChannelBand::_OnCustomDraw(NMCUSTOMDRAW* pnmcd)
 
     case CDDS_PREERASE:
         // Channel band has a darker background color
-        {
-            RECT rc;
-            GetClientRect(_hwndTB, &rc);
-            // BUGBUG perf: use SHFillRectClr not SetBk/ExtText/SetBk
-            COLORREF old = SetBkColor(pnmcd->hdc, _crBkgnd);
-            ExtTextOut(pnmcd->hdc,0,0,ETO_OPAQUE,&rc,NULL,0,NULL);
-            SetBkColor(pnmcd->hdc, old);
-            lres = CDRF_SKIPDEFAULT;
-        }
-        break;
+    {
+        RECT rc;
+        GetClientRect(_hwndTB, &rc);
+        // BUGBUG perf: use SHFillRectClr not SetBk/ExtText/SetBk
+        COLORREF old = SetBkColor(pnmcd->hdc, _crBkgnd);
+        ExtTextOut(pnmcd->hdc, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
+        SetBkColor(pnmcd->hdc, old);
+        lres = CDRF_SKIPDEFAULT;
+    }
+    break;
 
     case CDDS_ITEMPREPAINT:
         // Channel band doesn't draw as buttons
         lres |= TBCDRF_NOEDGES | TBCDRF_NOOFFSET | TBCDRF_NOMARK |
-                CDRF_NOTIFYPOSTPAINT;
+            CDRF_NOTIFYPOSTPAINT;
         break;
 
     case CDDS_ITEMPOSTPAINT:
@@ -735,10 +735,10 @@ LRESULT ChannelBand::_OnCustomDraw(NMCUSTOMDRAW* pnmcd)
         pnmcd->rc.left++;
         if (pnmcd->uItemState & CDIS_SELECTED)
             // Mark the selected item
-            FrameTrack(pnmcd->hdc,  &(pnmcd->rc), TRACKNOCHILD);
+            FrameTrack(pnmcd->hdc, &(pnmcd->rc), TRACKNOCHILD);
         else if (pnmcd->uItemState & CDIS_HOT)
             // Mark the hot item
-            FrameTrack(pnmcd->hdc,  &(pnmcd->rc), TRACKHOT);
+            FrameTrack(pnmcd->hdc, &(pnmcd->rc), TRACKHOT);
         break;
 
     }

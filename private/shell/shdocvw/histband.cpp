@@ -37,7 +37,7 @@
 #define VIEWTYPE_MAX        0x4  // A "guess" at how many viewtypes thare will be
 #define VIEWTYPE_REALLOC    0x4  // How many to realloc at a time
 
-// these are temporary
+  // these are temporary
 #define MENUID_SEARCH       0x4e4e
 
 // Distance between history search go and stop buttons
@@ -48,22 +48,22 @@ extern HINSTANCE     g_hinst;
 #define WM_SEARCH_STATE (WM_USER + 314)
 
 class CHistBand : public CNSCBand,
-                  public IShellFolderSearchableCallback
+    public IShellFolderSearchableCallback
 {
     friend HRESULT CHistBand_CreateInstance(IUnknown *punkOuter,
                                             IUnknown **ppunk, LPCOBJECTINFO poi);
 public:
     // *** IUnknown methods ***
     virtual STDMETHODIMP QueryInterface(REFIID riid, void **ppvObj);
-    STDMETHODIMP_(ULONG) AddRef (void) { return CNSCBand::AddRef();  };
+    STDMETHODIMP_(ULONG) AddRef(void) { return CNSCBand::AddRef(); };
     STDMETHODIMP_(ULONG) Release(void) { return CNSCBand::Release(); };
 
     // *** IOleCommandTarget methods ***
     virtual STDMETHODIMP Exec(const GUID *pguidCmdGroup,
-                  DWORD nCmdID,
-                  DWORD nCmdexecopt,
-                  VARIANTARG *pvarargIn,
-                  VARIANTARG *pvarargOut);
+                              DWORD nCmdID,
+                              DWORD nCmdexecopt,
+                              VARIANTARG *pvarargIn,
+                              VARIANTARG *pvarargOut);
 
     // *** IOleWindow methods ***
     //  (overriding CNSCBand implementation
@@ -187,7 +187,7 @@ HRESULT CHistBand::Exec(const GUID *pguidCmdGroup, DWORD nCmdID,
     {
         if (IsEqualGUID(CLSID_HistBand, *pguidCmdGroup))
         {
-            switch(nCmdID)
+            switch (nCmdID)
             {
             case FCIDM_HISTBAND_VIEW:
                 if (pvarargIn && (pvarargIn->vt == VT_I4))
@@ -237,7 +237,7 @@ HRESULT CHistBand::Exec(const GUID *pguidCmdGroup, DWORD nCmdID,
                     if (SUCCEEDED(hRes))
                     {
                         hRes = _SelectPidl(pidlSelect, dwViewFlags & SFVTFLAG_NOTIFY_CREATE,
-                                           pidlView,   dwViewFlags & SFVTFLAG_NOTIFY_RESORT);
+                                           pidlView, dwViewFlags & SFVTFLAG_NOTIFY_RESORT);
                     }
                 }
                 else //eat it, so that nsc doesn't get it
@@ -255,7 +255,7 @@ HRESULT CHistBand::Exec(const GUID *pguidCmdGroup, DWORD nCmdID,
             hRes = CNSCBand::Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvarargIn, pvarargOut);
     }
     else
-        hRes =  CNSCBand::Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvarargIn, pvarargOut);
+        hRes = CNSCBand::Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvarargIn, pvarargOut);
     return hRes;
 }
 
@@ -270,7 +270,7 @@ HRESULT CHistBand::TranslateAcceleratorIO(LPMSG pmsg)
     HWND hwndFocus = GetFocus();
 
     // Translate accelerator messages for dialog
-    if ( (_hwndSearchDlg) && (hwndFocus != _hwndNSC) && (!hwndFocus || !IsChild(_hwndNSC, hwndFocus)) )
+    if ((_hwndSearchDlg) && (hwndFocus != _hwndNSC) && (!hwndFocus || !IsChild(_hwndNSC, hwndFocus)))
     {
         if (pmsg->message == WM_KEYDOWN)
         {
@@ -281,7 +281,7 @@ HRESULT CHistBand::TranslateAcceleratorIO(LPMSG pmsg)
                 if (GetParent(pmsg->hwnd) != _hwndSearchDlg)
                     hwndCur = NULL;
 
-                HWND hwndNext  = GetNextDlgTabItem(_hwndSearchDlg, hwndCur, fBackwards);
+                HWND hwndNext = GetNextDlgTabItem(_hwndSearchDlg, hwndCur, fBackwards);
 
                 // Get the First dialog item in this searching order
                 HWND hwndFirst;
@@ -307,7 +307,7 @@ HRESULT CHistBand::TranslateAcceleratorIO(LPMSG pmsg)
                     return S_OK;
                 }
             }
-            else if ( (pmsg->wParam == VK_RETURN) )
+            else if ((pmsg->wParam == VK_RETURN))
                 SendMessage(_hwndSearchDlg, WM_COMMAND, MAKELONG(GetDlgCtrlID(pmsg->hwnd), 0), 0L);
         }
         // The History Search Edit Box is activated
@@ -364,27 +364,27 @@ LRESULT CALLBACK CHistBand::s_WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
     switch (msg)
     {
     case WM_SETFOCUS:
-        {
-            TraceMsg(DM_GUIPAINS, "Histband Parent -- SETFOCUS");
-            // The only way this should be called is via a RB_CYCLEFOCUS->...->UIActivateIO->SetFocus
-            //  therefore, we can assume that we're being tabbed into or something with equally good.
-            // If we tab into the outer dummy window, transfer the focus to
-            //  our appropriate child:
-            BOOL fBackwards = (GetAsyncKeyState(VK_SHIFT) < 0);
-            if (phb->_hwndSearchDlg) {
-                // Select either the first or the last item in the dialog depending on
-                //  whether we're shifting in or shifting out
-                SetFocus(GetNextDlgTabItem(phb->_hwndSearchDlg, (NULL), fBackwards));
-            }
-            else {
-                TraceMsg(DM_GUIPAINS, "NSC is being given focus!");
-                SetFocus(phb->_hwndNSC);
-            }
+    {
+        TraceMsg(DM_GUIPAINS, "Histband Parent -- SETFOCUS");
+        // The only way this should be called is via a RB_CYCLEFOCUS->...->UIActivateIO->SetFocus
+        //  therefore, we can assume that we're being tabbed into or something with equally good.
+        // If we tab into the outer dummy window, transfer the focus to
+        //  our appropriate child:
+        BOOL fBackwards = (GetAsyncKeyState(VK_SHIFT) < 0);
+        if (phb->_hwndSearchDlg) {
+            // Select either the first or the last item in the dialog depending on
+            //  whether we're shifting in or shifting out
+            SetFocus(GetNextDlgTabItem(phb->_hwndSearchDlg, (NULL), fBackwards));
         }
-        return 0;
+        else {
+            TraceMsg(DM_GUIPAINS, "NSC is being given focus!");
+            SetFocus(phb->_hwndNSC);
+        }
+    }
+    return 0;
     case WM_CREATE:
         SetWindowLongPtr(hWnd, GWLP_USERDATA,
-                      (reinterpret_cast<LONG_PTR>((reinterpret_cast<CREATESTRUCT *>(lParam))->lpCreateParams)));
+            (reinterpret_cast<LONG_PTR>((reinterpret_cast<CREATESTRUCT *>(lParam))->lpCreateParams)));
         return 0;
     case WM_SIZE:
         if (phb)
@@ -396,17 +396,17 @@ LRESULT CALLBACK CHistBand::s_WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
         break;
 
     case WM_NOTIFY:
-        {
-            if (phb) {
-                // We proxy the notification messages to our own parent who thinks that we
-                //  are the namespace control
-                LPNMHDR pnmh = (LPNMHDR)lParam;
+    {
+        if (phb) {
+            // We proxy the notification messages to our own parent who thinks that we
+            //  are the namespace control
+            LPNMHDR pnmh = (LPNMHDR)lParam;
 
-                // Notification message coming from NSC
-                if (pnmh->hwndFrom == phb->_hwndNSC)
-                    return SendMessage(phb->_hwndParent, msg, wParam, lParam);
-            }
-        } // INTENTIONAL FALLTHROUGH
+            // Notification message coming from NSC
+            if (pnmh->hwndFrom == phb->_hwndNSC)
+                return SendMessage(phb->_hwndParent, msg, wParam, lParam);
+        }
+    } // INTENTIONAL FALLTHROUGH
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -425,12 +425,12 @@ HRESULT CHistBand::GetWindow(HWND *phwnd)
 
         static LPTSTR pszClassName = TEXT("History Pane");
 
-        WNDCLASSEX wndclass    = { 0 };
-        wndclass.cbSize        = sizeof(wndclass);
-        wndclass.style         = CS_PARENTDC | CS_HREDRAW | CS_VREDRAW;
-        wndclass.lpfnWndProc   = ((WNDPROC)s_WndProc);
-        wndclass.hInstance     = g_hinst;
-        wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+        WNDCLASSEX wndclass = { 0 };
+        wndclass.cbSize = sizeof(wndclass);
+        wndclass.style = CS_PARENTDC | CS_HREDRAW | CS_VREDRAW;
+        wndclass.lpfnWndProc = ((WNDPROC)s_WndProc);
+        wndclass.hInstance = g_hinst;
+        wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
         wndclass.lpszClassName = pszClassName;
 
         RegisterClassEx(&wndclass);
@@ -489,7 +489,7 @@ void CHistBand::_AddButtons(BOOL fAdd)
             TBBUTTON tbHistory[ARRAYSIZE(c_tbHistory)];
             memcpy(tbHistory, c_tbHistory, SIZEOF(TBBUTTON) * ARRAYSIZE(c_tbHistory));
             for (int i = 0; i < ARRAYSIZE(c_tbHistory); i++)
-                tbHistory[i].iString += (long) _lStrOffset;
+                tbHistory[i].iString += (long)_lStrOffset;
 
             piet->AddButtons(&CLSID_HistBand, ARRAYSIZE(tbHistory), tbHistory);
         }
@@ -538,11 +538,11 @@ inline HWND _GetHwndAndRect(HWND hwndDlg, int item, BOOL fClient, RECT &rc) {
 
 LRESULT CALLBACK CHistBand::s_EditWndSubclassProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    switch(uMsg) {
+    switch (uMsg) {
     case WM_KEYDOWN:
         if ((GetAsyncKeyState(VK_CONTROL) < 0) &&
             (wParam == TEXT('U'))) {
-            uMsg   = WM_SETTEXT;
+            uMsg = WM_SETTEXT;
             wParam = 0;
             lParam = ((LPARAM)(LPCTSTR)TEXT(""));
         }
@@ -562,47 +562,47 @@ LRESULT CALLBACK CHistBand::s_EditWndSubclassProc(HWND hwnd, UINT uMsg, WPARAM w
 //BUGBUG:  Please see note at top of file for explanation...
 INT_PTR CALLBACK CHistBand::s_HistSearchDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    switch(uMsg) {
+    switch (uMsg) {
     case WM_PAINT:
-        {
-            // paint a little separator bar on the bottom
-            PAINTSTRUCT ps;
-            RECT        rcSelf;
-            HDC         hdc = BeginPaint(hwndDlg, &ps);
-            GetClientRect(hwndDlg, &rcSelf);
-            RECT        rcFill = { 0, rcSelf.bottom - 2, rcSelf.right, rcSelf.bottom };
-            FillRect(hdc, &rcFill, GetSysColorBrush(COLOR_BTNFACE));
-            EndPaint(hwndDlg, &ps);
-            break;
-        }
+    {
+        // paint a little separator bar on the bottom
+        PAINTSTRUCT ps;
+        RECT        rcSelf;
+        HDC         hdc = BeginPaint(hwndDlg, &ps);
+        GetClientRect(hwndDlg, &rcSelf);
+        RECT        rcFill = { 0, rcSelf.bottom - 2, rcSelf.right, rcSelf.bottom };
+        FillRect(hdc, &rcFill, GetSysColorBrush(COLOR_BTNFACE));
+        EndPaint(hwndDlg, &ps);
+        break;
+    }
 
     // Supply child controls with correct bkgd color
     case WM_CTLCOLORSTATIC:
         if ((HWND)lParam == GetDlgItem(hwndDlg, IDD_HISTSRCH_ANIMATION)) {
             SetBkColor((HDC)wParam, GetSysColor(COLOR_WINDOW));
-            return (INT_PTR) GetSysColorBrush(COLOR_WINDOW);
+            return (INT_PTR)GetSysColorBrush(COLOR_WINDOW);
         }
         else {
             SetBkMode((HDC)wParam, TRANSPARENT);
-            return (INT_PTR) GetSysColorBrush(COLOR_WINDOW);
+            return (INT_PTR)GetSysColorBrush(COLOR_WINDOW);
         }
     case WM_CTLCOLORDLG:
         //SetBkColor((HDC)HIWORD(lParam), GetSysColor(COLOR_WINDOW));
-        return (INT_PTR) GetSysColorBrush(COLOR_WINDOW);
+        return (INT_PTR)GetSysColorBrush(COLOR_WINDOW);
     case WM_INITDIALOG: {
-        HWND    hwndEdit       = GetDlgItem(hwndDlg, IDC_EDITHISTSEARCH);
+        HWND    hwndEdit = GetDlgItem(hwndDlg, IDC_EDITHISTSEARCH);
         WNDPROC pfnOldEditProc = (WNDPROC)(GetWindowLongPtr(hwndEdit, GWLP_WNDPROC));
 
         // subclass the editbox
         SetWindowLongPtr(hwndEdit, GWLP_USERDATA, (LPARAM)pfnOldEditProc);
-        SetWindowLongPtr(hwndEdit, GWLP_WNDPROC,  (LPARAM)s_EditWndSubclassProc);
+        SetWindowLongPtr(hwndEdit, GWLP_WNDPROC, (LPARAM)s_EditWndSubclassProc);
 
         SetWindowLongPtr(hwndDlg, DWLP_USER, lParam);
         Animate_Open(GetDlgItem(hwndDlg, IDD_HISTSRCH_ANIMATION),
                      MAKEINTRESOURCE(IDA_HISTSEARCHAVI));
 
         // limit the edit control to MAX_PATH-1 characters
-        Edit_LimitText(hwndEdit, MAX_PATH-1);
+        Edit_LimitText(hwndEdit, MAX_PATH - 1);
 
         break;
     }
@@ -611,20 +611,20 @@ INT_PTR CALLBACK CHistBand::s_HistSearchDlgProc(HWND hwndDlg, UINT uMsg, WPARAM 
         break;
     case WM_SIZE: {
         if (wParam == SIZE_RESTORED) {
-            UINT uWidth  = LOWORD(lParam);
+            UINT uWidth = LOWORD(lParam);
             UINT uHeight = HIWORD(lParam);
 
             RECT rcAnimSize, rcCancel, rcSearch, rcEdit, rcStatic;
-            HWND hwndAnim   = _GetHwndAndRect(hwndDlg, IDD_HISTSRCH_ANIMATION, TRUE,  rcAnimSize);
-            HWND hwndCancel = _GetHwndAndRect(hwndDlg, IDCANCEL,               FALSE, rcCancel);
-            HWND hwndSearch = _GetHwndAndRect(hwndDlg, IDB_HISTSRCH_GO,        FALSE, rcSearch);
-            HWND hwndEdit   = _GetHwndAndRect(hwndDlg, IDC_EDITHISTSEARCH,     FALSE, rcEdit);
+            HWND hwndAnim = _GetHwndAndRect(hwndDlg, IDD_HISTSRCH_ANIMATION, TRUE, rcAnimSize);
+            HWND hwndCancel = _GetHwndAndRect(hwndDlg, IDCANCEL, FALSE, rcCancel);
+            HWND hwndSearch = _GetHwndAndRect(hwndDlg, IDB_HISTSRCH_GO, FALSE, rcSearch);
+            HWND hwndEdit = _GetHwndAndRect(hwndDlg, IDC_EDITHISTSEARCH, FALSE, rcEdit);
 
             // calculate the minimum tolerable width
-            UINT uMinWidth  = ((rcCancel.right - rcCancel.left) +
-                               (rcSearch.right - rcSearch.left) + HISTSRCH_BUTTONDIST +
-                               rcEdit.left +
-                               rcAnimSize.right + 1);
+            UINT uMinWidth = ((rcCancel.right - rcCancel.left) +
+                (rcSearch.right - rcSearch.left) + HISTSRCH_BUTTONDIST +
+                              rcEdit.left +
+                              rcAnimSize.right + 1);
 
             if (uWidth < uMinWidth)
                 uWidth = uMinWidth;
@@ -680,84 +680,82 @@ INT_PTR CALLBACK CHistBand::s_HistSearchDlgProc(HWND hwndDlg, UINT uMsg, WPARAM 
             case EN_CHANGE:
                 // Enable 'Go Fish' button iff there is text in the edit box
                 EnableWindow(GetDlgItem(hwndDlg, IDB_HISTSRCH_GO),
-                             (bool) SendDlgItemMessage(hwndDlg, IDC_EDITHISTSEARCH, EM_LINELENGTH, 0, 0));
+                    (bool)SendDlgItemMessage(hwndDlg, IDC_EDITHISTSEARCH, EM_LINELENGTH, 0, 0));
                 break;
             }
             break;
         case IDB_HISTSRCH_GO:
+        {
+            TCHAR szSearchString[MAX_PATH];
+            if (GetDlgItemText(hwndDlg, IDC_EDITHISTSEARCH, szSearchString, ARRAYSIZE(szSearchString)))
             {
-                TCHAR szSearchString[MAX_PATH];
-                if (GetDlgItemText(hwndDlg, IDC_EDITHISTSEARCH, szSearchString, ARRAYSIZE(szSearchString)))
+                IServiceProvider *pServiceProvider;
+
+                HRESULT hr = IUnknown_QueryService(phb->_punkSite,
+                                                   SID_SProxyBrowser,
+                                                   IID_IServiceProvider,
+                                                   (void **)&pServiceProvider);
+
+                if (SUCCEEDED(hr))
                 {
-                    IServiceProvider *pServiceProvider;
-
-                    HRESULT hr = IUnknown_QueryService(phb->_punkSite,
-                                                       SID_SProxyBrowser,
-                                                       IID_IServiceProvider,
-                                                       (void **)&pServiceProvider);
-
+                    IWebBrowser2 *pWebBrowser2;
+                    hr = pServiceProvider->QueryService(SID_SWebBrowserApp, IID_IWebBrowser2, (void **)&pWebBrowser2);
                     if (SUCCEEDED(hr))
                     {
-                        IWebBrowser2 *pWebBrowser2;
-                        hr = pServiceProvider->QueryService(SID_SWebBrowserApp,
-                                                            IID_IWebBrowser2,
-                                                            (void **)&pWebBrowser2);
-                        if (SUCCEEDED(hr))
-                        {
-                            ::PutFindText(pWebBrowser2, szSearchString);
-                            pWebBrowser2->Release();
-                        }
-
-                        pServiceProvider->Release();
+                        ::PutFindText(pWebBrowser2, szSearchString);
+                        pWebBrowser2->Release();
                     }
 
-                    phb->_ExecuteSearch(szSearchString);
+                    pServiceProvider->Release();
                 }
+
+                phb->_ExecuteSearch(szSearchString);
+            }
+        }
+        break;
+        case IDCANCEL:
+        {
+            if (phb->_EnsureSearch())
+            {
+                phb->_psfSearch->CancelAsyncSearch(phb->_pidlSearch, NULL);
             }
             break;
-        case IDCANCEL:
-            {
-                if (phb->_EnsureSearch())
-                {
-                    phb->_psfSearch->CancelAsyncSearch(phb->_pidlSearch, NULL);
-                }
-                break;
-            }
+        }
         default:
             return FALSE;
         }
         return FALSE;
     }
     case WM_SEARCH_STATE:
-        {
-            BOOL fStart = (BOOL)wParam;
-            if (fStart)
-                Animate_Play(GetDlgItem(hwndDlg, IDD_HISTSRCH_ANIMATION), 0, -1, -1);
-            else {
-                HWND hwndAnim = GetDlgItem(hwndDlg, IDD_HISTSRCH_ANIMATION);
-                Animate_Stop(hwndAnim);
-                Animate_Seek(hwndAnim, 0); // reset the animation
+    {
+        BOOL fStart = (BOOL)wParam;
+        if (fStart)
+            Animate_Play(GetDlgItem(hwndDlg, IDD_HISTSRCH_ANIMATION), 0, -1, -1);
+        else {
+            HWND hwndAnim = GetDlgItem(hwndDlg, IDD_HISTSRCH_ANIMATION);
+            Animate_Stop(hwndAnim);
+            Animate_Seek(hwndAnim, 0); // reset the animation
 
-                //HACK for IE5 ship
-                //if there's only one item found in history search, the item doesn't display
-                //because someone (comctl32?) set redraw to false.
-                //so, manually force it to true when the search stops
-                CHistBand *phb = reinterpret_cast<CHistBand *>(GetWindowLongPtr(hwndDlg, DWLP_USER));
-                if (phb)
-                    SendMessage(phb->_hwndNSC, WM_SETREDRAW, TRUE, 0);
-            }
-            HWND hwndFocus = GetFocus();
-
-            EnableWindow(GetDlgItem(hwndDlg, IDC_EDITHISTSEARCH), !fStart);
-            EnableWindow(GetDlgItem(hwndDlg, IDB_HISTSRCH_GO), !fStart);
-            EnableWindow(GetDlgItem(hwndDlg, IDCANCEL), fStart);
-
-            //make sure the focus goes to the right place
-            if ((NULL != hwndFocus) && (hwndFocus == GetDlgItem(hwndDlg, IDC_EDITHISTSEARCH) ||
-                                       (hwndFocus == GetDlgItem(hwndDlg, IDCANCEL))))
-                SetFocus(GetDlgItem(hwndDlg, fStart ? IDCANCEL : IDC_EDITHISTSEARCH));
-            break;
+            //HACK for IE5 ship
+            //if there's only one item found in history search, the item doesn't display
+            //because someone (comctl32?) set redraw to false.
+            //so, manually force it to true when the search stops
+            CHistBand *phb = reinterpret_cast<CHistBand *>(GetWindowLongPtr(hwndDlg, DWLP_USER));
+            if (phb)
+                SendMessage(phb->_hwndNSC, WM_SETREDRAW, TRUE, 0);
         }
+        HWND hwndFocus = GetFocus();
+
+        EnableWindow(GetDlgItem(hwndDlg, IDC_EDITHISTSEARCH), !fStart);
+        EnableWindow(GetDlgItem(hwndDlg, IDB_HISTSRCH_GO), !fStart);
+        EnableWindow(GetDlgItem(hwndDlg, IDCANCEL), fStart);
+
+        //make sure the focus goes to the right place
+        if ((NULL != hwndFocus) && (hwndFocus == GetDlgItem(hwndDlg, IDC_EDITHISTSEARCH) ||
+            (hwndFocus == GetDlgItem(hwndDlg, IDCANCEL))))
+            SetFocus(GetDlgItem(hwndDlg, fStart ? IDCANCEL : IDC_EDITHISTSEARCH));
+        break;
+    }
 
     default:
         return FALSE;
@@ -769,7 +767,7 @@ IShellFolderSearchable *CHistBand::_EnsureSearch() {
     ASSERT(_psfHistory);
     if (!_pidlSearch) {
         _psfHistory->QueryInterface(IID_IShellFolderSearchable,
-                                    (LPVOID *)&_psfSearch);
+            (LPVOID *)&_psfSearch);
     }
     return _psfSearch;
 }
@@ -796,11 +794,11 @@ HRESULT CHistBand::_ExecuteSearch(LPTSTR pszSearchString)
     {
         _ClearSearch();
         hres = _psfSearch->FindString(pszSearchString,
-                                                     NULL,
-                                                     reinterpret_cast<IUnknown *>
-                                                     (static_cast<IShellFolderSearchableCallback *>
-                                                      (this)),
-                                                     &_pidlSearch);
+                                      NULL,
+                                      reinterpret_cast<IUnknown *>
+                                      (static_cast<IShellFolderSearchableCallback *>
+                                      (this)),
+                                      &_pidlSearch);
         if (SUCCEEDED(hres))
         {
             _ChangePidl(ILCombine(_pidlHistory, _pidlSearch));
@@ -884,7 +882,7 @@ HRESULT CHistBand::_DoViewPopup(int x, int y)
     // Currently, re-selecting the menu item will cause the item to be refreshed
     //  This makes sense to me, but it can be prevented by
     //  testing idCmd != _uViewCheckedItem
-    if ( (idCmd > 0) )
+    if ((idCmd > 0))
     {
         return _ViewPopupSelect(idCmd);
     }
@@ -919,8 +917,8 @@ HRESULT CHistBand::_SelectPidl(LPCITEMIDLIST pidlSelect,        // <-Standard Hi
     HRESULT hRes = S_OK;
     BOOL    fFreePidlSelect = FALSE;
 
-    if ( (!pidlSelect) &&
-         ((pidlSelect = _GetCurrentSelectPidl())) )
+    if ((!pidlSelect) &&
+        ((pidlSelect = _GetCurrentSelectPidl())))
         fFreePidlSelect = TRUE;
 
     if (pidlSelect) {
@@ -974,9 +972,9 @@ HRESULT CHistBand::_SetRegistryPersistView(int iMenuID) {
         return E_FAIL;
 
     return HRESULT_FROM_WIN32
-        (SHRegSetUSValue(REGSTR_PATH_MAIN, REGKEY_HISTORY_VIEW,
-                         REG_BINARY, (LPVOID)pidlReg, ILGetSize(pidlReg),
-                         SHREGSET_HKCU | SHREGSET_FORCE_HKCU));
+    (SHRegSetUSValue(REGSTR_PATH_MAIN, REGKEY_HISTORY_VIEW,
+                     REG_BINARY, (LPVOID)pidlReg, ILGetSize(pidlReg),
+                     SHREGSET_HKCU | SHREGSET_FORCE_HKCU));
 }
 
 // Get the default view from the registry as a menu item
@@ -988,9 +986,9 @@ int CHistBand::_GetRegistryPersistView() {
 
     // make a preliminary call to find out the size of the data
     DWORD cbData = 0;
-    LONG error   = SHRegGetUSValue(REGSTR_PATH_MAIN, REGKEY_HISTORY_VIEW, &dwType,
-                                   NULL, &cbData, FALSE, &pidlDefault,
-                                   sizeof(pidlDefault));
+    LONG error = SHRegGetUSValue(REGSTR_PATH_MAIN, REGKEY_HISTORY_VIEW, &dwType,
+                                 NULL, &cbData, FALSE, &pidlDefault,
+                                 sizeof(pidlDefault));
     if (cbData)
     {
         LPITEMIDLIST pidlReg = ((LPITEMIDLIST)SHAlloc(cbData));
@@ -998,7 +996,7 @@ int CHistBand::_GetRegistryPersistView() {
         if (pidlReg)
         {
             error = SHRegGetUSValue(REGSTR_PATH_MAIN, REGKEY_HISTORY_VIEW, &dwType,
-                                    (LPVOID)pidlReg, &cbData, FALSE, &pidlDefault,
+                (LPVOID)pidlReg, &cbData, FALSE, &pidlDefault,
                                     sizeof(pidlDefault));
 
             if (error == ERROR_SUCCESS)
@@ -1050,7 +1048,7 @@ IShellFolderViewType* CHistBand::_GetViewTypeInfo() {
         // QI For the views
         // We set the pointer because of a bad QI somewhere...
         if (SUCCEEDED(_psfHistory->QueryInterface(IID_IShellFolderViewType,
-                                                  ((void**)&psfvRet))))
+            ((void**)&psfvRet))))
         {
             _psfvtCache = psfvRet;
             psfvRet->AddRef(); // one released in destructor, another by caller
@@ -1158,10 +1156,10 @@ HRESULT CHistBand::_GetHistoryViews() {
             _ppszStrViewNames = ((LPTSTR *)LocalAlloc(LPTR, VIEWTYPE_MAX * sizeof(LPTSTR)));
             if (_ppszStrViewNames) {
                 IEnumIDList *penum = NULL;
-                cbViews  = VIEWTYPE_MAX;
-                _nViews  = 1;
+                cbViews = VIEWTYPE_MAX;
+                _nViews = 1;
                 // get the default view information
-                _ppidlViewTypes[0]   = IEILCreate(sizeof(ITEMIDLIST));
+                _ppidlViewTypes[0] = IEILCreate(sizeof(ITEMIDLIST));
                 if (_ppidlViewTypes[0] &&
                     SUCCEEDED((hRes = psfViewType->GetDefaultViewName(0, &(_ppszStrViewNames[0])))))
                 {
@@ -1171,9 +1169,9 @@ HRESULT CHistBand::_GetHistoryViews() {
                     if (SUCCEEDED((hRes = psfViewType->EnumViews(0, &penum)))) {
                         ULONG cFetched = 0;
                         // iterate to get other view information
-                        while(SUCCEEDED(hRes)                                                   &&
-                              SUCCEEDED(penum->Next(1, &(_ppidlViewTypes[_nViews]), &cFetched)) &&
-                              cFetched)
+                        while (SUCCEEDED(hRes) &&
+                               SUCCEEDED(penum->Next(1, &(_ppidlViewTypes[_nViews]), &cFetched)) &&
+                               cFetched)
                         {
                             STRRET strret;
                             // get the name of this view
@@ -1186,14 +1184,14 @@ HRESULT CHistBand::_GetHistoryViews() {
                                 if (_nViews > cbViews - 1)
                                 {
                                     LPITEMIDLIST *ppidlViewTypes = ((LPITEMIDLIST *)LocalReAlloc(_ppidlViewTypes,
-                                                                                       (cbViews + VIEWTYPE_REALLOC) * sizeof(LPITEMIDLIST),
-                                                                                       LMEM_MOVEABLE | LMEM_ZEROINIT));
+                                        (cbViews + VIEWTYPE_REALLOC) * sizeof(LPITEMIDLIST),
+                                                                                                 LMEM_MOVEABLE | LMEM_ZEROINIT));
                                     if (ppidlViewTypes)
                                     {
                                         _ppidlViewTypes = ppidlViewTypes;
                                         LPTSTR * ppszStrViewNames = ((LPTSTR *)LocalReAlloc(_ppszStrViewNames,
-                                                                                   (cbViews + VIEWTYPE_REALLOC) * sizeof(LPTSTR),
-                                                                                   LMEM_MOVEABLE | LMEM_ZEROINIT));
+                                            (cbViews + VIEWTYPE_REALLOC) * sizeof(LPTSTR),
+                                                                                            LMEM_MOVEABLE | LMEM_ZEROINIT));
                                         if (ppszStrViewNames)
                                         {
                                             _ppszStrViewNames = ppszStrViewNames;
@@ -1232,10 +1230,10 @@ HRESULT CHistBand_CreateInstance(IUnknown *punkOuter, IUnknown **ppunk, LPCOBJEC
     if (!phb)
         return E_OUTOFMEMORY;
 
-    ASSERT(phb->_pidlHistory    == NULL &&
+    ASSERT(phb->_pidlHistory == NULL &&
            phb->_pidlLastSelect == NULL &&
-           phb->_pidl           == NULL &&
-           phb->_psfvtCache     == NULL);
+           phb->_pidl == NULL &&
+           phb->_psfvtCache == NULL);
 
 
     if (SUCCEEDED(SHGetHistoryPIDL(&(phb->_pidlHistory))) &&
@@ -1293,11 +1291,11 @@ LPITEMIDLIST CHistBand::_GetCurrentSelectPidl(IOleCommandTarget *poctProxy/* = N
     if (poctProxy == NULL) {
         IBrowserService *pswProxy;
         if (SUCCEEDED(QueryService(SID_SProxyBrowser, IID_IBrowserService,
-                                   (void **)&pswProxy)))
+            (void **)&pswProxy)))
         {
             ASSERT(pswProxy);
             if (FAILED(pswProxy->QueryInterface(IID_IOleCommandTarget,
-                                                (void **)&poctProxy)))
+                (void **)&poctProxy)))
             {
                 pswProxy->Release();
                 return NULL;
@@ -1312,7 +1310,7 @@ LPITEMIDLIST CHistBand::_GetCurrentSelectPidl(IOleCommandTarget *poctProxy/* = N
     //  Inquire the current select pidl
     if ((SUCCEEDED(poctProxy->Exec(&CGID_Explorer, SBCMDID_GETHISTPIDL,
                                    OLECMDEXECOPT_PROMPTUSER, NULL, &var))) &&
-        (var.vt != VT_EMPTY))
+                                   (var.vt != VT_EMPTY))
     {
         pidlRet = ILClone(VariantToConstIDList(&var));
         VariantClearLazy(&var);

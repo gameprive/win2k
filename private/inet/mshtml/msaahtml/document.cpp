@@ -23,19 +23,19 @@
 #ifdef _MSAA_EVENTS
 
 // event map implementation for EMBED type plugin event handler
-BEGIN_EVENT_HANDLER_MAP(CDocumentAO,ImplIHTMLDocumentEvents,CEvent)
-    ON_DISPID_FIRE_EVENT(DISPID_HTMLDOCUMENTEVENTS_ONREADYSTATECHANGE,EVENT_SYSTEM_ALERT)
-    ON_DISPID_FIRE_EVENT(DISPID_HTMLDOCUMENTEVENTS_ONSELECTSTART,EVENT_OBJECT_SELECTION)
+BEGIN_EVENT_HANDLER_MAP(CDocumentAO, ImplIHTMLDocumentEvents, CEvent)
+    ON_DISPID_FIRE_EVENT(DISPID_HTMLDOCUMENTEVENTS_ONREADYSTATECHANGE, EVENT_SYSTEM_ALERT)
+    ON_DISPID_FIRE_EVENT(DISPID_HTMLDOCUMENTEVENTS_ONSELECTSTART, EVENT_OBJECT_SELECTION)
 END_EVENT_HANDLER_MAP()
 
 // event map implementation for APPLET or OBJECT type plugin event handler
-BEGIN_EVENT_HANDLER_MAP(CDocumentAO,ImplIDispIHTMLBodyElement,CEvent)
-    ON_DISPID_FIRE_EVENT(DISPID_IHTMLBODYELEMENT_ONLOAD,EVENT_OBJECT_STATECHANGE)
-    ON_DISPID_FIRE_EVENT(DISPID_IHTMLBODYELEMENT_ONUNLOAD,EVENT_OBJECT_STATECHANGE)
-    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONFOCUS,EVENT_OBJECT_FOCUS)
-    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONFOCUS,EVENT_OBJECT_STATECHANGE)
-    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONBLUR,EVENT_OBJECT_STATECHANGE)
-    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONRESIZE,EVENT_OBJECT_STATECHANGE)
+BEGIN_EVENT_HANDLER_MAP(CDocumentAO, ImplIDispIHTMLBodyElement, CEvent)
+    ON_DISPID_FIRE_EVENT(DISPID_IHTMLBODYELEMENT_ONLOAD, EVENT_OBJECT_STATECHANGE)
+    ON_DISPID_FIRE_EVENT(DISPID_IHTMLBODYELEMENT_ONUNLOAD, EVENT_OBJECT_STATECHANGE)
+    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONFOCUS, EVENT_OBJECT_FOCUS)
+    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONFOCUS, EVENT_OBJECT_STATECHANGE)
+    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONBLUR, EVENT_OBJECT_STATECHANGE)
+    ON_DISPID_FIRE_EVENT(DISPID_IHTMLCONTROLELEMENT_ONRESIZE, EVENT_OBJECT_STATECHANGE)
 END_EVENT_HANDLER_MAP()
 
 #endif
@@ -70,8 +70,8 @@ END_EVENT_HANDLER_MAP()
 //        None.
 
 
-CDocumentAO::CDocumentAO(CTridentAO * pAOParent,UINT nTOMIndex,UINT nChildID,HWND hWnd)
-: CTridentAO(pAOParent,this,nTOMIndex,nChildID,hWnd)
+CDocumentAO::CDocumentAO(CTridentAO * pAOParent, UINT nTOMIndex, UINT nChildID, HWND hWnd)
+    : CTridentAO(pAOParent, this, nTOMIndex, nChildID, hWnd)
 {
 
     // set the containing AO to point to this class, so
@@ -108,12 +108,12 @@ CDocumentAO::CDocumentAO(CTridentAO * pAOParent,UINT nTOMIndex,UINT nChildID,HWN
     m_bReceivedFocus = FALSE;
 
     // cached interfaces around for lifetime of this obj.
-    m_pIHTMLDocument2        = NULL;
-    m_pDocIHTMLElement        = NULL;
-    m_pIHTMLTextContainer    = NULL;
+    m_pIHTMLDocument2 = NULL;
+    m_pDocIHTMLElement = NULL;
+    m_pIHTMLTextContainer = NULL;
 
 #ifdef _DEBUG
-    lstrcpy(m_szAOMName,_T("DocumentAO"));// set this string for debugging use
+    lstrcpy(m_szAOMName, _T("DocumentAO"));// set this string for debugging use
 #endif
 }
 
@@ -124,38 +124,38 @@ CDocumentAO::~CDocumentAO()
 //        Destructor.
 {
     // release the TOM document IUnknown*
-    if ( m_pTOMObjIUnk )
+    if (m_pTOMObjIUnk)
     {
         m_pTOMObjIUnk->Release();
         m_pTOMObjIUnk = NULL;
     }
 
     // free all cached interfaces
-    if ( m_pSelectionObj )
+    if (m_pSelectionObj)
     {
         m_pSelectionObj->Release();
         m_pSelectionObj = NULL;
     }
 
-    if ( m_pTextRangeTEO )
+    if (m_pTextRangeTEO)
     {
         m_pTextRangeTEO->Release();
         m_pTextRangeTEO = NULL;
     }
 
-    if(m_pIHTMLDocument2)
+    if (m_pIHTMLDocument2)
     {
         m_pIHTMLDocument2->Release();
         m_pIHTMLDocument2 = NULL;
     }
 
-    if(m_pDocIHTMLElement)
+    if (m_pDocIHTMLElement)
     {
         m_pDocIHTMLElement->Release();
         m_pDocIHTMLElement = NULL;
     }
 
-    if(m_pIHTMLTextContainer)
+    if (m_pIHTMLTextContainer)
     {
         m_pIHTMLTextContainer->Release();
         m_pIHTMLTextContainer = NULL;
@@ -181,14 +181,14 @@ CDocumentAO::~CDocumentAO()
 //        HRESULT S_OK | E_FAIL | E_INVALIDARG | E_NOINTERFACE
 
 
-HRESULT CDocumentAO::Init(HWND hWndToProxy, long lSourceIndex,IUnknown *pTOMObjIUnk)
+HRESULT CDocumentAO::Init(HWND hWndToProxy, long lSourceIndex, IUnknown *pTOMObjIUnk)
 {
     HRESULT hr = E_FAIL;
 
-    if(!hWndToProxy)
+    if (!hWndToProxy)
         return(E_INVALIDARG);
 
-    if(!pTOMObjIUnk)
+    if (!pTOMObjIUnk)
         return(E_INVALIDARG);
 
 
@@ -199,7 +199,7 @@ HRESULT CDocumentAO::Init(HWND hWndToProxy, long lSourceIndex,IUnknown *pTOMObjI
 
     m_hWnd = hWndToProxy;
 
-    m_nTOMIndex    = lSourceIndex;
+    m_nTOMIndex = lSourceIndex;
 
 
 
@@ -227,22 +227,17 @@ HRESULT CDocumentAO::Init(HWND hWndToProxy, long lSourceIndex,IUnknown *pTOMObjI
 //        HRESULT S_OK | E_FAIL | E_INVALIDARG | E_NOINTERFACE
 
 
-HRESULT CDocumentAO::Init( IUnknown* pTOMObjIUnk )
+HRESULT CDocumentAO::Init(IUnknown* pTOMObjIUnk)
 {
     HRESULT hr;
 
-
-    if ( !pTOMObjIUnk )
+    if (!pTOMObjIUnk)
         return E_INVALIDARG;
-
-
 
     // QI on passed in pointer for base Trident object
     // interface from which all other interfaces will
     // be QI'd.
-
-
-    if(hr = pTOMObjIUnk->QueryInterface( IID_IHTMLDocument2, (void**) &m_pIHTMLDocument2 ))
+    if (hr = pTOMObjIUnk->QueryInterface(IID_IHTMLDocument2, (void**)&m_pIHTMLDocument2))
         return(hr);
 
 
@@ -253,14 +248,14 @@ HRESULT CDocumentAO::Init( IUnknown* pTOMObjIUnk )
 
     m_pTOMObjIUnk = m_pIHTMLDocument2;
 
-    m_pTOMObjIUnk ->AddRef();
+    m_pTOMObjIUnk->AddRef();
 
 
     // Determine if the TOM document.readyState is set
     // to "complete".  Cache this setting.
 
 
-    if ( hr = getReadyState( m_pIHTMLDocument2, &m_bTOMDocComplete ) )
+    if (hr = getReadyState(m_pIHTMLDocument2, &m_bTOMDocComplete))
         return hr;
 
 
@@ -269,7 +264,7 @@ HRESULT CDocumentAO::Init( IUnknown* pTOMObjIUnk )
     // fully initialize the object.
 
 
-    if(hr = createInterfaceImplementors())
+    if (hr = createInterfaceImplementors())
         return(hr);
 
 
@@ -290,9 +285,9 @@ HRESULT CDocumentAO::Init( IUnknown* pTOMObjIUnk )
     // keep this interface around if it is.
 
 
-    if(hr = m_pDocIHTMLElement->QueryInterface(IID_IHTMLTextContainer,(void **)&m_pIHTMLTextContainer))
+    if (hr = m_pDocIHTMLElement->QueryInterface(IID_IHTMLTextContainer, (void **)&m_pIHTMLTextContainer))
     {
-        if(hr != E_NOINTERFACE)
+        if (hr != E_NOINTERFACE)
             return(hr);
         else
             hr = S_OK;
@@ -320,7 +315,7 @@ HRESULT CDocumentAO::Init( IUnknown* pTOMObjIUnk )
     //    the output window.)
 
 
-    assert( hr == S_OK );
+    assert(hr == S_OK);
 
 #ifdef _DEBUG
 
@@ -330,8 +325,8 @@ HRESULT CDocumentAO::Init( IUnknown* pTOMObjIUnk )
     //    window.
 
 
-    if ( hr != S_OK )
-        OutputDebugString( "Event handler initialization in CDocumentAO::Init() failed.\n" );
+    if (hr != S_OK)
+        OutputDebugString("Event handler initialization in CDocumentAO::Init() failed.\n");
 
 #endif    // _DEBUG
 
@@ -356,33 +351,33 @@ HRESULT CDocumentAO::Init( IUnknown* pTOMObjIUnk )
 
 
 
-void CDocumentAO::ReleaseTridentInterfaces ()
+void CDocumentAO::ReleaseTridentInterfaces()
 {
-    if ( m_pSelectionObj )
+    if (m_pSelectionObj)
     {
         m_pSelectionObj->Release();
         m_pSelectionObj = NULL;
     }
 
-    if ( m_pTextRangeTEO )
+    if (m_pTextRangeTEO)
     {
         m_pTextRangeTEO->Release();
         m_pTextRangeTEO = NULL;
     }
 
-    if ( m_pIHTMLDocument2 )
+    if (m_pIHTMLDocument2)
     {
         m_pIHTMLDocument2->Release();
         m_pIHTMLDocument2 = NULL;
     }
 
-    if ( m_pDocIHTMLElement )
+    if (m_pDocIHTMLElement)
     {
         m_pDocIHTMLElement->Release();
         m_pDocIHTMLElement = NULL;
     }
 
-    if ( m_pIHTMLTextContainer )
+    if (m_pIHTMLTextContainer)
     {
         m_pIHTMLTextContainer->Release();
         m_pIHTMLTextContainer = NULL;
@@ -415,7 +410,7 @@ void CDocumentAO::ReleaseTridentInterfaces ()
 
 STDMETHODIMP CDocumentAO::QueryInterface(REFIID riid, void** ppv)
 {
-    if ( !ppv )
+    if (!ppv)
         return E_NOINTERFACE;
 
 
@@ -435,7 +430,7 @@ STDMETHODIMP CDocumentAO::QueryInterface(REFIID riid, void** ppv)
         // event interface for TOM document object
 
 
-        ASSIGN_TO_EVENT_HANDLER(ImplIHTMLDocumentEvents,ppv,HTMLDocumentEvents)
+        ASSIGN_TO_EVENT_HANDLER(ImplIHTMLDocumentEvents, ppv, HTMLDocumentEvents)
 
     }
     else if (riid == DIID_DispIHTMLBodyElement)
@@ -444,7 +439,7 @@ STDMETHODIMP CDocumentAO::QueryInterface(REFIID riid, void** ppv)
         // event interface for document BODY element object
 
 
-        ASSIGN_TO_EVENT_HANDLER(ImplIDispIHTMLBodyElement,ppv,DispIHTMLBodyElement)
+        ASSIGN_TO_EVENT_HANDLER(ImplIDispIHTMLBodyElement, ppv, DispIHTMLBodyElement)
     }
 
 #endif
@@ -456,14 +451,14 @@ STDMETHODIMP CDocumentAO::QueryInterface(REFIID riid, void** ppv)
         // checking.
 
 
-        return CTridentAO::QueryInterface( riid, ppv );
+        return CTridentAO::QueryInterface(riid, ppv);
     }
 
 
     // *ppv should be set.
 
 
-    if ( !*ppv )
+    if (!*ppv)
         return E_NOINTERFACE;
 
 
@@ -494,27 +489,27 @@ STDMETHODIMP CDocumentAO::QueryInterface(REFIID riid, void** ppv)
 //        HRESULT        S_OK | E_FAIL | E_NOINTERFACE
 
 
-HRESULT    CDocumentAO::GetAccName(long lChild, BSTR* pbstrName )
+HRESULT    CDocumentAO::GetAccName(long lChild, BSTR* pbstrName)
 {
     HRESULT    hr = S_OK;
 
 
-    assert( pbstrName );
+    assert(pbstrName);
 
 
-    if ( m_bstrName )
+    if (m_bstrName)
     {
-        *pbstrName = SysAllocString( m_bstrName );
+        *pbstrName = SysAllocString(m_bstrName);
     }
     else
     {
-        if ( m_pIHTMLDocument2 )
+        if (m_pIHTMLDocument2)
         {
-            HRESULT hr = m_pIHTMLDocument2->get_title( pbstrName );
+            HRESULT hr = m_pIHTMLDocument2->get_title(pbstrName);
 
-            if ( hr == S_OK && *pbstrName )
+            if (hr == S_OK && *pbstrName)
             {
-                m_bstrName = SysAllocString( *pbstrName );
+                m_bstrName = SysAllocString(*pbstrName);
             }
             else
                 hr = DISP_E_MEMBERNOTFOUND;
@@ -554,7 +549,7 @@ HRESULT    CDocumentAO::GetAccName(long lChild, BSTR* pbstrName )
 //        HRESULT        S_OK | E_FAIL | E_INVALIDARG | E_NOINTERFACE
 
 
-HRESULT    CDocumentAO::AccLocation(long* pxLeft,long* pyTop,long* pcxWidth,long* pcyHeight,long lChild)
+HRESULT    CDocumentAO::AccLocation(long* pxLeft, long* pyTop, long* pcxWidth, long* pcyHeight, long lChild)
 {
     HRESULT        hr;
     POINT        pt;
@@ -562,20 +557,20 @@ HRESULT    CDocumentAO::AccLocation(long* pxLeft,long* pyTop,long* pcxWidth,long
     long        lHeight = 0;
 
 
-    assert( pxLeft );
-    assert( pyTop );
-    assert( pcxWidth );
-    assert( pcyHeight );
+    assert(pxLeft);
+    assert(pyTop);
+    assert(pcxWidth);
+    assert(pcyHeight);
 
 
 
     // Initialize the out parameters.
 
 
-    *pxLeft        = 0;
-    *pyTop        = 0;
-    *pcxWidth    = 0;
-    *pcyHeight    = 0;
+    *pxLeft = 0;
+    *pyTop = 0;
+    *pcxWidth = 0;
+    *pcyHeight = 0;
 
 
 
@@ -590,29 +585,29 @@ HRESULT    CDocumentAO::AccLocation(long* pxLeft,long* pyTop,long* pcxWidth,long
     // Get the body object and its coordinate offsets:
 
 
-    if ( !m_pDocIHTMLElement )
+    if (!m_pDocIHTMLElement)
         hr = E_NOINTERFACE;
     else
     {
-        hr = m_pDocIHTMLElement->get_offsetWidth( &lWidth );
+        hr = m_pDocIHTMLElement->get_offsetWidth(&lWidth);
 
-        if ( hr == S_OK )
+        if (hr == S_OK)
         {
-            hr = m_pDocIHTMLElement->get_offsetHeight( &lHeight );
+            hr = m_pDocIHTMLElement->get_offsetHeight(&lHeight);
 
-            if ( hr == S_OK )
+            if (hr == S_OK)
             {
-                assert( lWidth > 0 );
-                assert( lHeight > 0 );
+                assert(lWidth > 0);
+                assert(lHeight > 0);
 
-                if ( lWidth <= 0 || lHeight <= 0 )
+                if (lWidth <= 0 || lHeight <= 0)
                     hr = E_FAIL;
             }
         }
     }
 
 
-    if ( hr == S_OK )
+    if (hr == S_OK)
     {
 
         // The origin coords need to be translated to
@@ -620,13 +615,13 @@ HRESULT    CDocumentAO::AccLocation(long* pxLeft,long* pyTop,long* pcxWidth,long
         // Translate the top and left coords only.
 
 
-        if ( m_hWnd )
-            ::ClientToScreen( m_hWnd, &pt );
+        if (m_hWnd)
+            ::ClientToScreen(m_hWnd, &pt);
 
-        *pxLeft        = pt.x;
-        *pyTop        = pt.y;
-        *pcxWidth    = lWidth;
-        *pcyHeight    = lHeight;
+        *pxLeft = pt.x;
+        *pyTop = pt.y;
+        *pcxWidth = lWidth;
+        *pcyHeight = lHeight;
     }
 
 
@@ -665,7 +660,7 @@ HRESULT    CDocumentAO::AccSelect(long flagsSel, long lChild)
     HRESULT    hr;
 
 
-    if ( flagsSel != SELFLAG_TAKEFOCUS )
+    if (flagsSel != SELFLAG_TAKEFOCUS)
         return E_INVALIDARG;
 
 
@@ -676,19 +671,19 @@ HRESULT    CDocumentAO::AccSelect(long flagsSel, long lChild)
 
     assert(m_pIHTMLDocument2);
 
-    if(!m_pIHTMLDocument2)
+    if (!m_pIHTMLDocument2)
         return(E_NOINTERFACE);
 
-    hr = m_pIHTMLDocument2->get_selection( &pIHTMLSelectionObject );
+    hr = m_pIHTMLDocument2->get_selection(&pIHTMLSelectionObject);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
-    if ( !pIHTMLSelectionObject )
+    if (!pIHTMLSelectionObject)
         return E_NOINTERFACE;
 
     hr = pIHTMLSelectionObject->empty();
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
@@ -696,7 +691,7 @@ HRESULT    CDocumentAO::AccSelect(long flagsSel, long lChild)
     // Set the focus to the document
 
 
-    return Focus( m_pIHTMLDocument2 );
+    return Focus(m_pIHTMLDocument2);
 }
 
 
@@ -722,7 +717,7 @@ HRESULT    CDocumentAO::GetAccState(long lChild, long *plState)
     HRESULT    hr = S_OK;
 
 
-    assert( plState );
+    assert(plState);
 
 
 
@@ -738,10 +733,10 @@ HRESULT    CDocumentAO::GetAccState(long lChild, long *plState)
 
     assert(m_pIHTMLDocument2);
 
-    if ( !m_pIHTMLDocument2 )
+    if (!m_pIHTMLDocument2)
         return E_NOINTERFACE;
 
-    if ( m_bTOMDocComplete )
+    if (m_bTOMDocComplete)
     {
         *plState = STATE_SYSTEM_READONLY;
     }
@@ -758,26 +753,26 @@ HRESULT    CDocumentAO::GetAccState(long lChild, long *plState)
 
     UINT nTOMIndex = 0;
 
-    hr = GetFocusedItem( &nTOMIndex );
+    hr = GetFocusedItem(&nTOMIndex);
 
-    if ( hr == S_OK && nTOMIndex > 0 )
+    if (hr == S_OK && nTOMIndex > 0)
     {
         *plState |= STATE_SYSTEM_FOCUSABLE;
 
 
-        if ( m_pDocIHTMLElement )
+        if (m_pDocIHTMLElement)
         {
             long lIndex = 0;
 
-            hr = m_pDocIHTMLElement->get_sourceIndex( &lIndex );
+            hr = m_pDocIHTMLElement->get_sourceIndex(&lIndex);
 
-            if ( (hr == S_OK) && (nTOMIndex == lIndex) )
+            if ((hr == S_OK) && (nTOMIndex == lIndex))
                 *plState |= STATE_SYSTEM_FOCUSED;
-            else if ( hr != S_OK )
+            else if (hr != S_OK)
                 *plState = STATE_SYSTEM_UNAVAILABLE;
         }
     }
-    else if ( hr == S_FALSE )
+    else if (hr == S_FALSE)
         hr = S_OK;
 
 
@@ -811,7 +806,7 @@ HRESULT    CDocumentAO::GetAccState(long lChild, long *plState)
 
 
 
-HRESULT CDocumentAO::GetAccSelection( IUnknown** ppIUnknown )
+HRESULT CDocumentAO::GetAccSelection(IUnknown** ppIUnknown)
 {
     HRESULT hr = E_FAIL;
     BOOL    bHasSelection = FALSE;
@@ -828,7 +823,7 @@ HRESULT CDocumentAO::GetAccSelection( IUnknown** ppIUnknown )
     //    selected objects.
 
 
-    if ( hr = ensureResolvedTree() )
+    if (hr = ensureResolvedTree())
         return hr;
 
 
@@ -837,17 +832,17 @@ HRESULT CDocumentAO::GetAccSelection( IUnknown** ppIUnknown )
     //    If it is, it won't support selection.
 
 
-    if(!m_pDocIHTMLElement)
+    if (!m_pDocIHTMLElement)
         return(E_NOINTERFACE);
 
-    CComQIPtr<IHTMLBodyElement,&IID_IHTMLBodyElement> pIHTMLBodyElement(m_pDocIHTMLElement);
+    CComQIPtr<IHTMLBodyElement, &IID_IHTMLBodyElement> pIHTMLBodyElement(m_pDocIHTMLElement);
 
 
     //    If there is no body element, that means that
     //    the body is actually a FRAMESET.
 
 
-    if ( !pIHTMLBodyElement )
+    if (!pIHTMLBodyElement)
         return DISP_E_MEMBERNOTFOUND;
 
 
@@ -857,12 +852,12 @@ HRESULT CDocumentAO::GetAccSelection( IUnknown** ppIUnknown )
     //    CDocumentAO's children will be selected.
 
 
-    hr = IsTOMSelectionNonEmpty( &bHasSelection );
+    hr = IsTOMSelectionNonEmpty(&bHasSelection);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
-    if ( !bHasSelection )
+    if (!bHasSelection)
         return S_FALSE;
 
 
@@ -871,7 +866,7 @@ HRESULT CDocumentAO::GetAccSelection( IUnknown** ppIUnknown )
     //    Does this CDocumentAO have any children?
 
 
-    if ( !m_AEList.size() )
+    if (!m_AEList.size())
     {
 
         //    The CDocumentAO has no children (!?!) so it
@@ -887,7 +882,7 @@ HRESULT CDocumentAO::GetAccSelection( IUnknown** ppIUnknown )
         //    of them are selected.
 
 
-        hr = getSelectedChildren( ppIUnknown );
+        hr = getSelectedChildren(ppIUnknown);
     }
 
     return hr;
@@ -914,7 +909,7 @@ HRESULT CDocumentAO::GetAccSelection( IUnknown** ppIUnknown )
 
 HRESULT    CDocumentAO::GetAccValue(long lChild, BSTR * pbstrValue)
 {
-    return( GetURL( pbstrValue ) );
+    return(GetURL(pbstrValue));
 }
 
 
@@ -946,13 +941,13 @@ HRESULT    CDocumentAO::GetAccValue(long lChild, BSTR * pbstrValue)
 
 
 
-HRESULT    CDocumentAO::IsTEOSelected( IHTMLElement* pIHTMLElement, BOOL* pbIsSelected )
+HRESULT    CDocumentAO::IsTEOSelected(IHTMLElement* pIHTMLElement, BOOL* pbIsSelected)
 {
     HRESULT    hr = S_OK;
 
 
-    assert( pIHTMLElement );
-    assert( pbIsSelected );
+    assert(pIHTMLElement);
+    assert(pbIsSelected);
 
 
 
@@ -961,31 +956,31 @@ HRESULT    CDocumentAO::IsTEOSelected( IHTMLElement* pIHTMLElement, BOOL* pbIsSe
     //    used to get the text range of the TEO.
 
 
-    if ( !m_pTextRangeTEO )
+    if (!m_pTextRangeTEO)
     {
         assert(m_pDocIHTMLElement);
 
-        if(!m_pDocIHTMLElement)
+        if (!m_pDocIHTMLElement)
             return(E_NOINTERFACE);
 
 
         //    Get the IHTMLBodyElement* of the BODY
 
 
-        CComQIPtr<IHTMLBodyElement,&IID_IHTMLBodyElement> pBodyElem( m_pDocIHTMLElement );
+        CComQIPtr<IHTMLBodyElement, &IID_IHTMLBodyElement> pBodyElem(m_pDocIHTMLElement);
 
 
-        if ( !pBodyElem )
+        if (!pBodyElem)
             return E_NOINTERFACE;
 
 
         //    Create a text range off the BODY
 
 
-        hr = pBodyElem->createTextRange( &m_pTextRangeTEO );
-        if ( hr != S_OK )
+        hr = pBodyElem->createTextRange(&m_pTextRangeTEO);
+        if (hr != S_OK)
             return hr;
-        if ( !m_pTextRangeTEO )
+        if (!m_pTextRangeTEO)
             return E_NOINTERFACE;
     }
 
@@ -994,8 +989,8 @@ HRESULT    CDocumentAO::IsTEOSelected( IHTMLElement* pIHTMLElement, BOOL* pbIsSe
     //    the text & HTML of the TEO.
 
 
-    hr = m_pTextRangeTEO->moveToElementText( pIHTMLElement );
-    if ( hr != S_OK )
+    hr = m_pTextRangeTEO->moveToElementText(pIHTMLElement);
+    if (hr != S_OK)
         return hr;
 
 
@@ -1003,7 +998,7 @@ HRESULT    CDocumentAO::IsTEOSelected( IHTMLElement* pIHTMLElement, BOOL* pbIsSe
     //    sister method IsTextRangeSelected()
 
 
-    return IsTextRangeSelected( m_pTextRangeTEO, pbIsSelected );
+    return IsTextRangeSelected(m_pTextRangeTEO, pbIsSelected);
 }
 
 
@@ -1036,14 +1031,14 @@ HRESULT    CDocumentAO::IsTEOSelected( IHTMLElement* pIHTMLElement, BOOL* pbIsSe
 
 
 
-HRESULT    CDocumentAO::IsTextRangeSelected( IHTMLTxtRange* pIHTMLTxtRange, BOOL* pbIsSelected )
+HRESULT    CDocumentAO::IsTextRangeSelected(IHTMLTxtRange* pIHTMLTxtRange, BOOL* pbIsSelected)
 {
     HRESULT    hr = S_OK;
     BSTR    bstrHow;
 
 
-    assert( pIHTMLTxtRange );
-    assert( pbIsSelected );
+    assert(pIHTMLTxtRange);
+    assert(pbIsSelected);
 
 
     *pbIsSelected = FALSE;
@@ -1055,9 +1050,9 @@ HRESULT    CDocumentAO::IsTextRangeSelected( IHTMLTxtRange* pIHTMLTxtRange, BOOL
     //    selected.
 
 
-    hr = IsTOMSelectionNonEmpty( pbIsSelected );
+    hr = IsTOMSelectionNonEmpty(pbIsSelected);
 
-    if ( hr != S_OK || !*pbIsSelected )
+    if (hr != S_OK || !*pbIsSelected)
         return hr;
 
 
@@ -1067,9 +1062,9 @@ HRESULT    CDocumentAO::IsTextRangeSelected( IHTMLTxtRange* pIHTMLTxtRange, BOOL
 
     CComPtr<IHTMLTxtRange> pIHTMLTxtRangeSel;
 
-    hr = getSelectionTextRange( &pIHTMLTxtRangeSel );
+    hr = getSelectionTextRange(&pIHTMLTxtRangeSel);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
@@ -1087,15 +1082,15 @@ HRESULT    CDocumentAO::IsTextRangeSelected( IHTMLTxtRange* pIHTMLTxtRange, BOOL
 
     // TODO: make this strings global to alloc once
 
-    bstrHow = SysAllocString( L"STARTTOEND" );
+    bstrHow = SysAllocString(L"STARTTOEND");
 
-    hr = pIHTMLTxtRange->compareEndPoints( bstrHow, pIHTMLTxtRangeSel, &lCompare );
+    hr = pIHTMLTxtRange->compareEndPoints(bstrHow, pIHTMLTxtRangeSel, &lCompare);
 
-    SysFreeString( bstrHow );
+    SysFreeString(bstrHow);
 
-    if ( hr != S_OK )
-        return( hr );
-    else if ( lCompare != -1 )
+    if (hr != S_OK)
+        return(hr);
+    else if (lCompare != -1)
     {
         *pbIsSelected = FALSE;
         return hr;
@@ -1103,14 +1098,14 @@ HRESULT    CDocumentAO::IsTextRangeSelected( IHTMLTxtRange* pIHTMLTxtRange, BOOL
 
     // TODO: make this string global to alloc once
 
-    bstrHow = SysAllocString( L"ENDTOSTART" );
+    bstrHow = SysAllocString(L"ENDTOSTART");
 
-    hr = pIHTMLTxtRange->compareEndPoints( bstrHow, pIHTMLTxtRangeSel, &lCompare );
+    hr = pIHTMLTxtRange->compareEndPoints(bstrHow, pIHTMLTxtRangeSel, &lCompare);
 
-    SysFreeString( bstrHow );
+    SysFreeString(bstrHow);
 
-    if ( hr != S_OK )
-        return( hr );
+    if (hr != S_OK)
+        return(hr);
 
     *pbIsSelected = (lCompare == 1);
 
@@ -1142,12 +1137,12 @@ HRESULT    CDocumentAO::IsTextRangeSelected( IHTMLTxtRange* pIHTMLTxtRange, BOOL
 
 
 
-HRESULT    CDocumentAO::IsTOMSelectionNonEmpty( BOOL* pbHasSelection )
+HRESULT    CDocumentAO::IsTOMSelectionNonEmpty(BOOL* pbHasSelection)
 {
     HRESULT    hr = S_OK;
 
 
-    assert( pbHasSelection );
+    assert(pbHasSelection);
 
 
     *pbHasSelection = FALSE;
@@ -1159,7 +1154,7 @@ HRESULT    CDocumentAO::IsTOMSelectionNonEmpty( BOOL* pbHasSelection )
 
     hr = getIHTMLSelectionObject();
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
@@ -1170,31 +1165,31 @@ HRESULT    CDocumentAO::IsTOMSelectionNonEmpty( BOOL* pbHasSelection )
 
     long    lSelectType = 0;
 
-    hr = callInvokeForLong( (IDispatch*)m_pSelectionObj,
-                            DISPID_IHTMLSELECTIONOBJECT_TYPE,
-                            &lSelectType );
+    hr = callInvokeForLong((IDispatch*)m_pSelectionObj,
+                           DISPID_IHTMLSELECTIONOBJECT_TYPE,
+                           &lSelectType);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
     {
         lSelectType = 0;
 
         BSTR    bstrType;
 
-        hr = m_pSelectionObj->get_type( &bstrType );
+        hr = m_pSelectionObj->get_type(&bstrType);
 
-        if ( hr == S_OK )
+        if (hr == S_OK)
         {
-            if ( bstrType )
+            if (bstrType)
             {
-                if ( _wcsicmp(bstrType, L"none") )
+                if (_wcsicmp(bstrType, L"none"))
                     lSelectType = 1;
 
-                SysFreeString( bstrType );
+                SysFreeString(bstrType);
             }
         }
     }
 
-    if ( hr == S_OK && lSelectType )
+    if (hr == S_OK && lSelectType)
     {
         *pbHasSelection = TRUE;
     }
@@ -1222,14 +1217,14 @@ HRESULT    CDocumentAO::IsTOMSelectionNonEmpty( BOOL* pbHasSelection )
 
 
 
-HRESULT    CDocumentAO::Focus( void )
+HRESULT    CDocumentAO::Focus(void)
 {
     assert(m_pIHTMLDocument2);
 
-    if(!m_pIHTMLDocument2)
+    if (!m_pIHTMLDocument2)
         return(E_NOINTERFACE);
 
-    return Focus( m_pIHTMLDocument2 );
+    return Focus(m_pIHTMLDocument2);
 }
 
 
@@ -1250,12 +1245,12 @@ HRESULT    CDocumentAO::Focus( void )
 
 
 
-HRESULT    CDocumentAO::Focus( IHTMLDocument2* pIHTMLDocument2 )
+HRESULT    CDocumentAO::Focus(IHTMLDocument2* pIHTMLDocument2)
 {
     HRESULT    hr;
 
 
-    assert( pIHTMLDocument2 );
+    assert(pIHTMLDocument2);
 
 
 
@@ -1264,16 +1259,16 @@ HRESULT    CDocumentAO::Focus( IHTMLDocument2* pIHTMLDocument2 )
 
     CComPtr<IHTMLWindow2> pIHTMLWindow2;
 
-    hr = pIHTMLDocument2->get_parentWindow( &pIHTMLWindow2 );
+    hr = pIHTMLDocument2->get_parentWindow(&pIHTMLWindow2);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
-    if ( !pIHTMLWindow2 )
+    if (!pIHTMLWindow2)
         return E_NOINTERFACE;
 
     hr = pIHTMLWindow2->focus();
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
@@ -1283,12 +1278,12 @@ HRESULT    CDocumentAO::Focus( IHTMLDocument2* pIHTMLDocument2 )
 
     assert(m_pDocIHTMLElement);
 
-    if(!m_pDocIHTMLElement)
+    if (!m_pDocIHTMLElement)
         return E_NOINTERFACE;
 
-    CComQIPtr<IHTMLControlElement,&IID_IHTMLControlElement> pIHTMLControlElementBody(m_pDocIHTMLElement);
+    CComQIPtr<IHTMLControlElement, &IID_IHTMLControlElement> pIHTMLControlElementBody(m_pDocIHTMLElement);
 
-    if ( !pIHTMLControlElementBody )
+    if (!pIHTMLControlElementBody)
         return E_NOINTERFACE;
 
     hr = pIHTMLControlElementBody->focus();
@@ -1325,7 +1320,7 @@ HRESULT CDocumentAO::GetFocusedItem(UINT *pnTOMIndex)
     BOOL        bParentWindowHasFocus;
 
 
-    assert( pnTOMIndex );
+    assert(pnTOMIndex);
 
 
 
@@ -1333,19 +1328,19 @@ HRESULT CDocumentAO::GetFocusedItem(UINT *pnTOMIndex)
     // document's parent is currently focused.
 
 
-    hr = ((CWindowAO *)m_pParent)->IsFocused( &bBrowserWindowHasFocus, &bParentWindowHasFocus );
+    hr = ((CWindowAO *)m_pParent)->IsFocused(&bBrowserWindowHasFocus, &bParentWindowHasFocus);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
-    if ( !bBrowserWindowHasFocus )
+    if (!bBrowserWindowHasFocus)
         return S_FALSE;
     else
     {
         *pnTOMIndex = ALL_OBJECTS_FOCUSABLE;
 
-        if ( !bParentWindowHasFocus )
+        if (!bParentWindowHasFocus)
             return hr;
     }
 
@@ -1373,9 +1368,9 @@ HRESULT CDocumentAO::GetFocusedItem(UINT *pnTOMIndex)
 
         TCHAR  szBuf[80];
 
-        wsprintf( szBuf, _T("CDocumentAO::GetFocusedItem(), ObjID = %ld\n"), m_lFocusedTOMObj );
+        wsprintf(szBuf, _T("CDocumentAO::GetFocusedItem(), ObjID = %ld\n"), m_lFocusedTOMObj);
 
-        OutputDebugString ( szBuf );
+        OutputDebugString(szBuf);
 
 #endif
 
@@ -1383,7 +1378,7 @@ HRESULT CDocumentAO::GetFocusedItem(UINT *pnTOMIndex)
         // Return the ID of the focused object
 
 
-        if ( m_lFocusedTOMObj != NO_TRIDENT_FOCUSED )
+        if (m_lFocusedTOMObj != NO_TRIDENT_FOCUSED)
             *pnTOMIndex = m_lFocusedTOMObj;
 
 
@@ -1398,7 +1393,7 @@ HRESULT CDocumentAO::GetFocusedItem(UINT *pnTOMIndex)
 
         assert(m_pIHTMLDocument2);
 
-        if ( !m_pIHTMLDocument2 )
+        if (!m_pIHTMLDocument2)
             return E_NOINTERFACE;
 
 
@@ -1408,11 +1403,11 @@ HRESULT CDocumentAO::GetFocusedItem(UINT *pnTOMIndex)
 
         UINT    nTmpIdx = 0;
 
-        hr = GetActiveElementIndex( &nTmpIdx );
+        hr = GetActiveElementIndex(&nTmpIdx);
 
-        if ( hr == S_OK )
+        if (hr == S_OK)
             *pnTOMIndex = nTmpIdx;
-        else if ( hr == S_FALSE )
+        else if (hr == S_FALSE)
             hr = S_OK;
 
         return hr;
@@ -1443,18 +1438,18 @@ HRESULT CDocumentAO::GetActiveElementIndex(UINT * pnTOMIndex)
     CComPtr<IHTMLElement> pIHTMLElement;
 
 
-    assert( pnTOMIndex );
+    assert(pnTOMIndex);
 
 
-    assert( m_pIHTMLDocument2 );
+    assert(m_pIHTMLDocument2);
 
-    if ( !m_pIHTMLDocument2 )
+    if (!m_pIHTMLDocument2)
         return E_FAIL;
 
 
-    hr = m_pIHTMLDocument2->get_activeElement( &pIHTMLElement );
+    hr = m_pIHTMLDocument2->get_activeElement(&pIHTMLElement);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
@@ -1477,36 +1472,36 @@ HRESULT CDocumentAO::GetActiveElementIndex(UINT * pnTOMIndex)
     //  Otherwise, return no element focused (S_FALSE).
 
 
-    CComQIPtr<IHTMLBodyElement,&IID_IHTMLBodyElement> pIHTMLBodyElement( pIHTMLElement );
+    CComQIPtr<IHTMLBodyElement, &IID_IHTMLBodyElement> pIHTMLBodyElement(pIHTMLElement);
 
-    CComQIPtr<IHTMLTableCell,&IID_IHTMLTableCell> pIHTMLTableCell( pIHTMLElement );
+    CComQIPtr<IHTMLTableCell, &IID_IHTMLTableCell> pIHTMLTableCell(pIHTMLElement);
 
-    if ( pIHTMLBodyElement || pIHTMLTableCell || !pIHTMLElement )
+    if (pIHTMLBodyElement || pIHTMLTableCell || !pIHTMLElement)
     {
         CComPtr<IHTMLElement> pElemSelParent;
 
-        hr = getIHTMLElementParentOfCurrentSelection( &pElemSelParent );
+        hr = getIHTMLElementParentOfCurrentSelection(&pElemSelParent);
 
-        if ( !SUCCEEDED( hr ) )
+        if (!SUCCEEDED(hr))
             return hr;
 
 
-        CComQIPtr<IHTMLAnchorElement,&IID_IHTMLAnchorElement> pIHTMLAnchorElement( pElemSelParent );
+        CComQIPtr<IHTMLAnchorElement, &IID_IHTMLAnchorElement> pIHTMLAnchorElement(pElemSelParent);
 
-        if ( pIHTMLAnchorElement )
+        if (pIHTMLAnchorElement)
         {
-            hr = pElemSelParent->get_sourceIndex( (long *)pnTOMIndex );
+            hr = pElemSelParent->get_sourceIndex((long *)pnTOMIndex);
         }
-        else if ( pIHTMLBodyElement )
+        else if (pIHTMLBodyElement)
         {
-            hr = pIHTMLElement->get_sourceIndex( (long *)pnTOMIndex );
+            hr = pIHTMLElement->get_sourceIndex((long *)pnTOMIndex);
         }
         else
             hr = S_FALSE;
     }
     else
     {
-        hr = pIHTMLElement->get_sourceIndex( (long *)pnTOMIndex );
+        hr = pIHTMLElement->get_sourceIndex((long *)pnTOMIndex);
     }
 
 
@@ -1532,17 +1527,17 @@ HRESULT CDocumentAO::GetActiveElementIndex(UINT * pnTOMIndex)
 //        S_OK  | E_FAIL | E_NOINTERFACE
 
 
-HRESULT CDocumentAO::GetScrollOffset( POINT* pPtScrollOffset )
+HRESULT CDocumentAO::GetScrollOffset(POINT* pPtScrollOffset)
 {
     HRESULT hr;
-    long xLeft    = 0;
-    long yTop    = 0;
+    long xLeft = 0;
+    long yTop = 0;
 
 
     // point must be valid
 
 
-    assert( pPtScrollOffset );
+    assert(pPtScrollOffset);
 
 
     // initialize point.
@@ -1558,7 +1553,7 @@ HRESULT CDocumentAO::GetScrollOffset( POINT* pPtScrollOffset )
     // return code.
 
 
-    if(!(m_pIHTMLTextContainer))
+    if (!(m_pIHTMLTextContainer))
     {
         pPtScrollOffset->x = 0;
         pPtScrollOffset->y = 0;
@@ -1568,12 +1563,12 @@ HRESULT CDocumentAO::GetScrollOffset( POINT* pPtScrollOffset )
 
     hr = m_pIHTMLTextContainer->get_scrollLeft(&xLeft);
 
-    if(hr != S_OK)
+    if (hr != S_OK)
         return(hr);
 
     hr = m_pIHTMLTextContainer->get_scrollTop(&yTop);
 
-    if(hr != S_OK)
+    if (hr != S_OK)
         return(hr);
 
     pPtScrollOffset->x = xLeft;
@@ -1605,7 +1600,7 @@ HRESULT CDocumentAO::GetScrollOffset( POINT* pPtScrollOffset )
 void CDocumentAO::NotifySoundElementExist(void)
 {
 #ifdef _MSAA_EVENTS
-    FIRE_EVENT(ImplIHTMLDocumentEvents,EVENT_SYSTEM_SOUND)
+    FIRE_EVENT(ImplIHTMLDocumentEvents, EVENT_SYSTEM_SOUND)
 #endif
 }
 
@@ -1632,7 +1627,7 @@ void CDocumentAO::NotifySoundElementExist(void)
 
 
 
-HRESULT CDocumentAO::ElementFromPoint(POINT *pPtHitTest,IHTMLElement **ppIHTMLElement)
+HRESULT CDocumentAO::ElementFromPoint(POINT *pPtHitTest, IHTMLElement **ppIHTMLElement)
 {
     HRESULT hr;
 
@@ -1641,14 +1636,14 @@ HRESULT CDocumentAO::ElementFromPoint(POINT *pPtHitTest,IHTMLElement **ppIHTMLEl
 
     assert(m_pIHTMLDocument2);
 
-    if(!m_pIHTMLDocument2)
+    if (!m_pIHTMLDocument2)
         return(E_NOINTERFACE);
 
 
     // get the element under the point.
 
 
-    if(hr = m_pIHTMLDocument2->elementFromPoint(pPtHitTest->x,pPtHitTest->y,ppIHTMLElement) )
+    if (hr = m_pIHTMLDocument2->elementFromPoint(pPtHitTest->x, pPtHitTest->y, ppIHTMLElement))
     {
         return(hr);
     }
@@ -1702,12 +1697,12 @@ HRESULT CDocumentAO::GetAOMMgr(CAOMMgr ** ppAOMMgr)
 HRESULT CDocumentAO::GetURL(BSTR * pbstrURL)
 {
 
-    if(!pbstrURL)
+    if (!pbstrURL)
         return(E_INVALIDARG);
 
     assert(m_pIHTMLDocument2);
 
-    if(!m_pIHTMLDocument2)
+    if (!m_pIHTMLDocument2)
         return(E_NOINTERFACE);
 
     return(m_pIHTMLDocument2->get_URL(pbstrURL));
@@ -1736,22 +1731,22 @@ HRESULT CDocumentAO::GetURL(BSTR * pbstrURL)
 //  S_OK | E_NOINTERFACE | other std COM error.
 
 
-HRESULT CDocumentAO::getIHTMLSelectionObject( void )
+HRESULT CDocumentAO::getIHTMLSelectionObject(void)
 {
     HRESULT hr = S_OK;
 
-    if ( !m_pSelectionObj )
+    if (!m_pSelectionObj)
     {
-        assert( m_pIHTMLDocument2 );
+        assert(m_pIHTMLDocument2);
 
-        if ( !m_pIHTMLDocument2 )
+        if (!m_pIHTMLDocument2)
             return E_NOINTERFACE;
 
-        hr = m_pIHTMLDocument2->get_selection( &m_pSelectionObj );
+        hr = m_pIHTMLDocument2->get_selection(&m_pSelectionObj);
 
-        if ( hr != S_OK )
+        if (hr != S_OK)
             return hr;
-        if ( !m_pSelectionObj )
+        if (!m_pSelectionObj)
             return E_NOINTERFACE;
     }
 
@@ -1778,33 +1773,33 @@ HRESULT CDocumentAO::getIHTMLSelectionObject( void )
 //  S_OK | E_NOINTERFACE | other std COM error.
 
 
-HRESULT CDocumentAO::getSelectionTextRange( /* out */ IHTMLTxtRange** ppIHTMLTxtRangeSel )
+HRESULT CDocumentAO::getSelectionTextRange( /* out */ IHTMLTxtRange** ppIHTMLTxtRangeSel)
 {
     HRESULT hr;
 
 
-    assert( ppIHTMLTxtRangeSel );
-    assert( *ppIHTMLTxtRangeSel == NULL );
+    assert(ppIHTMLTxtRangeSel);
+    assert(*ppIHTMLTxtRangeSel == NULL);
 
 
     hr = getIHTMLSelectionObject();
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
     CComPtr<IDispatch> pDispSelRange;
 
-    hr = m_pSelectionObj->createRange( &pDispSelRange );
+    hr = m_pSelectionObj->createRange(&pDispSelRange);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
-    if ( !pDispSelRange )
+    if (!pDispSelRange)
         return E_NOINTERFACE;
 
 
-    return pDispSelRange->QueryInterface( IID_IHTMLTxtRange, (void**) ppIHTMLTxtRangeSel );
+    return pDispSelRange->QueryInterface(IID_IHTMLTxtRange, (void**)ppIHTMLTxtRangeSel);
 }
 
 
@@ -1823,28 +1818,28 @@ HRESULT CDocumentAO::getSelectionTextRange( /* out */ IHTMLTxtRange** ppIHTMLTxt
 //  S_OK | S_FALSE if no parent (NULL range) | other std COM error.
 
 
-HRESULT CDocumentAO::getIHTMLElementParentOfCurrentSelection( /* out */ IHTMLElement** ppElem )
+HRESULT CDocumentAO::getIHTMLElementParentOfCurrentSelection( /* out */ IHTMLElement** ppElem)
 {
     HRESULT hr;
 
 
-    assert( ppElem );
-    assert( *ppElem == NULL );
+    assert(ppElem);
+    assert(*ppElem == NULL);
 
 
     CComPtr<IHTMLTxtRange> pIHTMLTxtRangeSel;
 
-    hr = getSelectionTextRange( &pIHTMLTxtRangeSel );
+    hr = getSelectionTextRange(&pIHTMLTxtRangeSel);
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
         return hr;
 
 
-    hr = pIHTMLTxtRangeSel->parentElement( ppElem );
+    hr = pIHTMLTxtRangeSel->parentElement(ppElem);
 
-    if ( hr == S_OK )
+    if (hr == S_OK)
     {
-        if ( !*ppElem )
+        if (!*ppElem)
             hr = S_FALSE;
     }
 
@@ -1871,12 +1866,12 @@ HRESULT CDocumentAO::getIHTMLElementParentOfCurrentSelection( /* out */ IHTMLEle
 
 //    RETURNS:
 //        HRESULT
-HRESULT CDocumentAO::getReadyState( /* in */ IHTMLDocument2* pIHTMLDocument2, /* out */ BOOL* pbComplete )
+HRESULT CDocumentAO::getReadyState( /* in */ IHTMLDocument2* pIHTMLDocument2, /* out */ BOOL* pbComplete)
 {
     HRESULT        hr = E_FAIL;
 
-    assert( pIHTMLDocument2 );
-    assert( pbComplete );
+    assert(pIHTMLDocument2);
+    assert(pbComplete);
 
     *pbComplete = FALSE;
 
@@ -1898,19 +1893,19 @@ HRESULT CDocumentAO::getReadyState( /* in */ IHTMLDocument2* pIHTMLDocument2, /*
     }
 */
 
-    if ( hr != S_OK )
+    if (hr != S_OK)
     {
         BSTR    bstrReadyState;
 
-        hr = pIHTMLDocument2->get_readyState( &bstrReadyState );
-        if ( hr == S_OK )
+        hr = pIHTMLDocument2->get_readyState(&bstrReadyState);
+        if (hr == S_OK)
         {
-            if ( bstrReadyState )
+            if (bstrReadyState)
             {
-                if ( !_wcsicmp(bstrReadyState, L"complete") )
+                if (!_wcsicmp(bstrReadyState, L"complete"))
                     *pbComplete = TRUE;
 
-                SysFreeString( bstrReadyState );
+                SysFreeString(bstrReadyState);
             }
             else
                 hr = DISP_E_MEMBERNOTFOUND;
@@ -1931,28 +1926,28 @@ HRESULT CDocumentAO::getReadyState( /* in */ IHTMLDocument2* pIHTMLDocument2, /*
 //        plData        [out]    pointer to the long returned
 //    RETURNS:
 //        HRESULT
-HRESULT CDocumentAO::callInvokeForLong( IDispatch* pDisp, DISPID dispID, long* plData )
+HRESULT CDocumentAO::callInvokeForLong(IDispatch* pDisp, DISPID dispID, long* plData)
 {
     HRESULT        hr;
     DISPPARAMS    dispparamsNoArgs = { NULL, NULL, 0, 0 };
     VARIANT        varResult;
 
-    assert( pDisp );
-    assert( plData );
+    assert(pDisp);
+    assert(plData);
 
-    VariantInit( &varResult );
+    VariantInit(&varResult);
 
-    hr = pDisp->Invoke( dispID, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispparamsNoArgs, &varResult, NULL, NULL );
-    if ( hr == S_OK )
+    hr = pDisp->Invoke(dispID, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_PROPERTYGET, &dispparamsNoArgs, &varResult, NULL, NULL);
+    if (hr == S_OK)
     {
-        if ( varResult.vt == VT_I4 )
+        if (varResult.vt == VT_I4)
         {
             *plData = varResult.lVal;
         }
         else
         {
             hr = DISP_E_MEMBERNOTFOUND;
-            VariantClear( &varResult );
+            VariantClear(&varResult);
         }
     }
 
@@ -1962,7 +1957,7 @@ HRESULT CDocumentAO::callInvokeForLong( IDispatch* pDisp, DISPID dispID, long* p
 
 #ifdef _MSAA_EVENTS
 
-HRESULT CDocumentAO::initDocumentEventHandlers( void )
+HRESULT CDocumentAO::initDocumentEventHandlers(void)
 //    CDocumentAO::initDocumentEventHandlers()
 //    DESCRIPTION:
 //        This method initializes the event handlers for the CDocumentAO.
@@ -1973,22 +1968,22 @@ HRESULT CDocumentAO::initDocumentEventHandlers( void )
 
     assert(m_pTOMObjIUnk);
 
-    if(!m_pTOMObjIUnk)
+    if (!m_pTOMObjIUnk)
         return(E_NOINTERFACE);
 
     assert(m_pDocIHTMLElement);
 
-    if(!m_pDocIHTMLElement)
+    if (!m_pDocIHTMLElement)
         return(E_NOINTERFACE);
 
     // create event handlers for document and body
     // elements of CDocumentAO class
 
-    hrEventInit = INIT_EVENT_HANDLER( ImplIHTMLDocumentEvents, m_pIUnknown, m_hWnd, m_nChildID, m_pTOMObjIUnk )
-    if ( hrEventInit == S_OK )
-    {
-        hrEventInit = INIT_EVENT_HANDLER( ImplIDispIHTMLBodyElement, m_pIUnknown, m_hWnd, m_nChildID, m_pDocIHTMLElement)
-    }
+    hrEventInit = INIT_EVENT_HANDLER(ImplIHTMLDocumentEvents, m_pIUnknown, m_hWnd, m_nChildID, m_pTOMObjIUnk)
+        if (hrEventInit == S_OK)
+        {
+            hrEventInit = INIT_EVENT_HANDLER(ImplIDispIHTMLBodyElement, m_pIUnknown, m_hWnd, m_nChildID, m_pDocIHTMLElement)
+        }
 
     return hrEventInit;
 }

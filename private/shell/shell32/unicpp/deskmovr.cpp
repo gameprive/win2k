@@ -2042,7 +2042,6 @@ HRESULT CDeskMovr::_GetHTMLDoc(IOleClientSite * pocs, IHTMLDocument2 ** pphd2)
 }
 
 
-
 HRESULT CDeskMovr::_IsInElement(HWND hwndParent, POINT * ppt, IHTMLElement ** pphe)
 {
     HRESULT hr = E_FAIL;

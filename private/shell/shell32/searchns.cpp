@@ -18,7 +18,7 @@
 #endif
 
 CSearchNameSpaceOC::CSearchNameSpaceOC() : CComboBoxExOC(SZ_REGKEY_CTL_SEARCHNAMESPACE, CSIDL_DEFAULT_PIDL),
-        _iDeferPathList(CB_ERR), _iLocalDisk(CB_ERR)
+_iDeferPathList(CB_ERR), _iLocalDisk(CB_ERR)
 {
     DllAddRef();
 
@@ -55,9 +55,9 @@ LRESULT CSearchNameSpaceOC::_OnDeleteItemMessage(int idCtrl, LPNMHDR pnmh, BOOL&
     //             a PNMCOMBOBOXEX (which has a first element of LPNMHDR).  This function
     //             can use this type cast iff it's guaranteed that this will only come from
     //           a function that behaves in this perverse way.
-    LRESULT lRet = _DeleteNamespaceComboItem( pnmh ) ;
+    LRESULT lRet = _DeleteNamespaceComboItem(pnmh);
     bHandled = FALSE;
-    return lRet ;
+    return lRet;
 }
 
 LRESULT CSearchNameSpaceOC::_OnFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled)
@@ -109,16 +109,16 @@ HRESULT CSearchNameSpaceOC::_BrowseForDirectory(LPTSTR pszPath, DWORD cchSize)
             {
                 // Yes, so display the dialog and replace the display text with the path
                 // if something was selected.
-                BROWSEINFO bi = {0};
+                BROWSEINFO bi = { 0 };
                 LPITEMIDLIST pidl;
 
-                bi.hwndOwner        = _hwndComboBox;
+                bi.hwndOwner = _hwndComboBox;
                 // bi.pszDisplayName   = pszPath; - // If we want to display a friendly name then set this value
-                bi.pidlRoot         = pidlRoot;
-                bi.lpszTitle        = szTitle;
-                bi.ulFlags          = (BIF_EDITBOX | BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS | BIF_USENEWUI);
-                bi.lpfn             = BrowseCallback;
-                bi.lParam           = (LPARAM) &pidlDefault;
+                bi.pidlRoot = pidlRoot;
+                bi.lpszTitle = szTitle;
+                bi.ulFlags = (BIF_EDITBOX | BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS | BIF_USENEWUI);
+                bi.lpfn = BrowseCallback;
+                bi.lParam = (LPARAM)&pidlDefault;
 
                 ASSERT(MAX_PATH <= cchSize);    // bi.pszDisplayName requires this
 
@@ -174,13 +174,13 @@ LRESULT CSearchNameSpaceOC::SubClassWndProc(HWND hwnd, UINT uMessage, WPARAM wPa
         switch (uMessage)
         {
         case WM_SETFOCUS:
-            {
-                CSearchNameSpaceOC * pdtp = (CSearchNameSpaceOC *) dwRefData;
+        {
+            CSearchNameSpaceOC * pdtp = (CSearchNameSpaceOC *)dwRefData;
 
-                if (EVAL(pdtp))
-                    pdtp->_PrivateActivate();
-            }
-            break;
+            if (EVAL(pdtp))
+                pdtp->_PrivateActivate();
+        }
+        break;
         case WM_DESTROY:
             RemoveWindowSubclass(hwnd, CSearchNameSpaceOC::SubClassWndProc, uIdSubclass);
             break;
@@ -201,13 +201,13 @@ HWND CSearchNameSpaceOC::Create(HWND hWndParent, RECT& rcPos, LPCTSTR pszWindowN
 
         if (EVAL(hwndComboBox))
         {
-            fSucceeded = SetWindowSubclass(hwndComboBox, CSearchNameSpaceOC::SubClassWndProc, COMBO_SUBCLASS_COOKIE, (ULONG_PTR) this);
+            fSucceeded = SetWindowSubclass(hwndComboBox, CSearchNameSpaceOC::SubClassWndProc, COMBO_SUBCLASS_COOKIE, (ULONG_PTR)this);
             ASSERT(fSucceeded);
         }
 
         if (_hwndEdit)  // User may not want combobox to be editable.
         {
-            fSucceeded = SetWindowSubclass(_hwndEdit, CSearchNameSpaceOC::SubClassWndProc, EDIT_SUBCLASS_COOKIE, (ULONG_PTR) this);
+            fSucceeded = SetWindowSubclass(_hwndEdit, CSearchNameSpaceOC::SubClassWndProc, EDIT_SUBCLASS_COOKIE, (ULONG_PTR)this);
             ASSERT(fSucceeded);
         }
     }
@@ -247,7 +247,7 @@ HRESULT CSearchNameSpaceOC::Load(IPropertyBag * pPropBag, IErrorLog * pErrorLog)
     var.vt = VT_UI4;
     var.ulVal = NULL;
     hr = pPropBag->Read(L"AutoComplete In File System", &var, NULL);
-    if (SUCCEEDED(hr) && var.vt==VT_UI4)
+    if (SUCCEEDED(hr) && var.vt == VT_UI4)
         _fFileSysAutoComp = var.ulVal;
 
     hr = CComboBoxExOC::_Load(pPropBag, pErrorLog);
@@ -276,11 +276,11 @@ HRESULT CSearchNameSpaceOC::IOleInPlaceObject_InPlaceDeactivate(void)
     TCHAR szRegValue[MAX_PATH];
 
     // sortof gross, but save room for ! at start to say that this is user input...
-    TCHAR szDisplayName[MAX_URL_STRING+1];
+    TCHAR szDisplayName[MAX_URL_STRING + 1];
     LPTSTR pszDisplayName = &szDisplayName[1];
     LPCTSTR pszPath = NULL;
 
-    LRESULT nIndex = _GetCurItemTextAndIndex( FALSE, pszDisplayName, ARRAYSIZE(szDisplayName)-1);
+    LRESULT nIndex = _GetCurItemTextAndIndex(FALSE, pszDisplayName, ARRAYSIZE(szDisplayName) - 1);
 
     TraceMsg(TF_CUSTOM1, "in CSearchNameSpaceOC::CSearchNameSpaceOC::IOleInPlaceObject_InPlaceDeactivate(), _fInRecursion=%d", _fInRecursion);
 
@@ -298,22 +298,22 @@ HRESULT CSearchNameSpaceOC::IOleInPlaceObject_InPlaceDeactivate(void)
         pszPath = (LPCTSTR)::SendMessage(_hwndComboBox, CB_GETITEMDATA, (WPARAM)nIndex, (LPARAM)0);
 
     SHSetValue(HKEY_CURRENT_USER, SZ_REGKEY_CTL_SEARCHNAMESPACE,
-            (_pszPersistString ? _pszPersistString : SZ_REGVALUE_LAST_SELECTION), REG_SZ,
-            (LPVOID)pszDisplayName, (lstrlen(pszDisplayName) + 1) * sizeof(TCHAR));
+        (_pszPersistString ? _pszPersistString : SZ_REGVALUE_LAST_SELECTION), REG_SZ,
+               (LPVOID)pszDisplayName, (lstrlen(pszDisplayName) + 1) * sizeof(TCHAR));
 
 
     wnsprintf(szRegValue, ARRAYSIZE(szRegValue), TEXT("%s_Path"), (_pszPersistString ? _pszPersistString : SZ_REGVALUE_LAST_SELECTION));
     SHSetValue(HKEY_CURRENT_USER, SZ_REGKEY_CTL_SEARCHNAMESPACE, szRegValue, REG_SZ,
-            (LPVOID)(pszPath ? pszPath : pszDisplayName),
-            (lstrlen(pszPath ? pszPath : pszDisplayName) + 1) * sizeof(TCHAR));
+        (LPVOID)(pszPath ? pszPath : pszDisplayName),
+               (lstrlen(pszPath ? pszPath : pszDisplayName) + 1) * sizeof(TCHAR));
     return CComControlBase::IOleInPlaceObject_InPlaceDeactivate();
 }
 
 
 HRESULT CSearchNameSpaceOC::_Populate(void)
 {
-//    if (_fPopulated)
-//        return S_OK;        // Done.
+    //    if (_fPopulated)
+    //        return S_OK;        // Done.
 #ifdef TIME_POPULATE
 #define ENDTIME(x) DWORD x = GetTickCount()
     DWORD dwStart = GetTickCount();
@@ -355,8 +355,8 @@ HRESULT CSearchNameSpaceOC::_Populate(void)
 
     _SetDefaultSelect();
 #ifdef TIME_POPULATE
-    TraceMsg(TF_GENERAL, "Populate Total Time=%d", (GetTickCount()-dwStart));
-DWORD dwLast = dwStart;
+    TraceMsg(TF_GENERAL, "Populate Total Time=%d", (GetTickCount() - dwStart));
+    DWORD dwLast = dwStart;
 #define PDELTA(x, y)  TraceMsg(TF_GENERAL, "        %s=%d", TEXT(x), (y-dwLast)); dwLast = y;
     PDELTA("My Computer", dwMyComp);
     PDELTA("Local Drives", dwLocDrives);
@@ -371,21 +371,21 @@ DWORD dwLast = dwStart;
 
 HRESULT CSearchNameSpaceOC::_AddMyComputer(void)
 {
-    CBXITEM item ;
-    HRESULT hr = _MakeMyComputerCbxItem( &item ) ;
+    CBXITEM item;
+    HRESULT hr = _MakeMyComputerCbxItem(&item);
 
-    if( SUCCEEDED( hr ) )
-        hr = _AddCbxItemToComboBox( _hwndComboBox, &item, NULL ) ;
+    if (SUCCEEDED(hr))
+        hr = _AddCbxItemToComboBox(_hwndComboBox, &item, NULL);
     return hr;
 }
 
 HRESULT CSearchNameSpaceOC::_AddLocalHardDrives(void)
 {
-    CBXITEM item ;
-    HRESULT hr = _MakeLocalHardDrivesCbxItem( &item ) ;
+    CBXITEM item;
+    HRESULT hr = _MakeLocalHardDrivesCbxItem(&item);
 
-    if( SUCCEEDED( hr ) )
-        hr = _AddCbxItemToComboBox( _hwndComboBox, &item, &_iLocalDisk ) ;
+    if (SUCCEEDED(hr))
+        hr = _AddCbxItemToComboBox(_hwndComboBox, &item, &_iLocalDisk);
     return hr;
 }
 
@@ -422,38 +422,38 @@ HRESULT CSearchNameSpaceOC::_CustomizeName(UINT idString, LPTSTR szDisplayName, 
 
 HRESULT CSearchNameSpaceOC::_AddMappedDrives(LPITEMIDLIST pidl)
 {
-    CBXITEM item ;
+    CBXITEM item;
 
-    HRESULT hr = _MakeMappedDrivesCbxItem( &item, pidl) ;
+    HRESULT hr = _MakeMappedDrivesCbxItem(&item, pidl);
 
-    if( SUCCEEDED( hr ) )
-        hr = _AddCbxItemToComboBox( _hwndComboBox, &item, NULL ) ;
-    return hr ;
+    if (SUCCEEDED(hr))
+        hr = _AddCbxItemToComboBox(_hwndComboBox, &item, NULL);
+    return hr;
 }
 
 
 HRESULT CSearchNameSpaceOC::_AddNethoodDirs(LPITEMIDLIST pidl)
 {
-    CBXITEM item ;
-    HRESULT hr = _MakeNethoodDirsCbxItem( &item, pidl ) ;
+    CBXITEM item;
+    HRESULT hr = _MakeNethoodDirsCbxItem(&item, pidl);
 
-    if( SUCCEEDED( hr ) )
+    if (SUCCEEDED(hr))
     {
-        hr = _AddCbxItemToComboBox( _hwndComboBox, &item, NULL ) ;
-        if( SUCCEEDED( hr ) )
-            EVAL(_AddPath( item.szText )) ;  // TODO: Use something larger than MAX_PATH.
+        hr = _AddCbxItemToComboBox(_hwndComboBox, &item, NULL);
+        if (SUCCEEDED(hr))
+            EVAL(_AddPath(item.szText));  // TODO: Use something larger than MAX_PATH.
     }
-    return hr ;
+    return hr;
 }
 
 HRESULT CSearchNameSpaceOC::_AddRecentFolderAndEntries(BOOL fAddEntries)
 {
-    CBXITEM item ;
-    HRESULT hr = _MakeRecentFolderCbxItem( &item ) ;
+    CBXITEM item;
+    HRESULT hr = _MakeRecentFolderCbxItem(&item);
 
-    if( SUCCEEDED( hr ) )
+    if (SUCCEEDED(hr))
     {
-        hr = _AddCbxItemToComboBox( _hwndComboBox, &item, &_iDeferPathList ) ;
+        hr = _AddCbxItemToComboBox(_hwndComboBox, &item, &_iDeferPathList);
 
         if (fAddEntries)
             _ReallyEnumRecentFolderAndEntries(fAddEntries);
@@ -464,41 +464,41 @@ HRESULT CSearchNameSpaceOC::_AddRecentFolderAndEntries(BOOL fAddEntries)
 // Ok we now need to do the work to get the paths contained in recent...
 HRESULT CSearchNameSpaceOC::_ReallyEnumRecentFolderAndEntries(BOOL fAddEntries)
 {
-        LPTSTR pszPath = NULL;
+    LPTSTR pszPath = NULL;
 
 
-        // Now build the list and optional the entries
-        _EnumRecentAndGeneratePath( fAddEntries, _EnumRecentAndGenPathCB, this );
+    // Now build the list and optional the entries
+    _EnumRecentAndGeneratePath(fAddEntries, _EnumRecentAndGenPathCB, this);
 
-        if (!_pszPathList || !*_pszPathList)
+    if (!_pszPathList || !*_pszPathList)
+    {
+        // Recent is empty, for now assume local hard disks...
+        if (_iLocalDisk != CB_ERR)
         {
-            // Recent is empty, for now assume local hard disks...
-            if (_iLocalDisk != CB_ERR)
-            {
-                LPTSTR pszString;
-                pszString = (LPTSTR)::SendMessage(_hwndComboBox, CB_GETITEMDATA, _iLocalDisk, 0);
-                Str_SetPtr(&_pszPathList, pszString);
-            }
-            else
-            {
-                // handle case where we may not have enum the list...
-                TCHAR szPath[MAX_PATH];
-                _BuildDrivesList(DRIVE_FIXED, TEXT(";"), TEXT(":\\"), szPath, ARRAYSIZE(szPath));
-                Str_SetPtr(&_pszPathList, szPath);
-            }
+            LPTSTR pszString;
+            pszString = (LPTSTR)::SendMessage(_hwndComboBox, CB_GETITEMDATA, _iLocalDisk, 0);
+            Str_SetPtr(&_pszPathList, pszString);
         }
+        else
+        {
+            // handle case where we may not have enum the list...
+            TCHAR szPath[MAX_PATH];
+            _BuildDrivesList(DRIVE_FIXED, TEXT(";"), TEXT(":\\"), szPath, ARRAYSIZE(szPath));
+            Str_SetPtr(&_pszPathList, szPath);
+        }
+    }
 
-        // Now update the path for the item to the calculated path.
-        _UpdateDeferredPathFromPathList();
+    // Now update the path for the item to the calculated path.
+    _UpdateDeferredPathFromPathList();
 
     return S_OK;
 }
 
 
-HRESULT CSearchNameSpaceOC::_EnumRecentAndGenPathCB( LPCTSTR pszPath, BOOL fAddEntries, LPVOID pvParam )
+HRESULT CSearchNameSpaceOC::_EnumRecentAndGenPathCB(LPCTSTR pszPath, BOOL fAddEntries, LPVOID pvParam)
 {
-    CSearchNameSpaceOC* pThis = (CSearchNameSpaceOC*)pvParam ;
-    ASSERT( pThis ) ;
+    CSearchNameSpaceOC* pThis = (CSearchNameSpaceOC*)pvParam;
+    ASSERT(pThis);
 
     EVAL(pThis->_AddPath(pszPath));
     if (fAddEntries)
@@ -506,21 +506,21 @@ HRESULT CSearchNameSpaceOC::_EnumRecentAndGenPathCB( LPCTSTR pszPath, BOOL fAddE
         LPTSTR psz = NULL;
         Str_SetPtr(&psz, pszPath);
 
-        CBXITEM item ;
-        if( SUCCEEDED( _MakeCbxItemKnownImage( &item, pszPath, (LPVOID)psz,
-                                               3, 3, LISTINSERT_LAST, ITEM_INDEX ) ) )
-            _AddCbxItemToComboBox( pThis->_hwndComboBox, &item, NULL ) ;
+        CBXITEM item;
+        if (SUCCEEDED(_MakeCbxItemKnownImage(&item, pszPath, (LPVOID)psz,
+                                             3, 3, LISTINSERT_LAST, ITEM_INDEX)))
+            _AddCbxItemToComboBox(pThis->_hwndComboBox, &item, NULL);
     }
-    return S_OK ;
+    return S_OK;
 }
 
 HRESULT CSearchNameSpaceOC::_AddBrowseItem(void)
 {
-    CBXITEM item ;
-    HRESULT hr = _MakeBrowseForCbxItem( &item ) ;
+    CBXITEM item;
+    HRESULT hr = _MakeBrowseForCbxItem(&item);
 
-    if( SUCCEEDED( hr ) )
-        hr = _AddCbxItemToComboBox( _hwndComboBox, &item, NULL ) ;
+    if (SUCCEEDED(hr))
+        hr = _AddCbxItemToComboBox(_hwndComboBox, &item, NULL);
     return hr;
 }
 
@@ -541,25 +541,25 @@ BOOL CSearchNameSpaceOC::_AddPath(LPCTSTR pszPath)
 
 HRESULT CSearchNameSpaceOC::_AddMyNetworkPlaces(void)
 {
-    CBXITEM item ;
+    CBXITEM item;
     LPTSTR pszPath = NULL;
 
     Str_SetPtr(&pszPath, (_pszPathList ? _pszPathList : TEXT("")));
-    HRESULT hr = _MakeNetworkPlacesCbxItem( &item, pszPath ) ;
+    HRESULT hr = _MakeNetworkPlacesCbxItem(&item, pszPath);
 
-    if( SUCCEEDED( hr ) )
+    if (SUCCEEDED(hr))
     {
-        hr = _AddCbxItemToComboBox( _hwndComboBox, &item, &_iDeferPathList ) ;
-        if( SUCCEEDED( hr ) )
+        hr = _AddCbxItemToComboBox(_hwndComboBox, &item, &_iDeferPathList);
+        if (SUCCEEDED(hr))
             Str_SetPtr(&_pszPathList, NULL);
     }
-    return hr ;
+    return hr;
 }
 
 HRESULT CSearchNameSpaceOC::_AddMyNetworkPlacesItems(void)
 {
-    HRESULT hr = _EnumSpecialItemIDs(CSIDL_NETHOOD, (SHCONTF_FOLDERS|SHCONTF_NONFOLDERS|SHCONTF_INCLUDEHIDDEN),
-            _AddNethoodDirsCB, this);
+    HRESULT hr = _EnumSpecialItemIDs(CSIDL_NETHOOD, (SHCONTF_FOLDERS | SHCONTF_NONFOLDERS | SHCONTF_INCLUDEHIDDEN),
+                                     _AddNethoodDirsCB, this);
     if (SUCCEEDED(hr))
         _UpdateDeferredPathFromPathList();
     return hr;
@@ -608,9 +608,9 @@ BOOL CSearchNameSpaceOC::_SetupBrowserCP()
 
         // OK now lets register ourself with the Defview to get any events that they may generate...
         if (SUCCEEDED(hr = IUnknown_QueryService(m_spClientSite, SID_STopLevelBrowser,
-                IID_IServiceProvider, (void**)&pspTLB))) {
+                                                 IID_IServiceProvider, (void**)&pspTLB))) {
             if (SUCCEEDED(hr = pspTLB->QueryService(IID_IExpDispSupport, IID_IConnectionPointContainer, (void **)&pcpc))) {
-                hr = ConnectToConnectionPoint(SAFECAST(&_cwbe,IDispatch*), DIID_DWebBrowserEvents2,
+                hr = ConnectToConnectionPoint(SAFECAST(&_cwbe, IDispatch*), DIID_DWebBrowserEvents2,
                                               TRUE, pcpc, &_dwCookie, &_pcpBrowser);
                 pcpc->Release();
             }
@@ -632,7 +632,7 @@ HRESULT CSearchNameSpaceOC::_RestoreIfUserInputValue(LPCTSTR pszLastSelection)
         // BUGBUG only works if file system path...
         // Should check to see if get path fails and try to select item by different
         // way...
-        TCHAR szPath[ MAX_PATH ];
+        TCHAR szPath[MAX_PATH];
         BOOL fOk = SHGetPathFromIDList(_pidlStart, szPath);
         ILFree(_pidlStart);
         _pidlStart = NULL;
@@ -646,13 +646,13 @@ HRESULT CSearchNameSpaceOC::_RestoreIfUserInputValue(LPCTSTR pszLastSelection)
     if (*pszLastSelection == TEXT('!'))
     {
         // user input...
-        ::SetWindowText(_hwndComboBox, pszLastSelection+1);
+        ::SetWindowText(_hwndComboBox, pszLastSelection + 1);
         return S_OK;
     }
     return S_FALSE; // say nope we did not handle this.
 }
 
-LRESULT CSearchNameSpaceOC::_GetCurItemTextAndIndex( BOOL fPath, LPTSTR psz, int cch)
+LRESULT CSearchNameSpaceOC::_GetCurItemTextAndIndex(BOOL fPath, LPTSTR psz, int cch)
 {
     //  Devnote: Keep logic synched with external version
     //  _GetNamespaceComboItemText(), _GetNamespaceComboSelItemText()
@@ -666,7 +666,7 @@ LRESULT CSearchNameSpaceOC::_GetCurItemTextAndIndex( BOOL fPath, LPTSTR psz, int
     if (-1 != nSelected)
     {
         if (::SendMessage(_hwndComboBox, CB_GETLBTEXT, (WPARAM)nSelected, (LPARAM)szItemName) == CB_ERR)
-            szItemName[0]=0;
+            szItemName[0] = 0;
 
         LPCTSTR pszString = (LPCTSTR)::SendMessage(_hwndComboBox, CB_GETITEMDATA, nSelected, 0);
         // We doule check that the text of the control is equal to the text of the item.  If not the control
@@ -685,7 +685,7 @@ LRESULT CSearchNameSpaceOC::_GetCurItemTextAndIndex( BOOL fPath, LPTSTR psz, int
         if (EVAL(!pszString) || EVAL(pszString == (LPCTSTR)CB_ERR) || (lstrcmp(psz, szItemName) != 0))
             nSelected = -1;
         else
-            StrCpyN(psz, fPath? pszString : szItemName, cch);
+            StrCpyN(psz, fPath ? pszString : szItemName, cch);
     }
     return nSelected;
 }
@@ -696,7 +696,7 @@ HRESULT CSearchNameSpaceOC::get_String(OUT BSTR *pbs)
     if (EVAL(pbs && _hwndComboBox))
     {
         TCHAR szPath[MAX_PATH];
-        _GetCurItemTextAndIndex( TRUE, szPath, ARRAYSIZE(szPath));
+        _GetCurItemTextAndIndex(TRUE, szPath, ARRAYSIZE(szPath));
 
 #ifdef UNICODE
         *pbs = SysAllocString(szPath);
@@ -749,7 +749,7 @@ HRESULT CSearchNameSpaceOC::get_IsValidSearch(OUT VARIANT_BOOL * pfValid)
         // does not equal -1.
         TCHAR szPath[3];
         ::GetWindowText(_hwndComboBox, szPath, ARRAYSIZE(szPath));
-        if ( !szPath[0] )
+        if (!szPath[0])
         {
             // So basically the only invalid case is when nIndex == -1 and the path is NULL
             *pfValid = VARIANT_FALSE;
@@ -811,7 +811,7 @@ BOOL CSearchNameSpaceOC::_IsSecure(void)
 
     if (EVAL(m_spClientSite))
     {
-        if (S_OK == LocalZoneCheck((IUnknown *) m_spClientSite))
+        if (S_OK == LocalZoneCheck((IUnknown *)m_spClientSite))
             fSecure = TRUE;
     }
     else
@@ -820,29 +820,24 @@ BOOL CSearchNameSpaceOC::_IsSecure(void)
     return fSecure;
 }
 
+
 BOOL CSearchNameSpaceOC::_FGetStartingPidl(void)
 {
-
     if (EVAL(m_spClientSite))
     {
         IShellBrowser  *psb;
         IShellView     *psv;
         IWebBrowser2* pwb = NULL;
-        if (SUCCEEDED(IUnknown_QueryService(m_spClientSite, SID_STopLevelBrowser,
-                IID_IShellBrowser, (void **) &psb)))
+        if (SUCCEEDED(IUnknown_QueryService(m_spClientSite, SID_STopLevelBrowser, IID_IShellBrowser, (void **)&psb)))
         {
-
             // Warning:: We check for shell view simply to see how the search pane was
             // loaded.  If this fails it is because we were loaded on the CoCreateInstance
             // of the browser window and as such it is a race condition to know if the
-            // properties were set or not.  So in this case wait until we get a
-            // navigate complete.  This lets us know for sure if a save file was passed
-            // in or not.
+            // properties were set or not.  So in this case wait until we get a navigate complete. 
+            // This lets us know for sure if a save file was passed in or not.
             if (SUCCEEDED(psb->QueryActiveShellView(&psv)))
             {
-
-                if (SUCCEEDED(IUnknown_QueryService(psb, SID_SWebBrowserApp,
-                        IID_IWebBrowser2, (void **) &pwb)))
+                if (SUCCEEDED(IUnknown_QueryService(psb, SID_SWebBrowserApp, IID_IWebBrowser2, (void **)&pwb)))
                 {
                     SA_BSTR bstr;
                     VARIANT var;
@@ -901,8 +896,7 @@ ULONG CSearchNameSpaceOC::CWBEvents2::Release(void)
 
 STDMETHODIMP CSearchNameSpaceOC::CWBEvents2::QueryInterface(REFIID riid, LPVOID *ppvObj)
 {
-    if ( riid == IID_IUnknown || riid == IID_IDispatch || riid == DIID_DWebBrowserEvents2
-         || riid == DIID_DWebBrowserEvents){
+    if (riid == IID_IUnknown || riid == IID_IDispatch || riid == DIID_DWebBrowserEvents2 || riid == DIID_DWebBrowserEvents) {
         *ppvObj = (LPVOID)this;
         AddRef();
     }
@@ -910,13 +904,21 @@ STDMETHODIMP CSearchNameSpaceOC::CWBEvents2::QueryInterface(REFIID riid, LPVOID 
     {
         return E_NOINTERFACE;
     }
+
     return NOERROR;
 }
 
-STDMETHODIMP CSearchNameSpaceOC::CWBEvents2::Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo, UINT * puArgErr)
+STDMETHODIMP CSearchNameSpaceOC::CWBEvents2::Invoke(DISPID dispidMember,
+                                                    REFIID riid,
+                                                    LCID lcid, 
+                                                    WORD wFlags, 
+                                                    DISPPARAMS * pdispparams,
+                                                    VARIANT * pvarResult,
+                                                    EXCEPINFO * pexcepinfo, 
+                                                    UINT * puArgErr)
 {
     if (_fWaitingForNavigate) {
-        TraceMsg(TF_WARNING, "CSearchNameSpaceOC::CWBEvents2::Invoke dispid=%d.",dispidMember);
+        TraceMsg(TF_WARNING, "CSearchNameSpaceOC::CWBEvents2::Invoke dispid=%d.", dispidMember);
         if ((dispidMember == DISPID_NAVIGATECOMPLETE) || (dispidMember == DISPID_DOCUMENTCOMPLETE)) {
             // Assume this is ours... Should maybe check parameters...
             _fWaitingForNavigate = FALSE;

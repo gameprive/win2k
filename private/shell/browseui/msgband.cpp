@@ -18,7 +18,7 @@
 #include "mluisupp.h"
 
 extern "C"  const GUID  CLSID_MsgBand;
-STDAPI_(void) unixGetWininetCacheLockStatus (BOOL *pBoolReadOnly, char **ppszLockingHost);
+STDAPI_(void) unixGetWininetCacheLockStatus(BOOL *pBoolReadOnly, char **ppszLockingHost);
 STDAPI_(void) unixCleanupWininetCacheLockFile();
 
 ///  Msg (BrowserOC) band
@@ -30,7 +30,7 @@ class CMsgBand : public CBrowserBand
 {
 public:
     // *** IDeskBand methods ***
-    virtual STDMETHODIMP GetBandInfo(DWORD dwBandID, DWORD fViewMode, DESKBANDINFO* pdbi) ;
+    virtual STDMETHODIMP GetBandInfo(DWORD dwBandID, DWORD fViewMode, DESKBANDINFO* pdbi);
 
     // *** IPersistStream methods ***
     // (others use base class implementation)
@@ -48,7 +48,7 @@ public:
     virtual ~CMsgBand();
 
     virtual void _InitBrowser(void);
-    virtual STDMETHODIMP Invoke(DISPID dispidMember,REFIID riid,LCID lcid,WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo,UINT * puArgErr);
+    virtual STDMETHODIMP Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo, UINT * puArgErr);
 
 protected:
     void _OnSearchBtnSelect(int x, int y);
@@ -89,12 +89,12 @@ void CMsgBand::_OnSearchBtnSelect(int x, int y)
                 idCmd = TrackPopupMenu(hmenu, TPM_RETURNCMD, x, y, 0, hwnd, NULL);
                 if (idCmd != 0)
                 {
-                    CMINVOKECOMMANDINFO ici = {0};
+                    CMINVOKECOMMANDINFO ici = { 0 };
 
                     ici.cbSize = SIZEOF(ici);
                     ici.hwnd = _hwnd;
                     ici.lpVerb = (LPSTR)MAKEINTRESOURCE(idCmd - FCIDM_SEARCHFIRST);
-                    ici.nShow  = SW_NORMAL;
+                    ici.nShow = SW_NORMAL;
                     pcm->InvokeCommand(&ici);
                 }
             }
@@ -112,9 +112,9 @@ HRESULT CMsgBand::Exec(const GUID *pguidCmdGroup, DWORD nCmdID, DWORD nCmdexecop
     switch (nCmdID)
     {
     case TBIDM_SEARCH:
-         if (EVAL(pvarargIn && (pvarargIn->vt == VT_I4)))
-             _OnSearchBtnSelect(LOWORD(pvarargIn->lVal), HIWORD(pvarargIn->lVal));
-         return S_OK;
+        if (EVAL(pvarargIn && (pvarargIn->vt == VT_I4)))
+            _OnSearchBtnSelect(LOWORD(pvarargIn->lVal), HIWORD(pvarargIn->lVal));
+        return S_OK;
     }
     return CBrowserBand::Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvarargIn, pvarargOut);
 }
@@ -149,7 +149,7 @@ HRESULT CMsgBand::Invoke
     HRESULT hr = S_OK;
 
     ASSERT(pdispparams);
-    if(!pdispparams)
+    if (!pdispparams)
         return E_INVALIDARG;
 
     // Big HACK!  Do this right after RTW.  Basically, I didn't have time to
@@ -163,27 +163,27 @@ HRESULT CMsgBand::Invoke
     {
     case DISPID_TITLECHANGE:
     {
-        int iArg = pdispparams->cArgs -1;
+        int iArg = pdispparams->cArgs - 1;
 
         if (iArg == 0 && (pdispparams->rgvarg[iArg].vt == VT_BSTR))
         {
             static BOOL s_fLockDeleted = FALSE;
             BSTR pArg = pdispparams->rgvarg[iArg].bstrVal;
 
-            if ( !s_fLockDeleted && StrCmpW( pArg, L"close" ) == 0 )
+            if (!s_fLockDeleted && StrCmpW(pArg, L"close") == 0)
             {
                 s_fLockDeleted = TRUE;
                 _CloseBand();
             }
 
-            if ( !s_fLockDeleted && StrCmpW( pArg, L"deleteLock" ) == 0 )
+            if (!s_fLockDeleted && StrCmpW(pArg, L"deleteLock") == 0)
             {
                 s_fLockDeleted = TRUE;
                 unixCleanupWininetCacheLockFile();
                 _CloseBand();
             }
 
-            if ( !s_fLockDeleted && StrCmpW( pArg, L"deleteLockAndShutdown" ) == 0 )
+            if (!s_fLockDeleted && StrCmpW(pArg, L"deleteLockAndShutdown") == 0)
             {
                 IOleCommandTarget *poct;
 
@@ -191,10 +191,10 @@ HRESULT CMsgBand::Invoke
                 unixCleanupWininetCacheLockFile();
 
                 // Initiate shutdown
-                PostMessage( GetActiveWindow(), WM_QUIT, 10, 0 );
+                PostMessage(GetActiveWindow(), WM_QUIT, 10, 0);
             }
 
-            if ( StrCmpW( pArg, L"Loaded" ) == 0) {
+            if (StrCmpW(pArg, L"Loaded") == 0) {
                 // Change all elements of ID "lockedMachine" to the actual
                 // machine name.
 
@@ -208,31 +208,31 @@ HRESULT CMsgBand::Invoke
                 BSTR bstr;
                 SA_BSTR strLockingHost;
 
-                unixGetWininetCacheLockStatus( NULL, &pszLockingHostAnsi );
-                if ( NULL == pszLockingHostAnsi )
+                unixGetWininetCacheLockStatus(NULL, &pszLockingHostAnsi);
+                if (NULL == pszLockingHostAnsi)
                     break;
 
-                SHAnsiToUnicode( pszLockingHostAnsi, strLockingHost.wsz, ARRAYSIZE(strLockingHost.wsz));
+                SHAnsiToUnicode(pszLockingHostAnsi, strLockingHost.wsz, ARRAYSIZE(strLockingHost.wsz));
                 strLockingHost.cb = lstrlenW(strLockingHost.wsz) * SIZEOF(WCHAR);
 
-                if ( !s_pIElementCollection ) {
-                    if ( !_pauto )
+                if (!s_pIElementCollection) {
+                    if (!_pauto)
                         break;
 
-                    hr = _pauto->get_Document( &pIDispatch );
+                    hr = _pauto->get_Document(&pIDispatch);
                     // IEUNIX
                     // WebOC returns hr = S_OK and also sets pIDispatch to NULL
-                    if ( !SUCCEEDED( hr ) || !pIDispatch)
+                    if (!SUCCEEDED(hr) || !pIDispatch)
                         break;
 
-                    hr = pIDispatch->QueryInterface( IID_IHTMLDocument2, (void**)&pIDocument );
+                    hr = pIDispatch->QueryInterface(IID_IHTMLDocument2, (void**)&pIDocument);
                     pIDispatch->Release();
-                    if ( !SUCCEEDED( hr ))
+                    if (!SUCCEEDED(hr))
                         break;
 
-                    hr = pIDocument->get_all( &s_pIElementCollection );
+                    hr = pIDocument->get_all(&s_pIElementCollection);
                     pIDocument->Release();
-                    if ( !SUCCEEDED( hr )) {
+                    if (!SUCCEEDED(hr)) {
                         s_pIElementCollection = NULL;
                         break;
                     }
@@ -251,22 +251,22 @@ HRESULT CMsgBand::Invoke
                     vaIndex.intVal = 0;
 
                     do {
-                        hr = s_pIElementCollection->item( va, vaIndex, &pIDispatch );
-                        if ( !SUCCEEDED( hr ) || !pIDispatch)
+                        hr = s_pIElementCollection->item(va, vaIndex, &pIDispatch);
+                        if (!SUCCEEDED(hr) || !pIDispatch)
                             break;
 
-                        hr = pIDispatch->QueryInterface( IID_IHTMLElement, (void**) &pIElement );
+                        hr = pIDispatch->QueryInterface(IID_IHTMLElement, (void**)&pIElement);
                         pIDispatch->Release();
-                        if ( !SUCCEEDED( hr ))
+                        if (!SUCCEEDED(hr))
                             break;
 
-                        pIElement->put_innerText( strLockingHost.wsz );
+                        pIElement->put_innerText(strLockingHost.wsz);
                         pIElement->Release();
 
                         vaIndex.intVal++;
-                    } while ( TRUE );
+                    } while (TRUE);
 
-                    SysFreeString( bstr );
+                    SysFreeString(bstr);
                 }
                 break;
             }
@@ -274,7 +274,7 @@ HRESULT CMsgBand::Invoke
         break;
     }
     default:
-        SUPERCLASS::Invoke( dispidMember, riid, lcid, wFlags, pdispparams, pvarResult, pexcepinfo, puArgErr );
+        SUPERCLASS::Invoke(dispidMember, riid, lcid, wFlags, pdispparams, pvarResult, pexcepinfo, puArgErr);
     }
 
     return hr;
@@ -351,7 +351,7 @@ HRESULT CMsgBand::GetBandInfo(DWORD dwBandID, DWORD fViewMode, DESKBANDINFO* pdb
 
 //***   CMsgBand::IPersistStream::* {
 
-        extern "C"  const GUID     CLSID_MsgBand  ;
+extern "C"  const GUID     CLSID_MsgBand;
 
 HRESULT CMsgBand::GetClassID(CLSID *pClassID)
 {
@@ -382,7 +382,7 @@ IDeskBand* CMsgBand_Create()
     hr = CMsgBand_CreateInstance(NULL, &punk, NULL);
     if (SUCCEEDED(hr))
     {
-        EVAL(punk->QueryInterface(IID_IDeskBand,(LPVOID *)&pistb));
+        EVAL(punk->QueryInterface(IID_IDeskBand, (LPVOID *)&pistb));
 
         // if we succeeded, release the 2nd refcnt and return non-NULL;
         // if we failed   , release the 1st refcnt and return NULL

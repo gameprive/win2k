@@ -129,19 +129,19 @@ MtDefine(CHTMLEditor_pComposeSettings, CHTMLEditor, "CHTMLEditor::_pComposeSetti
 DeclareTag(tagEditingTrackExecFailures, "Edit", "Track exec failures")
 
 #ifndef NO_IME
-extern CRITICAL_SECTION g_csActiveIMM ;
-extern int g_cRefActiveIMM ;
+extern CRITICAL_SECTION g_csActiveIMM;
+extern int g_cRefActiveIMM;
 extern IActiveIMMApp * g_pActiveIMM;
 #endif
 
 HRESULT
-OldCompare( IMarkupPointer * p1, IMarkupPointer * p2, int * pi )
+OldCompare(IMarkupPointer * p1, IMarkupPointer * p2, int * pi)
 {
     HRESULT hr = S_OK;
     BOOL    fResult;
 
-    hr = THR_NOTRACE( p1->IsEqualTo( p2, & fResult ) );
-    if ( FAILED( hr ) )
+    hr = THR_NOTRACE(p1->IsEqualTo(p2, &fResult));
+    if (FAILED(hr))
         goto Cleanup;
 
     if (fResult)
@@ -150,15 +150,15 @@ OldCompare( IMarkupPointer * p1, IMarkupPointer * p2, int * pi )
         goto Cleanup;
     }
 
-    hr = THR_NOTRACE( p1->IsLeftOf( p2, & fResult ) );
-    if ( FAILED( hr ) )
+    hr = THR_NOTRACE(p1->IsLeftOf(p2, &fResult));
+    if (FAILED(hr))
         goto Cleanup;
 
     *pi = fResult ? -1 : 1;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -167,16 +167,16 @@ Cleanup:
 
 CHTMLEditor::CHTMLEditor()
 {
-    Assert( _pDoc == NULL );
-    Assert( _pUnkDoc == NULL );
-    Assert( _pUnkView == NULL );
-    Assert( _pMarkupServices == NULL );
-    Assert( _pViewServices == NULL );
-    Assert( _pComposeSettings == NULL);
-    Assert( _pSelMan == NULL );
-    Assert( _pCommandTarget == NULL );
-    Assert( _fGotActiveIMM == FALSE ) ;
-    Assert( _pStringCache == NULL );
+    Assert(_pDoc == NULL);
+    Assert(_pUnkDoc == NULL);
+    Assert(_pUnkView == NULL);
+    Assert(_pMarkupServices == NULL);
+    Assert(_pViewServices == NULL);
+    Assert(_pComposeSettings == NULL);
+    Assert(_pSelMan == NULL);
+    Assert(_pCommandTarget == NULL);
+    Assert(_fGotActiveIMM == FALSE);
+    Assert(_pStringCache == NULL);
 }
 
 CHTMLEditor::~CHTMLEditor()
@@ -188,17 +188,17 @@ CHTMLEditor::~CHTMLEditor()
     delete _pComposeSettings;
     delete _pStringCache;
 
-    ReleaseInterface( _pDoc );
+    ReleaseInterface(_pDoc);
     _pDoc = NULL;
 
-    ReleaseInterface( _pMarkupServices );
+    ReleaseInterface(_pMarkupServices);
     _pMarkupServices = NULL;
 
-    ReleaseInterface( _pViewServices );
+    ReleaseInterface(_pViewServices);
     _pViewServices = NULL;
 
 #if DBG == 1
-    ReleaseInterface( _pEditDebugServices );
+    ReleaseInterface(_pEditDebugServices);
     _pEditDebugServices = NULL;
 #endif
     if (g_hEditLibInstance)
@@ -231,18 +231,18 @@ CHTMLEditor::~CHTMLEditor()
 //           in the future, make sure you add it to COmDocument (omdoc.cxx)
 //           QueryInterface
 HRESULT
-CHTMLEditor::Initialize( IUnknown * pUnkDoc, IUnknown * pUnkView )
+CHTMLEditor::Initialize(IUnknown * pUnkDoc, IUnknown * pUnkView)
 {
     HRESULT hr;
-    Assert( pUnkDoc );
-    Assert( pUnkView );
+    Assert(pUnkDoc);
+    Assert(pUnkView);
     _pUnkDoc = pUnkDoc;
     _pUnkView = pUnkView;
     IServiceProvider * pDocServiceProvider = NULL;
 
-    IFC(_pUnkDoc->QueryInterface( IID_IHTMLDocument2 , (void **) &_pDoc ));
-    IFC( _pUnkDoc->QueryInterface( IID_IMarkupServices , (void **) &_pMarkupServices ));
-    IFC( _pUnkView->QueryInterface( IID_IHTMLViewServices , (void **) &_pViewServices ));
+    IFC(_pUnkDoc->QueryInterface(IID_IHTMLDocument2, (void **)&_pDoc));
+    IFC(_pUnkDoc->QueryInterface(IID_IMarkupServices, (void **)&_pMarkupServices));
+    IFC(_pUnkView->QueryInterface(IID_IHTMLViewServices, (void **)&_pViewServices));
 
 #if DBG == 1
 
@@ -250,22 +250,22 @@ CHTMLEditor::Initialize( IUnknown * pUnkDoc, IUnknown * pUnkView )
     // In which case failure is bad. Instead - every debug method - just checks we have a non-null
     // _pEditDebugServices.
 
-    IGNORE_HR( _pUnkDoc->QueryInterface( IID_IEditDebugServices, ( void**) & _pEditDebugServices));
+    IGNORE_HR(_pUnkDoc->QueryInterface(IID_IEditDebugServices, (void**)& _pEditDebugServices));
 #endif
 
-    IFC( InitCommandTable() );
+    IFC(InitCommandTable());
 
     // Create the selection manager
-    _pSelMan = new CSelectionManager( this );
-    if( _pSelMan == NULL )
+    _pSelMan = new CSelectionManager(this);
+    if (_pSelMan == NULL)
         goto Error;
 
-    _pCommandTarget = new CMshtmlEd( this );
-    if( _pCommandTarget == NULL )
+    _pCommandTarget = new CMshtmlEd(this);
+    if (_pCommandTarget == NULL)
         goto Error;
 
     _pStringCache = new CStringCache(IDS_CACHE_BEGIN, IDS_CACHE_END);
-    if( _pStringCache == NULL )
+    if (_pStringCache == NULL)
         goto Error;
 
     // Need to delay loading of the string table because we can't LoadLibrary in process attach.
@@ -277,7 +277,7 @@ CHTMLEditor::Initialize( IUnknown * pUnkDoc, IUnknown * pUnkView )
     EnterCriticalSection(&g_csActiveIMM);
     if (g_pActiveIMM == NULL)
     {
-        IGNORE_HR( GetViewServices()->GetActiveIMM(&g_pActiveIMM) );
+        IGNORE_HR(GetViewServices()->GetActiveIMM(&g_pActiveIMM));
     }
 
     if (g_pActiveIMM != NULL)
@@ -292,16 +292,16 @@ CHTMLEditor::Initialize( IUnknown * pUnkDoc, IUnknown * pUnkView )
     // Set the Edit Host - if there is one.
 
 #ifdef EDIT_DRAG_HOST
-    IFC( _pDoc->QueryInterface(IID_IServiceProvider, (void**) & pDocServiceProvider ));
-    IGNORE_HR( pDocServiceProvider->QueryService( SID_SHTMLEditHost, IID_IHTMLDragEditHost, ( void** ) & _pIHTMLDragEditHost ));
+    IFC(_pDoc->QueryInterface(IID_IServiceProvider, (void**)& pDocServiceProvider));
+    IGNORE_HR(pDocServiceProvider->QueryService(SID_SHTMLEditHost, IID_IHTMLDragEditHost, (void**)& _pIHTMLDragEditHost));
 #endif
 
 Cleanup:
-    ReleaseInterface( pDocServiceProvider );
+    ReleaseInterface(pDocServiceProvider);
     return hr;
 
 Error:
-    return( E_OUTOFMEMORY );
+    return(E_OUTOFMEMORY);
 }
 
 
@@ -322,166 +322,166 @@ CHTMLEditor::InitCommandTable()
     COutdentCommand * pOutdentCmd = NULL;
 
     _pCommandTable = new CCommandTable(60);
-    if( _pCommandTable == NULL )
+    if (_pCommandTable == NULL)
         goto Error;
 
 
     // CHAR FORMAT COMMANDS
 
 
-    pCmd = new CCharCommand( IDM_BOLD, TAGID_STRONG, this );
-    if( pCmd == NULL )
+    pCmd = new CCharCommand(IDM_BOLD, TAGID_STRONG, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CCharCommand( IDM_ITALIC, TAGID_EM, this );
-    if( pCmd == NULL )
+    pCmd = new CCharCommand(IDM_ITALIC, TAGID_EM, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CCharCommand( IDM_STRIKETHROUGH, TAGID_STRIKE, this );
-    if( pCmd == NULL )
+    pCmd = new  CCharCommand(IDM_STRIKETHROUGH, TAGID_STRIKE, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CCharCommand( IDM_SUBSCRIPT, TAGID_SUB, this );
-    if( pCmd == NULL )
+    pCmd = new  CCharCommand(IDM_SUBSCRIPT, TAGID_SUB, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CCharCommand( IDM_SUPERSCRIPT, TAGID_SUP, this );
-    if( pCmd == NULL )
+    pCmd = new  CCharCommand(IDM_SUPERSCRIPT, TAGID_SUP, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CCharCommand( IDM_UNDERLINE, TAGID_U, this );
-    if( pCmd == NULL )
+    pCmd = new  CCharCommand(IDM_UNDERLINE, TAGID_U, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CFontSizeCommand( IDM_FONTSIZE, TAGID_FONT, this );
-    if( pCmd == NULL )
+    pCmd = new  CFontSizeCommand(IDM_FONTSIZE, TAGID_FONT, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CFontNameCommand( IDM_FONTNAME, TAGID_FONT, this );
-    if( pCmd == NULL )
+    pCmd = new  CFontNameCommand(IDM_FONTNAME, TAGID_FONT, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CForeColorCommand( IDM_FORECOLOR, TAGID_FONT, this );
-    if( pCmd == NULL )
+    pCmd = new  CForeColorCommand(IDM_FORECOLOR, TAGID_FONT, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CBackColorCommand( IDM_BACKCOLOR, TAGID_FONT, this );
-    if( pCmd == NULL )
+    pCmd = new  CBackColorCommand(IDM_BACKCOLOR, TAGID_FONT, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CAnchorCommand( IDM_HYPERLINK, TAGID_A, this );
-    if( pCmd == NULL )
+    pCmd = new CAnchorCommand(IDM_HYPERLINK, TAGID_A, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CAnchorCommand( IDM_BOOKMARK, TAGID_A, this );
-    if( pCmd == NULL )
+    pCmd = new CAnchorCommand(IDM_BOOKMARK, TAGID_A, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CRemoveFormatCommand( IDM_REMOVEFORMAT, this );
-    if( pCmd == NULL )
+    pCmd = new CRemoveFormatCommand(IDM_REMOVEFORMAT, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CUnlinkCommand( IDM_UNLINK, this );
-    if( pCmd == NULL )
+    pCmd = new CUnlinkCommand(IDM_UNLINK, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CUnlinkCommand( IDM_UNBOOKMARK, this );
-    if( pCmd == NULL )
+    pCmd = new CUnlinkCommand(IDM_UNBOOKMARK, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
     // BLOCK FORMAT COMMANDS
 
 
-    pCmd = new  CIndentCommand( IDM_INDENT, TAGID_BLOCKQUOTE , this );
-    if( pCmd == NULL )
+    pCmd = new  CIndentCommand(IDM_INDENT, TAGID_BLOCKQUOTE, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pOutdentCmd = new  COutdentCommand( IDM_OUTDENT, TAGID_BLOCKQUOTE , this );
-    if( pOutdentCmd == NULL )
+    pOutdentCmd = new  COutdentCommand(IDM_OUTDENT, TAGID_BLOCKQUOTE, this);
+    if (pOutdentCmd == NULL)
         goto Error;
-    _pCommandTable->Add( (CCommand*) pOutdentCmd );
+    _pCommandTable->Add((CCommand*)pOutdentCmd);
 
-    pCmd = new  CAlignCommand(IDM_JUSTIFYCENTER, TAGID_CENTER, _T("center"), this );
-    if( pCmd == NULL )
+    pCmd = new  CAlignCommand(IDM_JUSTIFYCENTER, TAGID_CENTER, _T("center"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CAlignCommand(IDM_JUSTIFYLEFT, TAGID_NULL, _T("left"), this );
-    if( pCmd == NULL )
+    pCmd = new  CAlignCommand(IDM_JUSTIFYLEFT, TAGID_NULL, _T("left"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CAlignCommand(IDM_JUSTIFYGENERAL, TAGID_NULL, _T("left"), this );
-    if( pCmd == NULL )
+    pCmd = new  CAlignCommand(IDM_JUSTIFYGENERAL, TAGID_NULL, _T("left"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CAlignCommand(IDM_JUSTIFYRIGHT, TAGID_NULL, _T("right"), this );
-    if( pCmd == NULL )
+    pCmd = new  CAlignCommand(IDM_JUSTIFYRIGHT, TAGID_NULL, _T("right"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CAlignCommand(IDM_JUSTIFYNONE, TAGID_NULL, _T(""), this );
-    if( pCmd == NULL )
+    pCmd = new  CAlignCommand(IDM_JUSTIFYNONE, TAGID_NULL, _T(""), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CAlignCommand(IDM_JUSTIFYFULL, TAGID_NULL, _T("justify"), this );
-    if( pCmd == NULL )
+    pCmd = new  CAlignCommand(IDM_JUSTIFYFULL, TAGID_NULL, _T("justify"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CGetBlockFmtCommand( IDM_GETBLOCKFMTS, this );
-    if( pCmd == NULL )
+    pCmd = new  CGetBlockFmtCommand(IDM_GETBLOCKFMTS, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new  CLocalizeEditorCommand( IDM_LOCALIZEEDITOR, this );
-    if( pCmd == NULL )
+    pCmd = new  CLocalizeEditorCommand(IDM_LOCALIZEEDITOR, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CListCommand( IDM_ORDERLIST, TAGID_OL, this );
-    if( pCmd == NULL )
+    pCmd = new CListCommand(IDM_ORDERLIST, TAGID_OL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CListCommand( IDM_UNORDERLIST, TAGID_UL, this );
-    if( pCmd == NULL )
+    pCmd = new CListCommand(IDM_UNORDERLIST, TAGID_UL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CBlockFmtCommand( IDM_BLOCKFMT , TAGID_NULL, this );
-    if( pCmd == NULL )
+    pCmd = new CBlockFmtCommand(IDM_BLOCKFMT, TAGID_NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CBlockDirCommand( IDM_BLOCKDIRLTR, TAGID_NULL, _T("ltr"), this );
-    if( pCmd == NULL )
+    pCmd = new CBlockDirCommand(IDM_BLOCKDIRLTR, TAGID_NULL, _T("ltr"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CBlockDirCommand( IDM_BLOCKDIRRTL, TAGID_NULL, _T("rtl"), this );
-    if( pCmd == NULL )
+    pCmd = new CBlockDirCommand(IDM_BLOCKDIRRTL, TAGID_NULL, _T("rtl"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
     // DIALOG COMMANDS
@@ -489,251 +489,251 @@ CHTMLEditor::InitCommandTable()
 
     // BUGBUG - these UINT casts/inversion needs to change
 
-    pCmd = new CDialogCommand( UINT(~IDM_HYPERLINK) , this );
-    if( pCmd == NULL )
+    pCmd = new CDialogCommand(UINT(~IDM_HYPERLINK), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CDialogCommand( UINT(~IDM_IMAGE) , this );
-    if( pCmd == NULL )
+    pCmd = new CDialogCommand(UINT(~IDM_IMAGE), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CDialogCommand( UINT(~IDM_FONT) , this );
-    if( pCmd == NULL )
+    pCmd = new CDialogCommand(UINT(~IDM_FONT), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
 
     // INSERT COMMANDS
 
 
-    pCmd = new CInsertCommand( IDM_BUTTON, TAGID_BUTTON, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_BUTTON, TAGID_BUTTON, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_TEXTBOX, TAGID_INPUT, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_TEXTBOX, TAGID_INPUT, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_TEXTAREA, TAGID_TEXTAREA, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_TEXTAREA, TAGID_TEXTAREA, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_MARQUEE, TAGID_MARQUEE, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_MARQUEE, TAGID_MARQUEE, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_HORIZONTALLINE, TAGID_HR, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_HORIZONTALLINE, TAGID_HR, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_IFRAME, TAGID_IFRAME, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_IFRAME, TAGID_IFRAME, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSFIELDSET, TAGID_FIELDSET, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSFIELDSET, TAGID_FIELDSET, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertParagraphCommand( IDM_PARAGRAPH, this );
-    if( pCmd == NULL )
+    pCmd = new CInsertParagraphCommand(IDM_PARAGRAPH, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_IMAGE, TAGID_IMG, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_IMAGE, TAGID_IMG, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_DROPDOWNBOX, TAGID_SELECT, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_DROPDOWNBOX, TAGID_SELECT, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_LISTBOX, TAGID_SELECT,  _T("MULTIPLE"), _T("TRUE") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_LISTBOX, TAGID_SELECT, _T("MULTIPLE"), _T("TRUE"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_1D, TAGID_DIV, _T("POSITION:RELATIVE"), NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_1D, TAGID_DIV, _T("POSITION:RELATIVE"), NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_CHECKBOX, TAGID_INPUT, _T("type"), _T("checkbox") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_CHECKBOX, TAGID_INPUT, _T("type"), _T("checkbox"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_RADIOBUTTON, TAGID_INPUT, _T("type"), _T("radio") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_RADIOBUTTON, TAGID_INPUT, _T("type"), _T("radio"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSINPUTBUTTON, TAGID_INPUT, _T("type"), _T("button") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSINPUTBUTTON, TAGID_INPUT, _T("type"), _T("button"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSINPUTRESET, TAGID_INPUT, _T("type"), _T("reset") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSINPUTRESET, TAGID_INPUT, _T("type"), _T("reset"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSINPUTSUBMIT, TAGID_INPUT, _T("type"), _T("submit") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSINPUTSUBMIT, TAGID_INPUT, _T("type"), _T("submit"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSINPUTUPLOAD, TAGID_INPUT, _T("type"), _T("file") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSINPUTUPLOAD, TAGID_INPUT, _T("type"), _T("file"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSINPUTHIDDEN, TAGID_INPUT, _T("type"), _T("hidden") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSINPUTHIDDEN, TAGID_INPUT, _T("type"), _T("hidden"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSINPUTPASSWORD, TAGID_INPUT, _T("type"), _T("password") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSINPUTPASSWORD, TAGID_INPUT, _T("type"), _T("password"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSINPUTIMAGE, TAGID_INPUT, _T("type"), _T("image") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSINPUTIMAGE, TAGID_INPUT, _T("type"), _T("image"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_INSERTSPAN, TAGID_SPAN, _T("class"), _T("") , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_INSERTSPAN, TAGID_SPAN, _T("class"), _T(""), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_LINEBREAKLEFT, TAGID_BR, _T("clear"), _T("left"), this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_LINEBREAKLEFT, TAGID_BR, _T("clear"), _T("left"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_LINEBREAKRIGHT, TAGID_BR, _T("clear"), _T("right"), this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_LINEBREAKRIGHT, TAGID_BR, _T("clear"), _T("right"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_LINEBREAKBOTH, TAGID_BR, _T("clear"), _T("all"), this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_LINEBREAKBOTH, TAGID_BR, _T("clear"), _T("all"), this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_LINEBREAKNORMAL, TAGID_BR, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_LINEBREAKNORMAL, TAGID_BR, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CInsertCommand( IDM_NONBREAK, TAGID_NULL, NULL, NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertCommand(IDM_NONBREAK, TAGID_NULL, NULL, NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
     // INSERTOBJECT COMMAND
 
 
-    pCmd = new CInsertObjectCommand( IDM_INSERTOBJECT, TAGID_OBJECT, _T( "CLASSID" ), NULL , this );
-    if( pCmd == NULL )
+    pCmd = new CInsertObjectCommand(IDM_INSERTOBJECT, TAGID_OBJECT, _T("CLASSID"), NULL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
     // SELECTION COMMANDS
 
 
-    pCmd = new CSelectAllCommand( IDM_SELECTALL , this );
-    if( pCmd == NULL )
+    pCmd = new CSelectAllCommand(IDM_SELECTALL, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CClearSelectionCommand( IDM_CLEARSELECTION , this );
-    if( pCmd == NULL )
+    pCmd = new CClearSelectionCommand(IDM_CLEARSELECTION, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
     // DELETE COMMAND
 
 
-    pCmd = new CDeleteCommand( IDM_DELETE , this );
-    if( pCmd == NULL )
+    pCmd = new CDeleteCommand(IDM_DELETE, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    pCmd = new CDeleteCommand( IDM_DELETEWORD , this );
-    if( pCmd == NULL )
+    pCmd = new CDeleteCommand(IDM_DELETEWORD, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
     // CUT COMMAND
 
 
-    pCmd = new CCutCommand( IDM_CUT , this );
-    if( pCmd == NULL )
+    pCmd = new CCutCommand(IDM_CUT, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
 
     // COPY COMMAND
 
 
-    pCmd = new CCopyCommand( IDM_COPY , this );
-    if( pCmd == NULL )
+    pCmd = new CCopyCommand(IDM_COPY, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
 
     // PASTE COMMAND
 
 
-    pCmd = new CPasteCommand( IDM_PASTE , this );
-    if( pCmd == NULL )
+    pCmd = new CPasteCommand(IDM_PASTE, this);
+    if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
 
 
     // MISCELLANEOUS OTHER COMMANDS
 
 
-    pCmd = new CAutoDetectCommand( IDM_AUTODETECT, this );
-    if( pCmd == NULL )
-        goto Error;
-    _pCommandTable->Add( pCmd );
-
-    pCmd = new COverwriteCommand( IDM_OVERWRITE, this );
-    if( pCmd == NULL )
-        goto Error;
-    _pCommandTable->Add( pCmd );
-
-    pCmd = new CComposeSettingsCommand( IDM_COMPOSESETTINGS, this );
+    pCmd = new CAutoDetectCommand(IDM_AUTODETECT, this);
     if (pCmd == NULL)
         goto Error;
-    _pCommandTable->Add( pCmd );
+    _pCommandTable->Add(pCmd);
 
-    return( S_OK );
+    pCmd = new COverwriteCommand(IDM_OVERWRITE, this);
+    if (pCmd == NULL)
+        goto Error;
+    _pCommandTable->Add(pCmd);
+
+    pCmd = new CComposeSettingsCommand(IDM_COMPOSESETTINGS, this);
+    if (pCmd == NULL)
+        goto Error;
+    _pCommandTable->Add(pCmd);
+
+    return(S_OK);
 
 Error:
-    return( E_OUTOFMEMORY );
+    return(E_OUTOFMEMORY);
 }
 
 
@@ -751,52 +751,52 @@ CHTMLEditor::DeleteCommandTable()
 
 HRESULT
 CHTMLEditor::HandleMessage(
-    SelectionMessage* pSelectionMessage ,
-    DWORD* pdwFollowUpAction )
+    SelectionMessage* pSelectionMessage,
+    DWORD* pdwFollowUpAction)
 {
-    if(!_pSelMan)
+    if (!_pSelMan)
         return E_FAIL;
 
-    HRESULT hr = THR( _pSelMan->HandleMessage( pSelectionMessage, pdwFollowUpAction ) );
-    return( hr );
+    HRESULT hr = THR(_pSelMan->HandleMessage(pSelectionMessage, pdwFollowUpAction));
+    return(hr);
 }
 
 HRESULT
 CHTMLEditor::SetEditContext(
-            BOOL fEditable ,
-            BOOL fSetSelection,
-            BOOL fParentEditable,
-            IMarkupPointer* pStartPointer,
-            IMarkupPointer* pEndPointer,
-            BOOL fNoScope )
+    BOOL fEditable,
+    BOOL fSetSelection,
+    BOOL fParentEditable,
+    IMarkupPointer* pStartPointer,
+    IMarkupPointer* pEndPointer,
+    BOOL fNoScope)
 {
-    HRESULT hr ;
+    HRESULT hr;
 
     Assert(_pSelMan != NULL);
-    if ( ! _pSelMan )
+    if (!_pSelMan)
     {
         hr = E_FAIL;
         goto Cleanup;
     }
 
-    hr = THR( _pSelMan->SetEditContext( fEditable, fSetSelection, fParentEditable, pStartPointer, pEndPointer, fNoScope  ));
+    hr = THR(_pSelMan->SetEditContext(fEditable, fSetSelection, fParentEditable, pStartPointer, pEndPointer, fNoScope));
 
 Cleanup:
-    return( hr );
+    return(hr);
 }
 
 
 HRESULT
 CHTMLEditor::GetSelectionType(
-    SELECTION_TYPE * eSelectionType )
+    SELECTION_TYPE * eSelectionType)
 {
     Assert(_pSelMan != NULL);
-    if ( ! _pSelMan )
+    if (!_pSelMan)
     {
-        return( E_FAIL) ;
+        return(E_FAIL);
     }
 
-    RRETURN( _pSelMan->GetSelectionType( eSelectionType ) );
+    RRETURN(_pSelMan->GetSelectionType(eSelectionType));
 }
 
 
@@ -805,62 +805,62 @@ CHTMLEditor::Notify(
     SELECTION_NOTIFICATION eSelectionNotification,
     IUnknown *pUnknown,
     DWORD* pdwFollowUpActionFlag,
-    DWORD dword )
+    DWORD dword)
 {
     Assert(_pSelMan != NULL);
-    if ( ! _pSelMan )
+    if (!_pSelMan)
     {
-        return ( E_FAIL );
+        return (E_FAIL);
     }
-    return( THR( _pSelMan->Notify( eSelectionNotification, pUnknown, pdwFollowUpActionFlag, dword ) ));
+    return(THR(_pSelMan->Notify(eSelectionNotification, pUnknown, pdwFollowUpActionFlag, dword)));
 }
 
 
 HRESULT
 CHTMLEditor::GetRangeCommandTarget(
     IUnknown *  pContext,
-    IUnknown ** ppUnkTarget )
+    IUnknown ** ppUnkTarget)
 {
     // TODO: (johnbed) smarten this up so we just maintain a pool of available
     // command targets instead of create/destroy.
     HRESULT hr = S_OK;
     IUnknown * punk = NULL;
-    CMshtmlEd * pt = new CMshtmlEd( this );
+    CMshtmlEd * pt = new CMshtmlEd(this);
 
-    if( pt == NULL )
+    if (pt == NULL)
     {
         hr = E_OUTOFMEMORY;
         goto Cleanup;
     }
 
-    hr = THR( pt->Initialize( pContext ));
-    if( hr )
+    hr = THR(pt->Initialize(pContext));
+    if (hr)
         goto Cleanup;
 
-    hr = THR( pt->QueryInterface( IID_IUnknown , (void **) &punk ));
-    if( hr )
+    hr = THR(pt->QueryInterface(IID_IUnknown, (void **)&punk));
+    if (hr)
         goto Cleanup;
 
     *ppUnkTarget = punk;
 
 Cleanup:
 
-    return( hr );
+    return(hr);
 }
 
 HRESULT
 CHTMLEditor::GetElementToTabFrom(
-            BOOL            fForward,
-            IHTMLElement**  ppElement,
-            BOOL *          pfFindNext)
+    BOOL            fForward,
+    IHTMLElement**  ppElement,
+    BOOL *          pfFindNext)
 {
     HRESULT hr = S_OK;
     SELECTION_TYPE eSelType;
     IHTMLElement * pElement = NULL;
     ISelectionRenderingServices * psrs = NULL;
 
-    Assert( ppElement );
-    if( ppElement == NULL )
+    Assert(ppElement);
+    if (ppElement == NULL)
         goto Cleanup;
 
     Assert(pfFindNext);
@@ -871,47 +871,47 @@ CHTMLEditor::GetElementToTabFrom(
     *pfFindNext = TRUE;
     eSelType = _pSelMan->GetSelectionType();
 
-    if( eSelType == SELECTION_TYPE_Control )
+    if (eSelType == SELECTION_TYPE_Control)
     {
         CEditTracker * pTracker = _pSelMan->GetActiveTracker();
-        Assert( pTracker );
-        CControlTracker * pCtrlTracker = (CControlTracker *) pTracker;
+        Assert(pTracker);
+        CControlTracker * pCtrlTracker = (CControlTracker *)pTracker;
         pElement = pCtrlTracker->GetControlElement();
         pElement->AddRef();
     }
     else
     {
-        CEditPointer epLeft( this );
-        CEditPointer epRight( this );
+        CEditPointer epLeft(this);
+        CEditPointer epRight(this);
         INT lSegmentCount = 0;
 
-        IFC( _pViewServices->GetCurrentSelectionRenderingServices( &psrs ) );
-        IFC( psrs->GetSegmentCount( &lSegmentCount , &eSelType ));
+        IFC(_pViewServices->GetCurrentSelectionRenderingServices(&psrs));
+        IFC(psrs->GetSegmentCount(&lSegmentCount, &eSelType));
 
-        if( lSegmentCount == 0 )
+        if (lSegmentCount == 0)
         {
             SP_IHTMLCaret spCaret;
             BOOL fPositioned;
             // There is no selection, try to use the physical caret
 
-            hr = THR( _pViewServices->GetCaret( & spCaret ));
-            hr = THR( spCaret->MovePointerToCaret( epRight ));
-            hr = THR( epRight->IsPositioned( & fPositioned ));
+            hr = THR(_pViewServices->GetCaret(&spCaret));
+            hr = THR(spCaret->MovePointerToCaret(epRight));
+            hr = THR(epRight->IsPositioned(&fPositioned));
 
-            if( fPositioned )
+            if (fPositioned)
             {
 
             }
             else
             {
                 // no caret to fall back on - go use the edit context
-                if( fForward )
+                if (fForward)
                 {
-                    IFC( epRight.MoveToPointer( _pSelMan->GetStartEditContext()));
+                    IFC(epRight.MoveToPointer(_pSelMan->GetStartEditContext()));
                 }
                 else
                 {
-                    IFC( epRight.MoveToPointer( _pSelMan->GetEndEditContext()));
+                    IFC(epRight.MoveToPointer(_pSelMan->GetEndEditContext()));
                 }
             }
 
@@ -921,21 +921,21 @@ CHTMLEditor::GetElementToTabFrom(
             if (fForward)
             {
                 // Move to the last segment added to the list
-                IFC( psrs->MovePointersToSegment( lSegmentCount - 1 , epLeft, epRight ));
+                IFC(psrs->MovePointersToSegment(lSegmentCount - 1, epLeft, epRight));
             }
             else
             {
                 // Move to the first segment added to the list. Also, store the left
                 // ptr in epRight because epRight is what we use for all further
                 // computation.
-                IFC( psrs->MovePointersToSegment( 0 , epRight, epLeft ));
+                IFC(psrs->MovePointersToSegment(0, epRight, epLeft));
             }
         }
 
         // Find the next element to go to when tabbing from caret(epRight)
         {
-            IHTMLElement *          pElementCaret   = NULL;
-            MARKUP_CONTEXT_TYPE     context         = CONTEXT_TYPE_None;
+            IHTMLElement *          pElementCaret = NULL;
+            MARKUP_CONTEXT_TYPE     context = CONTEXT_TYPE_None;
 
             // First find the element that contains caret
             IFC(_pViewServices->CurrentScopeOrSlave(epRight, &pElementCaret));
@@ -954,10 +954,10 @@ CHTMLEditor::GetElementToTabFrom(
                 {
                     IFC(_pViewServices->LeftOrSlave(epRight, TRUE, &context, &pElement, NULL, NULL));
                 }
-                if (    context == CONTEXT_TYPE_EnterScope
-                    ||  context == CONTEXT_TYPE_ExitScope
-                    ||  context == CONTEXT_TYPE_NoScope
-                   )
+                if (context == CONTEXT_TYPE_EnterScope
+                    || context == CONTEXT_TYPE_ExitScope
+                    || context == CONTEXT_TYPE_NoScope
+                    )
                 {
                     break;
                 }
@@ -975,15 +975,15 @@ CHTMLEditor::GetElementToTabFrom(
 
 Cleanup:
 
-    if( SUCCEEDED(hr) && pElement )
+    if (SUCCEEDED(hr) && pElement)
     {
-        hr = THR( pElement->QueryInterface( IID_IHTMLElement , (LPVOID *) ppElement ));
+        hr = THR(pElement->QueryInterface(IID_IHTMLElement, (LPVOID *)ppElement));
     }
 
-    ReleaseInterface( pElement );
-    ReleaseInterface( psrs );
+    ReleaseInterface(pElement);
+    ReleaseInterface(psrs);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -993,33 +993,33 @@ Cleanup:
 
 
 HRESULT
-CHTMLEditor::Delete (
+CHTMLEditor::Delete(
     IMarkupPointer*     pStart,
     IMarkupPointer*     pEnd,
     BOOL fAdjustPointers)
 {
     CDeleteCommand * pDeleteCommand;
 
-    pDeleteCommand = (CDeleteCommand *) GetCommandTable()->Get( IDM_DELETE );
-    Assert( pDeleteCommand );
+    pDeleteCommand = (CDeleteCommand *)GetCommandTable()->Get(IDM_DELETE);
+    Assert(pDeleteCommand);
 
-    RRETURN( THR(pDeleteCommand->Delete( pStart, pEnd, fAdjustPointers )));
+    RRETURN(THR(pDeleteCommand->Delete(pStart, pEnd, fAdjustPointers)));
 }
 
 
 HRESULT
-CHTMLEditor::DeleteCharacter (
+CHTMLEditor::DeleteCharacter(
     IMarkupPointer * pPointer,
     BOOL fLeftBound,
     BOOL fWordMode,
-    IMarkupPointer * pBoundary )
+    IMarkupPointer * pBoundary)
 {
     CDeleteCommand * pDeleteCommand;
 
-    pDeleteCommand = (CDeleteCommand *) GetCommandTable()->Get( IDM_DELETE );
-    Assert( pDeleteCommand );
+    pDeleteCommand = (CDeleteCommand *)GetCommandTable()->Get(IDM_DELETE);
+    Assert(pDeleteCommand);
 
-    RRETURN( THR(pDeleteCommand->DeleteCharacter( pPointer, fLeftBound, fWordMode, pBoundary )));
+    RRETURN(THR(pDeleteCommand->DeleteCharacter(pPointer, fLeftBound, fWordMode, pBoundary)));
 }
 
 
@@ -1027,14 +1027,14 @@ HRESULT
 CHTMLEditor::Paste(
     IMarkupPointer* pStart,
     IMarkupPointer* pEnd,
-    BSTR bstrText )
+    BSTR bstrText)
 {
     CPasteCommand * pPasteCommand;
 
-    pPasteCommand = (CPasteCommand *) GetCommandTable()->Get( IDM_PASTE );
-    Assert( pPasteCommand );
+    pPasteCommand = (CPasteCommand *)GetCommandTable()->Get(IDM_PASTE);
+    Assert(pPasteCommand);
 
-    RRETURN( THR( pPasteCommand->Paste( pStart, pEnd, GetPrimarySpringLoader(), bstrText )));
+    RRETURN(THR(pPasteCommand->Paste(pStart, pEnd, GetPrimarySpringLoader(), bstrText)));
 
 }
 
@@ -1043,25 +1043,25 @@ HRESULT
 CHTMLEditor::PasteFromClipboard(
     IMarkupPointer* pStart,
     IMarkupPointer* pEnd,
-    IDataObject* pDO )
+    IDataObject* pDO)
 {
     CPasteCommand  * pPasteCommand = NULL;
 
-    pPasteCommand = (CPasteCommand *) GetCommandTable()->Get( IDM_PASTE );
-    Assert( pPasteCommand );
+    pPasteCommand = (CPasteCommand *)GetCommandTable()->Get(IDM_PASTE);
+    Assert(pPasteCommand);
 
-    RRETURN( THR(pPasteCommand->PasteFromClipboard( pStart, pEnd , pDO, GetPrimarySpringLoader())));
+    RRETURN(THR(pPasteCommand->PasteFromClipboard(pStart, pEnd, pDO, GetPrimarySpringLoader())));
 }
 
 HRESULT
 CHTMLEditor::Select(
     IMarkupPointer* pStart,
-    IMarkupPointer* pEnd ,
+    IMarkupPointer* pEnd,
     SELECTION_TYPE eType,
-    DWORD * pdwFollowUpCode )
+    DWORD * pdwFollowUpCode)
 {
     Assert(_pSelMan != NULL);
-    if ( ! _pSelMan )
+    if (!_pSelMan)
     {
         return E_FAIL;
     }
@@ -1069,7 +1069,7 @@ CHTMLEditor::Select(
     // Stop doing a set edit context range here, assume that its been set in Trident.
 
 
-    RRETURN ( _pSelMan->Select( pStart, pEnd, eType, pdwFollowUpCode ));
+    RRETURN(_pSelMan->Select(pStart, pEnd, eType, pdwFollowUpCode));
 
 }
 
@@ -1079,46 +1079,46 @@ CHTMLEditor::IsPointerInSelection(
     IMarkupPointer* pMarkupPointer,
     BOOL * pfPointInSelection,
     POINT * pptGlobal,
-    IHTMLElement* pIElementOver )
+    IHTMLElement* pIElementOver)
 {
     Assert(_pSelMan != NULL);
-    if ( ! _pSelMan )
+    if (!_pSelMan)
     {
-        return( E_FAIL );
+        return(E_FAIL);
     }
-    RRETURN ( _pSelMan->IsPointerInSelection( pMarkupPointer, pfPointInSelection, pptGlobal, pIElementOver  ));
+    RRETURN(_pSelMan->IsPointerInSelection(pMarkupPointer, pfPointInSelection, pptGlobal, pIElementOver));
 }
 
 
 HRESULT
-CHTMLEditor::AdjustPointerForInsert (
-                                    IMarkupPointer * pWhereIThinkIAm ,
-                                    BOOL fFurtherInDocument,
-                                    BOOL fNotAtBol ,
-                                    IMarkupPointer* pConstraintStart,
-                                    IMarkupPointer* pConstraintEnd )
+CHTMLEditor::AdjustPointerForInsert(
+    IMarkupPointer * pWhereIThinkIAm,
+    BOOL fFurtherInDocument,
+    BOOL fNotAtBol,
+    IMarkupPointer* pConstraintStart,
+    IMarkupPointer* pConstraintEnd)
 {
     HRESULT hr = S_OK;
-    hr = THR( AdjustPointer( pWhereIThinkIAm, fNotAtBol, fFurtherInDocument ? RIGHT : LEFT, fNotAtBol ? LEFT : RIGHT,
-                             ( pConstraintStart == NULL ) ? _pSelMan->GetStartEditContext() : pConstraintStart,
-                             ( pConstraintEnd == NULL ) ? _pSelMan->GetEndEditContext() : pConstraintEnd, POSCARETOPT_None ) );
-    RRETURN ( hr );
+    hr = THR(AdjustPointer(pWhereIThinkIAm, fNotAtBol, fFurtherInDocument ? RIGHT : LEFT, fNotAtBol ? LEFT : RIGHT,
+        (pConstraintStart == NULL) ? _pSelMan->GetStartEditContext() : pConstraintStart,
+                           (pConstraintEnd == NULL) ? _pSelMan->GetEndEditContext() : pConstraintEnd, POSCARETOPT_None));
+    RRETURN(hr);
 }
 
 HRESULT
-CHTMLEditor::AdjustPointerForInsert (
-                                    IMarkupPointer * pWhereIThinkIAm ,
-                                    BOOL fFurtherInDocument,
-                                    BOOL fNotAtBol ,
-                                    IMarkupPointer* pConstraintStart,
-                                    IMarkupPointer* pConstraintEnd,
-                                    BOOL fStayOutsideUrl)
+CHTMLEditor::AdjustPointerForInsert(
+    IMarkupPointer * pWhereIThinkIAm,
+    BOOL fFurtherInDocument,
+    BOOL fNotAtBol,
+    IMarkupPointer* pConstraintStart,
+    IMarkupPointer* pConstraintEnd,
+    BOOL fStayOutsideUrl)
 {
     HRESULT hr = S_OK;
-    hr = THR( AdjustPointer( pWhereIThinkIAm, fNotAtBol, fFurtherInDocument ? RIGHT : LEFT, fNotAtBol ? LEFT : RIGHT,
-                             ( pConstraintStart == NULL ) ? _pSelMan->GetStartEditContext() : pConstraintStart,
-                             ( pConstraintEnd == NULL ) ? _pSelMan->GetEndEditContext() : pConstraintEnd, fStayOutsideUrl ? POSCARETOPT_None : ADJPTROPT_AdjustIntoURL ));
-    RRETURN ( hr );
+    hr = THR(AdjustPointer(pWhereIThinkIAm, fNotAtBol, fFurtherInDocument ? RIGHT : LEFT, fNotAtBol ? LEFT : RIGHT,
+        (pConstraintStart == NULL) ? _pSelMan->GetStartEditContext() : pConstraintStart,
+                           (pConstraintEnd == NULL) ? _pSelMan->GetEndEditContext() : pConstraintEnd, fStayOutsideUrl ? POSCARETOPT_None : ADJPTROPT_AdjustIntoURL));
+    RRETURN(hr);
 }
 
 
@@ -1131,10 +1131,10 @@ CHTMLEditor::AdjustPointerForInsert (
 
 
 HRESULT
-CHTMLEditor::FindSiteSelectableElement (
-                                     IMarkupPointer* pPointerStart,
-                                     IMarkupPointer* pPointerEnd,
-                                     IHTMLElement** ppIHTMLElement)
+CHTMLEditor::FindSiteSelectableElement(
+    IMarkupPointer* pPointerStart,
+    IMarkupPointer* pPointerEnd,
+    IHTMLElement** ppIHTMLElement)
 {
     HRESULT hr = S_OK;
     IHTMLElement* pICurElement = NULL;
@@ -1144,83 +1144,83 @@ CHTMLEditor::FindSiteSelectableElement (
     int iWherePointer = 0;
     MARKUP_CONTEXT_TYPE eContext = CONTEXT_TYPE_None;
     BOOL fFound = FALSE;
-    BOOL fValidForSelection  = FALSE;
+    BOOL fValidForSelection = FALSE;
     BOOL fSiteSelectable = FALSE;
 
 #if DBG == 1
-    IFC( OldCompare( pPointerStart, pPointerEnd, & iWherePointer ));
-    Assert( iWherePointer != LEFT );
+    IFC(OldCompare(pPointerStart, pPointerEnd, &iWherePointer));
+    Assert(iWherePointer != LEFT);
 #endif
 
-    IFC( GetMarkupServices()->CreateMarkupPointer( & pPointer ));
-    IFC( pPointer->MoveToPointer( pPointerStart));
+    IFC(GetMarkupServices()->CreateMarkupPointer(&pPointer));
+    IFC(pPointer->MoveToPointer(pPointerStart));
 
-    for(;;)
+    for (;;)
     {
-        IFC( pPointer->Right( TRUE, & eContext, & pICurElement, NULL, NULL));
-        IFC( OldCompare( pPointer, pPointerEnd, & iWherePointer));
+        IFC(pPointer->Right(TRUE, &eContext, &pICurElement, NULL, NULL));
+        IFC(OldCompare(pPointer, pPointerEnd, &iWherePointer));
 
-        if ( iWherePointer == LEFT )
+        if (iWherePointer == LEFT)
         {
             goto Cleanup;
         }
-        switch( eContext)
+        switch (eContext)
         {
-            case CONTEXT_TYPE_EnterScope:
-            case CONTEXT_TYPE_NoScope:
+        case CONTEXT_TYPE_EnterScope:
+        case CONTEXT_TYPE_NoScope:
+        {
+            Assert(pICurElement);
+
+            fSiteSelectable = IsElementSiteSelectable(pICurElement) == S_OK;
+            if (fSiteSelectable)
             {
-                Assert( pICurElement);
-
-                fSiteSelectable = IsElementSiteSelectable( pICurElement ) == S_OK ;
-                if ( fSiteSelectable )
+                if (!fFound)
                 {
-                    if (! fFound )
-                    {
-                        fValidForSelection = TRUE;
-                        IFC( pPointer->MoveAdjacentToElement( pICurElement, ELEM_ADJ_AfterEnd ));
-                        ReplaceInterface( & pISiteSelectableElement, pICurElement);
-                    }
-                    else
-                    {
+                    fValidForSelection = TRUE;
+                    IFC(pPointer->MoveAdjacentToElement(pICurElement, ELEM_ADJ_AfterEnd));
+                    ReplaceInterface(&pISiteSelectableElement, pICurElement);
+                }
+                else
+                {
 
-                        // If we find a more than one site selectable elment assume we are a text selection
-                        // this assumption breaks for MultipleSelection
+                    // If we find a more than one site selectable elment assume we are a text selection
+                    // this assumption breaks for MultipleSelection
 
-                        fValidForSelection = FALSE;
-                        goto Cleanup;
-                    }
+                    fValidForSelection = FALSE;
+                    goto Cleanup;
                 }
             }
-            break;
+        }
+        break;
 
-            case CONTEXT_TYPE_Text:
-            case CONTEXT_TYPE_None:
-            {
-                if ( fFound )
-                    fValidForSelection = FALSE;
-                goto Cleanup;
-            }
+        case CONTEXT_TYPE_Text:
+        case CONTEXT_TYPE_None:
+        {
+            if (fFound)
+                fValidForSelection = FALSE;
+            goto Cleanup;
+        }
 
         }
-        ClearInterface( & pICurElement );
+        ClearInterface(&pICurElement);
     }
 
 
 Cleanup:
-    ReleaseInterface( pICurElement);
-    ReleaseInterface( pPointer );
+    ReleaseInterface(pICurElement);
+    ReleaseInterface(pPointer);
 
-    if ( hr == S_OK )
+    if (hr == S_OK)
     {
-        if ( fValidForSelection )
+        if (fValidForSelection)
         {
-            ReplaceInterface( ppIHTMLElement, pISiteSelectableElement );
+            ReplaceInterface(ppIHTMLElement, pISiteSelectableElement);
         }
         else
             hr = S_FALSE;
     }
-    ReleaseInterface( pISiteSelectableElement );
-    return ( hr );
+    ReleaseInterface(pISiteSelectableElement);
+    return (hr);
 }
 
 
@@ -1234,25 +1234,25 @@ Cleanup:
 
 
 HRESULT
-CHTMLEditor::IsElementSiteSelectable( IHTMLElement* pIElement )
+CHTMLEditor::IsElementSiteSelectable(IHTMLElement* pIElement)
 {
     HRESULT hr = S_OK;
     ELEMENT_TAG_ID eTag = TAGID_NULL;
     BOOL fSiteSelectable = FALSE;
 
-    IFC( GetMarkupServices()->GetElementTagId( pIElement, & eTag ));
+    IFC(GetMarkupServices()->GetElementTagId(pIElement, &eTag));
 
     fSiteSelectable = CControlTracker::IsThisElementSiteSelectable(
-                            _pSelMan,
-                            eTag,
-                            pIElement );
+        _pSelMan,
+        eTag,
+        pIElement);
 Cleanup:
 
-    if ( fSiteSelectable )
+    if (fSiteSelectable)
         hr = S_OK;
     else
         hr = S_FALSE;
-    RRETURN1( hr , S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 
@@ -1264,18 +1264,18 @@ Cleanup:
 
 
 HRESULT
-CHTMLEditor::IsElementUIActivatable( IHTMLElement* pIElement )
+CHTMLEditor::IsElementUIActivatable(IHTMLElement* pIElement)
 {
     HRESULT hr;
 
-    hr =  _pSelMan->IsElementUIActivatable( pIElement ) ? S_OK : S_FALSE ;
+    hr = _pSelMan->IsElementUIActivatable(pIElement) ? S_OK : S_FALSE;
 
-    RRETURN1( hr , S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 
 BOOL
-SkipCRLF ( TCHAR ** ppch )
+SkipCRLF(TCHAR ** ppch)
 {
     TCHAR   ch1;
     TCHAR   ch2;
@@ -1311,14 +1311,14 @@ Cleanup:
 
 
 HRESULT
-CHTMLEditor::InsertLineBreak( IMarkupPointer * pStart, BOOL fAcceptsHTML )
+CHTMLEditor::InsertLineBreak(IMarkupPointer * pStart, BOOL fAcceptsHTML)
 {
     IMarkupPointer  * pEnd = NULL;
     IHTMLElement    * pIElement = NULL;
     HRESULT           hr;
 
-    IFC( GetMarkupServices()->CreateMarkupPointer( & pEnd ) );
-    IFC( pEnd->MoveToPointer( pStart ) );
+    IFC(GetMarkupServices()->CreateMarkupPointer(&pEnd));
+    IFC(pEnd->MoveToPointer(pStart));
 
 
     // If pStart is in an element that accepts the truth, then insert a BR there
@@ -1326,18 +1326,18 @@ CHTMLEditor::InsertLineBreak( IMarkupPointer * pStart, BOOL fAcceptsHTML )
 
     if (fAcceptsHTML)
     {
-        IFC( GetMarkupServices()->CreateElement( TAGID_BR, NULL, & pIElement) );
-        IFC( InsertElement( pIElement, pStart, pEnd ) );
+        IFC(GetMarkupServices()->CreateElement(TAGID_BR, NULL, &pIElement));
+        IFC(InsertElement(pIElement, pStart, pEnd));
     }
     else
     {
-        IFC( GetViewServices()->InsertMaximumText( _T("\r"), 1, pStart ) );
+        IFC(GetViewServices()->InsertMaximumText(_T("\r"), 1, pStart));
     }
 
 Cleanup:
-    ReleaseInterface( pIElement );
-    ReleaseInterface( pEnd );
-    RRETURN( hr );
+    ReleaseInterface(pIElement);
+    ReleaseInterface(pEnd);
+    RRETURN(hr);
 }
 
 
@@ -1349,12 +1349,12 @@ CHTMLEditor::InsertSanitizedText(
     CSpringLoader *     psl,
     BOOL                fDataBinding)
 {
-    const TCHAR chNBSP  = WCH_NBSP;
+    const TCHAR chNBSP = WCH_NBSP;
     const TCHAR chSpace = _T(' ');
-    const TCHAR chTab   = _T('\t');
+    const TCHAR chTab = _T('\t');
 
     HRESULT   hr = S_OK;;
-    TCHAR     pchInsert[ TEXTCHUNK_SIZE + 1 ];
+    TCHAR     pchInsert[TEXTCHUNK_SIZE + 1];
     TCHAR     chNext;
     int       cch = 0;
     IHTMLElement        *   pFlowElement = NULL;
@@ -1365,21 +1365,21 @@ CHTMLEditor::InsertSanitizedText(
     POINTER_GRAVITY         eGravity;
 
     // Remember the gravity so we can restore it at Cleanup
-    IFC( pStart->Gravity(& eGravity ) );
+    IFC(pStart->Gravity(&eGravity));
 
     // we may be passed a null pStr if, for example, we are pasting an empty clipboard.
 
-    if( pStr == NULL )
+    if (pStr == NULL)
         goto Cleanup;
 
-    IFC( pStart->SetGravity( POINTER_GRAVITY_Right ) );
+    IFC(pStart->SetGravity(POINTER_GRAVITY_Right));
 
 
     // Determine whether we accept HTML or not
 
-    IFC( pViewServices->GetFlowElement(pStart, &pFlowElement) );
+    IFC(pViewServices->GetFlowElement(pStart, &pFlowElement));
 
-    if (! pFlowElement)
+    if (!pFlowElement)
     {
 
         // Elements that do not accept HTML, e.g. TextArea, always have a flow layout.
@@ -1390,9 +1390,9 @@ CHTMLEditor::InsertSanitizedText(
     }
     else
     {
-        IFC( pViewServices->IsContainerElement(pFlowElement, &fContainer, &fAcceptsHTML) );
+        IFC(pViewServices->IsContainerElement(pFlowElement, &fContainer, &fAcceptsHTML));
 
-        IFC( pViewServices->IsMultiLineFlowElement(pFlowElement, &fMultiLine) );
+        IFC(pViewServices->IsMultiLineFlowElement(pFlowElement, &fMultiLine));
     }
 
     if (*pStr && psl)
@@ -1400,47 +1400,47 @@ CHTMLEditor::InsertSanitizedText(
 
     chNext = *pStr;
 
-    while( chNext )
+    while (chNext)
     {
 
         // If the first character is a space,
         // it must turn into an nbsp if pStart is
         // at the beginning of a block/layout or after a <BR>
 
-        if ( fAcceptsHTML && chNext == chSpace )
+        if (fAcceptsHTML && chNext == chSpace)
         {
-            CEditPointer    ePointer( this );
+            CEditPointer    ePointer(this);
             DWORD           dwBreak;
 
-            IFC( ePointer.MoveToPointer( pStart ) );
-            IGNORE_HR( ePointer.Scan(  LEFT,
-                            BREAK_CONDITION_Block |
-                            BREAK_CONDITION_Site |
-                            BREAK_CONDITION_Control |
-                            BREAK_CONDITION_NoScopeBlock |
-                            BREAK_CONDITION_Text ,
-                            &dwBreak ) );
+            IFC(ePointer.MoveToPointer(pStart));
+            IGNORE_HR(ePointer.Scan(LEFT,
+                                    BREAK_CONDITION_Block |
+                                    BREAK_CONDITION_Site |
+                                    BREAK_CONDITION_Control |
+                                    BREAK_CONDITION_NoScopeBlock |
+                                    BREAK_CONDITION_Text,
+                                    &dwBreak));
 
-            if ( ePointer.CheckFlag( dwBreak, BREAK_CONDITION_ExitBlock ) ||
-                 ePointer.CheckFlag( dwBreak, BREAK_CONDITION_ExitSite  ) ||
-                 ePointer.CheckFlag( dwBreak, BREAK_CONDITION_NoScopeBlock ))
+            if (ePointer.CheckFlag(dwBreak, BREAK_CONDITION_ExitBlock) ||
+                ePointer.CheckFlag(dwBreak, BREAK_CONDITION_ExitSite) ||
+                ePointer.CheckFlag(dwBreak, BREAK_CONDITION_NoScopeBlock))
             {
                 // Change the first character to an nbsp
                 chNext = chNBSP;
             }
         }
 
-        for ( cch = 0 ; chNext != 0 && chNext != _T('\r') && chNext != _T('\n') ; )
+        for (cch = 0; chNext != 0 && chNext != _T('\r') && chNext != _T('\n'); )
         {
-            if ( fAcceptsHTML )
+            if (fAcceptsHTML)
             {
 
                 // Launder spaces if we accept html
 
-                switch ( chNext )
+                switch (chNext)
                 {
                 case chSpace:
-                    if ( *(pStr + 1) == _T( ' ' ) )
+                    if (*(pStr + 1) == _T(' '))
                     {
                         chNext = chNBSP;
                     }
@@ -1455,36 +1455,36 @@ CHTMLEditor::InsertSanitizedText(
                 }
             }
 
-            pchInsert[ cch++ ] = chNext;
+            pchInsert[cch++] = chNext;
 
             chNext = *++pStr;
 
             if (cch == TEXTCHUNK_SIZE)
             {
                 // pchInsert is full, empty the text into the tree
-                pchInsert[ cch ] = 0;
-                IFC( pViewServices->InsertMaximumText( pchInsert, TEXTCHUNK_SIZE, pStart ) );
+                pchInsert[cch] = 0;
+                IFC(pViewServices->InsertMaximumText(pchInsert, TEXTCHUNK_SIZE, pStart));
                 cch = 0;
             }
         }
 
-        pchInsert[ cch ] = 0;
+        pchInsert[cch] = 0;
 
-        if (! *pStr)
+        if (!*pStr)
         {
             if (cch)
             {
                 // Insert processed text into the tree and bail
-                IFC( pViewServices->InsertMaximumText( pchInsert, cch, pStart ) );
+                IFC(pViewServices->InsertMaximumText(pchInsert, cch, pStart));
             }
             break;
         }
 
-        Verify( SkipCRLF( &pStr ) );
+        Verify(SkipCRLF(&pStr));
 
-        IFC( pViewServices->InsertMaximumText( pchInsert, -1, pStart ) );
+        IFC(pViewServices->InsertMaximumText(pchInsert, -1, pStart));
 
-        if ( !fAcceptsHTML && !fMultiLine )
+        if (!fAcceptsHTML && !fMultiLine)
         {
 
             // We're done because this is not a multi line control and
@@ -1493,40 +1493,40 @@ CHTMLEditor::InsertSanitizedText(
             goto Cleanup;
         }
 
-        if ( SkipCRLF( &pStr ))
+        if (SkipCRLF(&pStr))
         {
             // We got two CRLFs. If we are in data binding, simply
             // insert two BRs. If we are not in databinding, insert
             // a new paragraph.
             if (fDataBinding || !fAcceptsHTML)
             {
-                IFC( InsertLineBreak( pStart, fAcceptsHTML ) );
-                IFC( InsertLineBreak( pStart, fAcceptsHTML ) );
+                IFC(InsertLineBreak(pStart, fAcceptsHTML));
+                IFC(InsertLineBreak(pStart, fAcceptsHTML));
             }
             else
             {
-                ClearInterface( & pmpTemp );
-                IFC( HandleEnter( pStart, & pmpTemp, NULL, TRUE ) );
+                ClearInterface(&pmpTemp);
+                IFC(HandleEnter(pStart, &pmpTemp, NULL, TRUE));
                 if (pmpTemp)
                 {
-                    IFC( pStart->MoveToPointer( pmpTemp ) );
+                    IFC(pStart->MoveToPointer(pmpTemp));
                 }
             }
         }
         else
         {
-            IFC( InsertLineBreak( pStart, fAcceptsHTML ) );
+            IFC(InsertLineBreak(pStart, fAcceptsHTML));
         }
 
         chNext = *pStr;
     }
 
 Cleanup:
-    ReleaseInterface( pmpTemp );
-    ReleaseInterface( pFlowElement );
-    IGNORE_HR( pStart->SetGravity( eGravity ) );
+    ReleaseInterface(pmpTemp);
+    ReleaseInterface(pFlowElement);
+    IGNORE_HR(pStart->SetGravity(eGravity));
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 
@@ -1540,19 +1540,19 @@ Cleanup:
 
 
 HRESULT
-CHTMLEditor::IsElementSiteSelected( IHTMLElement* pIElement )
+CHTMLEditor::IsElementSiteSelected(IHTMLElement* pIElement)
 {
     HRESULT hr = S_OK;
 
     Assert(_pSelMan != NULL);
-    if ( ! _pSelMan )
+    if (!_pSelMan)
     {
-        return( E_FAIL );
+        return(E_FAIL);
     }
 
-    hr = _pSelMan->IsElementSiteSelected( pIElement );
+    hr = _pSelMan->IsElementSiteSelected(pIElement);
 
-    RRETURN1( hr , S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 
@@ -1570,7 +1570,7 @@ CHTMLEditor::IsEditContextUIActive()
 {
     HRESULT hr;
 
-    if ( !_pSelMan )
+    if (!_pSelMan)
     {
         hr = E_FAIL;
         goto Cleanup;
@@ -1579,7 +1579,7 @@ CHTMLEditor::IsEditContextUIActive()
     hr = _pSelMan->HasFocusAdorner() ? S_OK : S_FALSE;
 
 Cleanup:
-    RRETURN1( hr, S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 HRESULT
@@ -1600,81 +1600,81 @@ CHTMLEditor::InsertSanitizedText(
     // Now, do the insert
 
 
-    hr = THR( InsertSanitizedText( pstrText, pIPointerInsertHere, _pMarkupServices, NULL, fDataBinding ) );
+    hr = THR(InsertSanitizedText(pstrText, pIPointerInsertHere, _pMarkupServices, NULL, fDataBinding));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
 CHTMLEditor::UrlAutoDetectCurrentWord(
-    IMarkupPointer * pWord )
+    IMarkupPointer * pWord)
 {
     HRESULT hr;
 
-    if( !pWord )
+    if (!pWord)
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( AutoUrl_DetectCurrentWord( _pMarkupServices, pWord, NULL, NULL ) );
-    if( hr )
+    hr = THR(AutoUrl_DetectCurrentWord(_pMarkupServices, pWord, NULL, NULL));
+    if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
 CHTMLEditor::UrlAutoDetectRange(
     IMarkupPointer * pStart,
-    IMarkupPointer * pEnd )
+    IMarkupPointer * pEnd)
 {
     HRESULT hr;
 
-    if( !pStart || !pEnd )
+    if (!pStart || !pEnd)
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( AutoUrl_DetectRange( _pMarkupServices, pStart, pEnd ) );
-    if( hr )
+    hr = THR(AutoUrl_DetectRange(_pMarkupServices, pStart, pEnd));
+    if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CHTMLEditor::ShouldUpdateAnchorText (
-        OLECHAR * pstrHref,
-        OLECHAR * pstrAnchorText,
-        BOOL    * pfResult )
+CHTMLEditor::ShouldUpdateAnchorText(
+    OLECHAR * pstrHref,
+    OLECHAR * pstrAnchorText,
+    BOOL    * pfResult)
 {
-    return ( AutoUrl_ShouldUpdateAnchorText (pstrHref, pstrAnchorText, pfResult ) );
+    return (AutoUrl_ShouldUpdateAnchorText(pstrHref, pstrAnchorText, pfResult));
 }
 
 
 HRESULT
-CHTMLEditor::LaunderSpaces (
+CHTMLEditor::LaunderSpaces(
     IMarkupPointer  * pStart,
-    IMarkupPointer  * pEnd  )
+    IMarkupPointer  * pEnd)
 {
     CDeleteCommand * pDeleteCommand;
 
-    pDeleteCommand = (CDeleteCommand *) GetCommandTable()->Get( IDM_DELETE );
-    Assert( pDeleteCommand );
+    pDeleteCommand = (CDeleteCommand *)GetCommandTable()->Get(IDM_DELETE);
+    Assert(pDeleteCommand);
 
-    RRETURN( THR(pDeleteCommand->LaunderSpaces( pStart, pEnd )));
+    RRETURN(THR(pDeleteCommand->LaunderSpaces(pStart, pEnd)));
 }
 
 
@@ -1694,25 +1694,25 @@ CHTMLEditor::QueryStatus(
     ISelectionRenderingServices * psrs = NULL;
     ISegmentList * pcontext = NULL;
 
-    hr = THR( _pViewServices->GetCurrentSelectionRenderingServices( &psrs ) );
-    if( hr )
+    hr = THR(_pViewServices->GetCurrentSelectionRenderingServices(&psrs));
+    if (hr)
         goto Cleanup;
 
-    hr = THR( psrs->QueryInterface( IID_ISegmentList , (void **) &pcontext ));
-    if( hr || pcontext == NULL)
+    hr = THR(psrs->QueryInterface(IID_ISegmentList, (void **)&pcontext));
+    if (hr || pcontext == NULL)
         goto Cleanup;
 
     Assert(_pCommandTarget);
-    hr = THR( _pCommandTarget->Initialize( pcontext ));
-    if( hr )
+    hr = THR(_pCommandTarget->Initialize(pcontext));
+    if (hr)
         goto Cleanup;
 
-    hr = THR_NOTRACE( _pCommandTarget->QueryStatus( pguidCmdGroup, cCmds, rgCmds, pcmdtext ));
+    hr = THR_NOTRACE(_pCommandTarget->QueryStatus(pguidCmdGroup, cCmds, rgCmds, pcmdtext));
 
 Cleanup:
-    ReleaseInterface( psrs );
-    ReleaseInterface( pcontext );
-    return( hr );
+    ReleaseInterface(psrs);
+    ReleaseInterface(pcontext);
+    return(hr);
 }
 
 HRESULT
@@ -1728,20 +1728,20 @@ CHTMLEditor::Exec(
     ISegmentList * pcontext = NULL;
     IHTMLCaret * pc = NULL;
 
-    hr = THR( _pViewServices->GetCurrentSelectionRenderingServices( &psrs ) );
-    if( hr )
+    hr = THR(_pViewServices->GetCurrentSelectionRenderingServices(&psrs));
+    if (hr)
         goto Cleanup;
 
-    hr = THR( psrs->QueryInterface( IID_ISegmentList , (void **) &pcontext ));
-    if( hr || pcontext == NULL)
+    hr = THR(psrs->QueryInterface(IID_ISegmentList, (void **)&pcontext));
+    if (hr || pcontext == NULL)
         goto Cleanup;
 
     Assert(_pCommandTarget);
-    hr = THR( _pCommandTarget->Initialize( pcontext ));
-    if( hr )
+    hr = THR(_pCommandTarget->Initialize(pcontext));
+    if (hr)
         goto Cleanup;
 
-    hr = THR_NOTRACE( _pCommandTarget->Exec( pguidCmdGroup, nCmdID, nCmdexecopt, pvarargIn, pvarargOut ));
+    hr = THR_NOTRACE(_pCommandTarget->Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvarargIn, pvarargOut));
 
 #if DBG==1
     if (IsTagEnabled(tagEditingTrackExecFailures))
@@ -1751,25 +1751,25 @@ CHTMLEditor::Exec(
             CHAR szBuf[1000];
 
             wsprintfA(szBuf, "CHTMLEditor::Exec failed: nCmdId=%d, nCmdexecopt=0x%x, pvarargIn=0x%x, pvarargOut=0x%x",
-                    nCmdID, nCmdexecopt, pvarargIn, pvarargOut);
+                      nCmdID, nCmdexecopt, pvarargIn, pvarargOut);
             AssertSz(0, szBuf);
         }
     }
 #endif
-    if( hr )
+    if (hr)
         goto Cleanup;
 
-    if(!_pSelMan)
+    if (!_pSelMan)
     {
         hr = E_FAIL;
         goto Cleanup;
     }
 
 Cleanup:
-    ReleaseInterface( pc );
-    ReleaseInterface( psrs );
-    ReleaseInterface( pcontext );
-    return( hr );
+    ReleaseInterface(pc);
+    ReleaseInterface(psrs);
+    ReleaseInterface(pcontext);
+    return(hr);
 }
 
 
@@ -1789,7 +1789,7 @@ CHTMLEditor::IsContextEditable()
 HRESULT
 CHTMLEditor::FindBlockElement(
     IMarkupPointer   *     pPointer,
-    IHTMLElement    **     ppBlockElement )
+    IHTMLElement    **     ppBlockElement)
 {
     HRESULT             hr = S_FALSE;
     IHTMLElement      * pElement = NULL;
@@ -1799,11 +1799,11 @@ CHTMLEditor::FindBlockElement(
 
     *ppBlockElement = NULL;
 
-    hr = THR( GetViewServices()->CurrentScopeOrSlave(pPointer, & pElement ) );
+    hr = THR(GetViewServices()->CurrentScopeOrSlave(pPointer, &pElement));
     if (hr)
         goto Cleanup;
 
-    if (! pElement)
+    if (!pElement)
         goto Cleanup;
 
     *ppBlockElement = pElement;
@@ -1811,14 +1811,14 @@ CHTMLEditor::FindBlockElement(
 
     do
     {
-        hr = _pMarkupServices->GetElementTagId ( *ppBlockElement, & tagId );
+        hr = _pMarkupServices->GetElementTagId(*ppBlockElement, &tagId);
         if (tagId == TAGID_BODY || tagId == TAGID_HTML)
         {
             hr = S_FALSE;
             goto Cleanup;
         }
 
-        hr = _pViewServices->IsBlockElement(*ppBlockElement, & fIsBlockElement);
+        hr = _pViewServices->IsBlockElement(*ppBlockElement, &fIsBlockElement);
         if (FAILED(hr) || fIsBlockElement)
             goto Cleanup;
 
@@ -1827,13 +1827,12 @@ CHTMLEditor::FindBlockElement(
         pOldElement->Release();
         if (FAILED(hr))
             goto Cleanup;
-    }
-    while (*ppBlockElement);
+    } while (*ppBlockElement);
 
 Cleanup:
-    ReleaseInterface( pElement );
+    ReleaseInterface(pElement);
     if (hr)
-        ClearInterface( ppBlockElement );
+        ClearInterface(ppBlockElement);
 
     return hr;
 }
@@ -1849,7 +1848,7 @@ CHTMLEditor::GetPrimarySpringLoader()
 HRESULT
 CHTMLEditor::InsertElement(IHTMLElement *pElement, IMarkupPointer *pStart, IMarkupPointer *pEnd)
 {
-    RRETURN( EdUtil::InsertElement(GetMarkupServices(), pElement, pStart, pEnd) );
+    RRETURN(EdUtil::InsertElement(GetMarkupServices(), pElement, pStart, pEnd));
 }
 
 
@@ -1857,7 +1856,7 @@ CHTMLEditor::InsertElement(IHTMLElement *pElement, IMarkupPointer *pStart, IMark
 
 
 struct COMPOSE_SETTINGS *
-CHTMLEditor::GetComposeSettings(BOOL fDontExtract /*=FALSE*/)
+    CHTMLEditor::GetComposeSettings(BOOL fDontExtract /*=FALSE*/)
 {
     if (!fDontExtract)
         CComposeSettingsCommand::ExtractLastComposeSettings(this, _pComposeSettings != NULL);
@@ -1899,7 +1898,7 @@ CHTMLEditor::GetSiteContainer(
     IHTMLElement **         ppSite,
     BOOL *                  pfText,             /*=NULL*/
     BOOL *                  pfMultiLine,        /*=NULL*/
-    BOOL *                  pfScrollable )      /*=NULL*/
+    BOOL *                  pfScrollable)      /*=NULL*/
 {
     HRESULT hr = E_FAIL;
     BOOL fSite = FALSE;
@@ -1909,45 +1908,45 @@ CHTMLEditor::GetSiteContainer(
 
     SP_IHTMLElement spElement;
 
-    Assert( pStart != NULL && ppSite != NULL );
-    if( pStart == NULL || ppSite == NULL )
+    Assert(pStart != NULL && ppSite != NULL);
+    if (pStart == NULL || ppSite == NULL)
         goto Cleanup;
 
     *ppSite = NULL;
     spElement = pStart;
 
-    while( ! fSite && spElement != NULL )
+    while (!fSite && spElement != NULL)
     {
-        IFC( _pViewServices->IsSite( spElement, &fSite, &fText, &fMultiLine, &fScrollable ));
+        IFC(_pViewServices->IsSite(spElement, &fSite, &fText, &fMultiLine, &fScrollable));
 
-        if( ! fSite )
+        if (!fSite)
         {
             SP_IHTMLElement  spParent;
-            IFC( spElement->get_parentElement( &spParent ));
+            IFC(spElement->get_parentElement(&spParent));
             spElement = spParent;
         }
     }
 
 Cleanup:
 
-    if( fSite )
+    if (fSite)
     {
         hr = S_OK;
 
         *ppSite = spElement;
         (*ppSite)->AddRef();
 
-        if( pfText != NULL )
+        if (pfText != NULL)
             *pfText = fText;
 
-        if( pfMultiLine != NULL )
+        if (pfMultiLine != NULL)
             *pfMultiLine = fMultiLine;
 
-        if( pfScrollable != NULL )
+        if (pfScrollable != NULL)
             *pfScrollable = fScrollable;
     }
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -1956,7 +1955,7 @@ CHTMLEditor::GetTextSiteContainer(
     IHTMLElement *          pStart,
     IHTMLElement **         ppTextSite,
     BOOL *                  pfMultiLine,        /*=NULL*/
-    BOOL *                  pfScrollable )      /*=NULL*/
+    BOOL *                  pfScrollable)      /*=NULL*/
 {
 
     HRESULT hr = E_FAIL;
@@ -1968,82 +1967,82 @@ CHTMLEditor::GetTextSiteContainer(
 
     SP_IHTMLElement spElement;
 
-    Assert( pStart != NULL && ppTextSite != NULL );
-    if( pStart == NULL || ppTextSite == NULL )
+    Assert(pStart != NULL && ppTextSite != NULL);
+    if (pStart == NULL || ppTextSite == NULL)
         goto Cleanup;
 
     *ppTextSite = NULL;
     spElement = pStart;
 
-    while( ! fFound && spElement != NULL )
+    while (!fFound && spElement != NULL)
     {
-        IFC( _pViewServices->IsSite( spElement, &fSite, &fText, &fMultiLine, &fScrollable ));
+        IFC(_pViewServices->IsSite(spElement, &fSite, &fText, &fMultiLine, &fScrollable));
         fFound = fSite && fText;
 
-        if( ! fFound )
+        if (!fFound)
         {
             SP_IHTMLElement spParent;
-            IFC( spElement->get_parentElement( &spParent ));
+            IFC(spElement->get_parentElement(&spParent));
             spElement = spParent;
         }
     }
 
 Cleanup:
 
-    if( fFound )
+    if (fFound)
     {
         hr = S_OK;
         *ppTextSite = spElement;
         (*ppTextSite)->AddRef();
 
-        if( pfMultiLine != NULL )
+        if (pfMultiLine != NULL)
             *pfMultiLine = fMultiLine;
 
-        if( pfScrollable != NULL )
+        if (pfScrollable != NULL)
             *pfScrollable = fScrollable;
     }
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
 CHTMLEditor::GetBlockContainer(
     IHTMLElement *          pStart,
-    IHTMLElement **         ppElement )
+    IHTMLElement **         ppElement)
 {
     HRESULT hr = E_FAIL;
     BOOL fFound = FALSE;
     SP_IHTMLElement spElement;
 
-    Assert( pStart && ppElement );
-    if( pStart == NULL || ppElement == NULL )
+    Assert(pStart && ppElement);
+    if (pStart == NULL || ppElement == NULL)
         goto Cleanup;
 
     *ppElement = NULL;
     spElement = pStart;
 
-    while( ! fFound && spElement != NULL )
+    while (!fFound && spElement != NULL)
     {
-        IFC( _pViewServices->IsBlockElement( spElement, &fFound ));
+        IFC(_pViewServices->IsBlockElement(spElement, &fFound));
 
-        if( ! fFound )
+        if (!fFound)
         {
             SP_IHTMLElement spParent;
-            IFC( spElement->get_parentElement( &spParent ));
+            IFC(spElement->get_parentElement(&spParent));
             spElement = spParent;
         }
     }
 
 Cleanup:
-    if( fFound )
+    if (fFound)
     {
         hr = S_OK;
         *ppElement = spElement;
         (*ppElement)->AddRef();
     }
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -2053,22 +2052,22 @@ CHTMLEditor::GetSiteContainer(
     IHTMLElement **         ppSite,
     BOOL *                  pfText,             /*=NULL*/
     BOOL *                  pfMultiLine,        /*=NULL*/
-    BOOL *                  pfScrollable )      /*=NULL*/
+    BOOL *                  pfScrollable)      /*=NULL*/
 {
     HRESULT hr = E_FAIL;
     SP_IHTMLElement spElement;
 
-    Assert( pPointer != NULL && ppSite != NULL );
-    if( pPointer == NULL || ppSite == NULL )
+    Assert(pPointer != NULL && ppSite != NULL);
+    if (pPointer == NULL || ppSite == NULL)
         goto Cleanup;
 
-    IFC( GetViewServices()->CurrentScopeOrSlave(pPointer, &spElement ));
+    IFC(GetViewServices()->CurrentScopeOrSlave(pPointer, &spElement));
 
-    if( spElement )
-        IFC( GetSiteContainer( spElement, ppSite, pfText, pfMultiLine, pfScrollable ));
+    if (spElement)
+        IFC(GetSiteContainer(spElement, ppSite, pfText, pfMultiLine, pfScrollable));
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -2077,44 +2076,44 @@ CHTMLEditor::GetTextSiteContainer(
     IMarkupPointer *        pPointer,
     IHTMLElement **         ppTextSite,
     BOOL *                  pfMultiLine,        /*=NULL*/
-    BOOL *                  pfScrollable )      /*=NULL*/
+    BOOL *                  pfScrollable)      /*=NULL*/
 {
     HRESULT hr = E_FAIL;
     SP_IHTMLElement spElement;
 
-    Assert( pPointer != NULL && ppTextSite != NULL );
-    if( pPointer == NULL || ppTextSite == NULL )
+    Assert(pPointer != NULL && ppTextSite != NULL);
+    if (pPointer == NULL || ppTextSite == NULL)
         goto Cleanup;
 
-    IFC( GetViewServices()->CurrentScopeOrSlave(pPointer, &spElement ));
+    IFC(GetViewServices()->CurrentScopeOrSlave(pPointer, &spElement));
 
-    if( spElement )
-        IFC( GetTextSiteContainer( spElement, ppTextSite, pfMultiLine, pfScrollable ));
+    if (spElement)
+        IFC(GetTextSiteContainer(spElement, ppTextSite, pfMultiLine, pfScrollable));
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
 CHTMLEditor::GetBlockContainer(
     IMarkupPointer *        pPointer,
-    IHTMLElement **         ppElement )
+    IHTMLElement **         ppElement)
 {
     HRESULT hr = E_FAIL;
     SP_IHTMLElement spElement;
 
-    Assert( pPointer != NULL && ppElement != NULL );
-    if( pPointer == NULL || ppElement == NULL )
+    Assert(pPointer != NULL && ppElement != NULL);
+    if (pPointer == NULL || ppElement == NULL)
         goto Cleanup;
 
-    IFC( GetViewServices()->CurrentScopeOrSlave(pPointer, &spElement ));
+    IFC(GetViewServices()->CurrentScopeOrSlave(pPointer, &spElement));
 
-    if( spElement )
-        IFC( GetBlockContainer( spElement, ppElement ));
+    if (spElement)
+        IFC(GetBlockContainer(spElement, ppElement));
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -2131,24 +2130,24 @@ CHTMLEditor::IsInDifferentEditableSite(IMarkupPointer* pPointer)
 {
     HRESULT hr = S_OK;
     BOOL fDifferent = FALSE;
-    IHTMLElement* pIFlowElement = NULL ;
+    IHTMLElement* pIFlowElement = NULL;
 
-    IFC( GetViewServices()->GetFlowElement( pPointer, & pIFlowElement ));
-    if ( pIFlowElement )
+    IFC(GetViewServices()->GetFlowElement(pPointer, &pIFlowElement));
+    if (pIFlowElement)
     {
-        if ( ! SameElements(
-                             pIFlowElement,
-                             GetSelectionManager()->GetEditableElement()) &&
-            IsElementSiteSelectable( pIFlowElement) == S_OK  )
+        if (!SameElements(
+            pIFlowElement,
+            GetSelectionManager()->GetEditableElement()) &&
+            IsElementSiteSelectable(pIFlowElement) == S_OK)
         {
             fDifferent = TRUE;
         }
     }
 
 Cleanup:
-    ReleaseInterface( pIFlowElement);
+    ReleaseInterface(pIFlowElement);
 
-    return( fDifferent );
+    return(fDifferent);
 }
 
 HRESULT
@@ -2159,21 +2158,21 @@ CHTMLEditor::AdjustPointer(
     Direction               eTextDir,
     IMarkupPointer *        pLeftBoundary,
     IMarkupPointer *        pRightBoundary,
-    DWORD                   dwOptions /* = ADJPTROPT_None */ )
+    DWORD                   dwOptions /* = ADJPTROPT_None */)
 {
     HRESULT hr = S_OK;
 
     ELEMENT_TAG_ID eTag = TAGID_NULL;
-    CEditPointer ep( this );        // allocate a new MP
-    CEditPointer epSave( this );    // allocate a place saver
+    CEditPointer ep(this);        // allocate a new MP
+    CEditPointer epSave(this);    // allocate a place saver
     BOOL fTextSite = FALSE;
     BOOL fBlockHasLayout = FALSE;
     BOOL fNotAtBOL = infNotAtBOL;
-    BOOL fAtLogBOL = ! fNotAtBOL;
+    BOOL fAtLogBOL = !fNotAtBOL;
     DWORD dwSearch = 0;
     DWORD dwFound = 0;
-    BOOL fStayOutOfUrl = ! CheckFlag( dwOptions , ADJPTROPT_AdjustIntoURL );    // If the adjust into url flag is not set, we stay out of the url
-    BOOL fDontExitPhrase = CheckFlag( dwOptions , ADJPTROPT_DontExitPhrase ); // If the don't exit phrase flag is set, we don't exit phrase elements while adjusting to text
+    BOOL fStayOutOfUrl = !CheckFlag(dwOptions, ADJPTROPT_AdjustIntoURL);    // If the adjust into url flag is not set, we stay out of the url
+    BOOL fDontExitPhrase = CheckFlag(dwOptions, ADJPTROPT_DontExitPhrase); // If the don't exit phrase flag is set, we don't exit phrase elements while adjusting to text
 
     SP_IHTMLElement spIBlock;
     SP_IHTMLElement spISite;
@@ -2182,13 +2181,13 @@ CHTMLEditor::AdjustPointer(
     CEditPointer epLB(this);
     CEditPointer epRB(this);
 
-    IFC( ep.MoveToPointer( pPointer ));
-    IFC( epLB.MoveToPointer( pPointer ));
-    IFC( epRB.MoveToPointer( pPointer ));
-    IFC( GetViewServices()->MoveMarkupPointer( epLB, LAYOUT_MOVE_UNIT_CurrentLineStart, -1, &fNotAtBOL, &fAtLogBOL ));
+    IFC(ep.MoveToPointer(pPointer));
+    IFC(epLB.MoveToPointer(pPointer));
+    IFC(epRB.MoveToPointer(pPointer));
+    IFC(GetViewServices()->MoveMarkupPointer(epLB, LAYOUT_MOVE_UNIT_CurrentLineStart, -1, &fNotAtBOL, &fAtLogBOL));
     fNotAtBOL = infNotAtBOL;
-    fAtLogBOL = ! infNotAtBOL;
-    IFC( GetViewServices()->MoveMarkupPointer( epRB, LAYOUT_MOVE_UNIT_CurrentLineEnd, -1, &fNotAtBOL, &fAtLogBOL ));
+    fAtLogBOL = !infNotAtBOL;
+    IFC(GetViewServices()->MoveMarkupPointer(epRB, LAYOUT_MOVE_UNIT_CurrentLineEnd, -1, &fNotAtBOL, &fAtLogBOL));
 
 
     // We want to be sure that the pointer is located inside a valid
@@ -2201,7 +2200,7 @@ CHTMLEditor::AdjustPointer(
     // (especially with tables)
 
 
-    hr = THR( GetSiteContainer( ep, &spISite, &fTextSite ));
+    hr = THR(GetSiteContainer(ep, &spISite, &fTextSite));
 
 
     // BUGBUG. AdjPointerForInsert barfs on selects. Talk to John about the
@@ -2209,96 +2208,96 @@ CHTMLEditor::AdjustPointer(
     // We dont really allow typing in a select right now - so you're in the "right"
     // place.
 
-    IFC( GetMarkupServices()->GetElementTagId( spISite, & eTag ));
-    if ( eTag == TAGID_SELECT )
+    IFC(GetMarkupServices()->GetElementTagId(spISite, &eTag));
+    if (eTag == TAGID_SELECT)
         goto Cleanup;
 
 
     // Is our pointer within a text site?
 
 
-    if( ! fTextSite )
+    if (!fTextSite)
     {
-        hr = AdjustIntoTextSite( ep, eBlockDir );
+        hr = AdjustIntoTextSite(ep, eBlockDir);
 
-        if( FAILED( hr ))
+        if (FAILED(hr))
         {
-            hr = AdjustIntoTextSite( ep, Reverse( eBlockDir ));
+            hr = AdjustIntoTextSite(ep, Reverse(eBlockDir));
         }
 
-        if( FAILED( hr ))
+        if (FAILED(hr))
         {
             hr = E_FAIL;
             goto Cleanup;
         }
 
         // Our line may have moved
-        IFC( epLB.MoveToPointer( ep ));
-        IFC( epRB.MoveToPointer( ep ));
+        IFC(epLB.MoveToPointer(ep));
+        IFC(epRB.MoveToPointer(ep));
         fNotAtBOL = infNotAtBOL;
-        fAtLogBOL = ! infNotAtBOL;
-        IFC( GetViewServices()->MoveMarkupPointer( epLB, LAYOUT_MOVE_UNIT_CurrentLineStart, -1, &fNotAtBOL, &fAtLogBOL ));
+        fAtLogBOL = !infNotAtBOL;
+        IFC(GetViewServices()->MoveMarkupPointer(epLB, LAYOUT_MOVE_UNIT_CurrentLineStart, -1, &fNotAtBOL, &fAtLogBOL));
         fNotAtBOL = infNotAtBOL;
-        fAtLogBOL = ! infNotAtBOL;
-        IFC( GetViewServices()->MoveMarkupPointer( epRB, LAYOUT_MOVE_UNIT_CurrentLineEnd, -1, &fNotAtBOL, &fAtLogBOL ));
+        fAtLogBOL = !infNotAtBOL;
+        IFC(GetViewServices()->MoveMarkupPointer(epRB, LAYOUT_MOVE_UNIT_CurrentLineEnd, -1, &fNotAtBOL, &fAtLogBOL));
     }
 
 
     // Constrain the pointer
 
 
-    if( pLeftBoundary )
+    if (pLeftBoundary)
     {
         BOOL fAdj = FALSE;
-        IFC( pLeftBoundary->IsRightOf( epLB, &fAdj ));
+        IFC(pLeftBoundary->IsRightOf(epLB, &fAdj));
 
-        if( fAdj )
-            IFC( epLB->MoveToPointer( pLeftBoundary ));
+        if (fAdj)
+            IFC(epLB->MoveToPointer(pLeftBoundary));
     }
 
-    if( pRightBoundary )
+    if (pRightBoundary)
     {
         BOOL fAdj = FALSE;
-        IFC( pRightBoundary->IsLeftOf( epRB, &fAdj ));
+        IFC(pRightBoundary->IsLeftOf(epRB, &fAdj));
 
-        if( fAdj )
-            IFC( epRB->MoveToPointer( pRightBoundary ));
+        if (fAdj)
+            IFC(epRB->MoveToPointer(pRightBoundary));
     }
 
-    IFC( ep.SetBoundary( epLB, epRB ));
-    IFC( ep.Constrain() );
+    IFC(ep.SetBoundary(epLB, epRB));
+    IFC(ep.Constrain());
 
 
     // Now that we are assured that we are in a nice cozy text site, we would
     // like to be in a block element, if possible.
 
-    hr = THR( GetBlockContainer( ep, &spIBlock ));
+    hr = THR(GetBlockContainer(ep, &spIBlock));
 
-    if( spIBlock )
+    if (spIBlock)
     {
-        IFC( _pMarkupServices->GetElementTagId( spIBlock, &eTag ));
+        IFC(_pMarkupServices->GetElementTagId(spIBlock, &eTag));
     }
 
-    IFC( _pViewServices->IsSite( spIBlock , & fBlockHasLayout , NULL , NULL , NULL ));
+    IFC(_pViewServices->IsSite(spIBlock, &fBlockHasLayout, NULL, NULL, NULL));
 
-    if( FAILED( hr ) || spIBlock == NULL || IsNonTextBlock( eTag ) || fBlockHasLayout )
+    if (FAILED(hr) || spIBlock == NULL || IsNonTextBlock(eTag) || fBlockHasLayout)
     {
         BOOL fHitText = FALSE;
 
-        hr = AdjustIntoBlock( ep, eBlockDir, &fHitText, TRUE, epLB, epRB );
+        hr = AdjustIntoBlock(ep, eBlockDir, &fHitText, TRUE, epLB, epRB);
 
-        if( FAILED( hr ))
+        if (FAILED(hr))
         {
-            hr = AdjustIntoBlock( ep, Reverse( eBlockDir ), &fHitText, FALSE, epLB, epRB );
+            hr = AdjustIntoBlock(ep, Reverse(eBlockDir), &fHitText, FALSE, epLB, epRB);
         }
 
-        if( FAILED( hr ))
+        if (FAILED(hr))
         {
             // Not so bad. Just cling to text...
             hr = S_OK;
         }
 
-        if( fHitText )
+        if (fHitText)
         {
             goto Done;
         }
@@ -2308,16 +2307,16 @@ CHTMLEditor::AdjustPointer(
     // If we are block adjusting left, we can move exactly one NoscopeBlock to the left
 
 
-    if( eBlockDir == LEFT )
+    if (eBlockDir == LEFT)
     {
-        IFC( epSave.MoveToPointer( ep ));
-        dwSearch =  BREAK_CONDITION_OMIT_PHRASE;
+        IFC(epSave.MoveToPointer(ep));
+        dwSearch = BREAK_CONDITION_OMIT_PHRASE;
         dwFound = BREAK_CONDITION_None;
-        hr = THR( ep.Scan( LEFT, dwSearch, &dwFound ));
+        hr = THR(ep.Scan(LEFT, dwSearch, &dwFound));
 
-        if( ! ep.CheckFlag( dwFound , BREAK_CONDITION_NoScopeBlock ))
+        if (!ep.CheckFlag(dwFound, BREAK_CONDITION_NoScopeBlock))
         {
-            IFC( ep.MoveToPointer( epSave ));
+            IFC(ep.MoveToPointer(epSave));
         }
     }
 
@@ -2325,22 +2324,22 @@ CHTMLEditor::AdjustPointer(
     // Search for text
 
 
-    IFC( AdjustIntoPhrase(ep, eTextDir, fDontExitPhrase) );
+    IFC(AdjustIntoPhrase(ep, eTextDir, fDontExitPhrase));
 
 Done:
 
     // See if we need to exit from an URL boundary
 
 
-    IFC( epTest->MoveToPointer(ep) );
-    IFC( epTest.Scan(LEFT, BREAK_CONDITION_OMIT_PHRASE, &dwFound) );
+    IFC(epTest->MoveToPointer(ep));
+    IFC(epTest.Scan(LEFT, BREAK_CONDITION_OMIT_PHRASE, &dwFound));
     eTextDir = LEFT; // remember the direction of scan
 
-    if (!epTest.CheckFlag(dwFound,  BREAK_CONDITION_ExitAnchor))
+    if (!epTest.CheckFlag(dwFound, BREAK_CONDITION_ExitAnchor))
     {
-        IFC( epTest->MoveToPointer(ep) );
-        IFC( epTest.Scan(RIGHT, BREAK_CONDITION_OMIT_PHRASE, &dwFound) );
-        eTextDir = RIGHT ;// remember the direction of scan
+        IFC(epTest->MoveToPointer(ep));
+        IFC(epTest.Scan(RIGHT, BREAK_CONDITION_OMIT_PHRASE, &dwFound));
+        eTextDir = RIGHT;// remember the direction of scan
     }
 
     if (epTest.CheckFlag(dwFound, BREAK_CONDITION_ExitAnchor))
@@ -2350,33 +2349,33 @@ Done:
             CEditPointer epText(this);
 
             // Make sure we are adjacent to text
-            IFC( epText->MoveToPointer(ep) );
-            IFC( epText.Scan(Reverse(eTextDir), BREAK_CONDITION_OMIT_PHRASE, &dwFound) );
+            IFC(epText->MoveToPointer(ep));
+            IFC(epText.Scan(Reverse(eTextDir), BREAK_CONDITION_OMIT_PHRASE, &dwFound));
 
             fStayOutOfUrl = !epText.CheckFlag(dwFound, BREAK_CONDITION_Text)
-                            && !epText.CheckFlag(dwFound, BREAK_CONDITION_Anchor);
+                && !epText.CheckFlag(dwFound, BREAK_CONDITION_Anchor);
         }
         if (fStayOutOfUrl)
         {
-            IFC( ep->MoveToPointer(epTest) );
+            IFC(ep->MoveToPointer(epTest));
 
             // Move into adjacent phrase elements if we can
-            IFC( AdjustIntoPhrase(ep, eTextDir, fDontExitPhrase) );
+            IFC(AdjustIntoPhrase(ep, eTextDir, fDontExitPhrase));
         }
     }
 
-    IFC( pPointer->MoveToPointer( ep ));
+    IFC(pPointer->MoveToPointer(ep));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
 CHTMLEditor::AdjustIntoTextSite(
     IMarkupPointer *        pPointer,
-    Direction               eDir )
+    Direction               eDir)
 {
     HRESULT hr = E_FAIL;
     BOOL fDone = FALSE;
@@ -2384,20 +2383,20 @@ CHTMLEditor::AdjustIntoTextSite(
     DWORD dwSearch = BREAK_CONDITION_Site;
     DWORD dwFound = BREAK_CONDITION_None;
 
-    CEditPointer ep( this );
+    CEditPointer ep(this);
     SP_IHTMLElement spISite;
 
-    IFC( ep.MoveToPointer( pPointer ));
+    IFC(ep.MoveToPointer(pPointer));
 
-    while( ! fDone && ! fFound )
+    while (!fDone && !fFound)
     {
         dwFound = BREAK_CONDITION_None;
-        hr = THR( ep.Scan( eDir, dwSearch, &dwFound ));
+        hr = THR(ep.Scan(eDir, dwSearch, &dwFound));
 
-        if( ep.CheckFlag( dwFound, BREAK_CONDITION_Site ))
+        if (ep.CheckFlag(dwFound, BREAK_CONDITION_Site))
         {
             // Did we enter a text site in the desired direction?
-            hr = THR( GetSiteContainer( ep, &spISite, &fFound ));
+            hr = THR(GetSiteContainer(ep, &spISite, &fFound));
         }
         else
         {
@@ -2407,16 +2406,16 @@ CHTMLEditor::AdjustIntoTextSite(
     }
 
 Cleanup:
-    if( fFound )
+    if (fFound)
     {
-        hr = THR( pPointer->MoveToPointer( ep ));
+        hr = THR(pPointer->MoveToPointer(ep));
     }
     else
     {
         hr = E_FAIL;
     }
 
-    return( hr );
+    return(hr);
 }
 
 
@@ -2427,7 +2426,7 @@ CHTMLEditor::AdjustIntoBlock(
     BOOL *                  pfHitText,
     BOOL                    fAdjustOutOfBody,
     IMarkupPointer *        pLeftBoundary,
-    IMarkupPointer *        pRightBoundary )
+    IMarkupPointer *        pRightBoundary)
 {
     HRESULT hr = E_FAIL;
 
@@ -2445,47 +2444,47 @@ CHTMLEditor::AdjustIntoBlock(
     ELEMENT_TAG_ID eTag = TAGID_NULL;
     TCHAR chFound = 0;
 
-    CEditPointer ep( this );
+    CEditPointer ep(this);
     SP_IHTMLElement spIBlock;
 
-    Assert( pPointer && pfHitText );
-    if( pPointer == NULL || pfHitText == NULL )
+    Assert(pPointer && pfHitText);
+    if (pPointer == NULL || pfHitText == NULL)
         goto Cleanup;
 
-    IFC( ep.MoveToPointer( pPointer ));
-    IFC( ep.SetBoundary( pLeftBoundary, pRightBoundary ));
-    IFC( ep.Constrain() );
+    IFC(ep.MoveToPointer(pPointer));
+    IFC(ep.SetBoundary(pLeftBoundary, pRightBoundary));
+    IFC(ep.Constrain());
 
-    while( ! fDone )
+    while (!fDone)
     {
         dwFound = BREAK_CONDITION_None;
-        IFC( ep.Scan( eDir , dwSearch, &dwFound, NULL, NULL, &chFound, NULL ));
+        IFC(ep.Scan(eDir, dwSearch, &dwFound, NULL, NULL, &chFound, NULL));
 
 
         // Did we hit text or a text like object?
 
 
-        if( ep.CheckFlag( dwFound , BREAK_CONDITION_TEXT ))
+        if (ep.CheckFlag(dwFound, BREAK_CONDITION_TEXT))
         {
             // just passed over text, back up and we done!
 
             LONG lChars = 1;
             MARKUP_CONTEXT_TYPE eCtxt = CONTEXT_TYPE_None;
-            hr = THR( ep.Move( Reverse( eDir ), TRUE, &eCtxt, NULL, &lChars, NULL ));
+            hr = THR(ep.Move(Reverse(eDir), TRUE, &eCtxt, NULL, &lChars, NULL));
 
-            if( hr == E_HITBOUNDARY )
+            if (hr == E_HITBOUNDARY)
             {
                 fDone = TRUE;
                 goto Cleanup;
             }
 
-            IFC( pPointer->MoveToPointer( ep ));
+            IFC(pPointer->MoveToPointer(ep));
 
             fHitText = TRUE;
             fFound = TRUE;
             fDone = TRUE;
 
-            Assert( ! FAILED( hr ));
+            Assert(!FAILED(hr));
 
             goto Cleanup;
         }
@@ -2494,7 +2493,7 @@ CHTMLEditor::AdjustIntoBlock(
         // Did we hit a site boundary?
 
 
-        else if( ep.CheckFlag( dwFound, BREAK_CONDITION_Site ))
+        else if (ep.CheckFlag(dwFound, BREAK_CONDITION_Site))
         {
             fDone = TRUE;
         }
@@ -2503,25 +2502,25 @@ CHTMLEditor::AdjustIntoBlock(
         // Did we enter a block?
 
 
-        else if( ep.CheckFlag( dwFound , BREAK_CONDITION_EnterBlock ))
+        else if (ep.CheckFlag(dwFound, BREAK_CONDITION_EnterBlock))
         {
             // Entered a Block
-            hr = THR( GetBlockContainer( ep, &spIBlock ));
+            hr = THR(GetBlockContainer(ep, &spIBlock));
 
-            if(( ! FAILED( hr )) && ( spIBlock != NULL ))
+            if ((!FAILED(hr)) && (spIBlock != NULL))
             {
-                IFC( _pMarkupServices->GetElementTagId( spIBlock, &eTag ));
+                IFC(_pMarkupServices->GetElementTagId(spIBlock, &eTag));
 
-                if(( ! IsNonTextBlock( eTag )) && ( ! ( fAdjustOutOfBody && eTag == TAGID_BODY )))
+                if ((!IsNonTextBlock(eTag)) && (!(fAdjustOutOfBody && eTag == TAGID_BODY)))
                 {
                     // found a potentially better block - check to see if eitehr breakonempty is set or the block contains text
                     BOOL fBOESet = FALSE;
-                    IFC( _pViewServices->IsInflatedBlockElement( spIBlock , &fBOESet ));
+                    IFC(_pViewServices->IsInflatedBlockElement(spIBlock, &fBOESet));
 
-                    if( fBOESet )
+                    if (fBOESet)
                     {
                         // it really is better - move our pointer there and set the sucess flag!!!
-                        IFC( pPointer->MoveToPointer( ep ));
+                        IFC(pPointer->MoveToPointer(ep));
                         fFound = TRUE; // but, keep going!
                     }
 
@@ -2539,7 +2538,7 @@ CHTMLEditor::AdjustIntoBlock(
         // Did we exit a block - probably not a good sign, but we should keep going for now...
 
 
-        else if( ep.CheckFlag( dwFound, BREAK_CONDITION_ExitBlock ))
+        else if (ep.CheckFlag(dwFound, BREAK_CONDITION_ExitBlock))
         {
             // we just booked out of a block element. things may be okay
         }
@@ -2552,19 +2551,19 @@ CHTMLEditor::AdjustIntoBlock(
 
 Cleanup:
 
-    if( pfHitText )
+    if (pfHitText)
     {
         *pfHitText = fHitText;
     }
 
-    if( ! fFound )
+    if (!fFound)
         hr = E_FAIL;
 
-    return( hr );
+    return(hr);
 }
 
 HRESULT
-CHTMLEditor::AdjustIntoPhrase(IMarkupPointer  *pPointer, Direction eTextDir, BOOL fDontExitPhrase )
+CHTMLEditor::AdjustIntoPhrase(IMarkupPointer  *pPointer, Direction eTextDir, BOOL fDontExitPhrase)
 {
     HRESULT         hr;
     DWORD           dwFound;
@@ -2573,26 +2572,26 @@ CHTMLEditor::AdjustIntoPhrase(IMarkupPointer  *pPointer, Direction eTextDir, BOO
     CEditPointer    epSave(this);
     CEditPointer    ep(this, pPointer);
 
-    if( fDontExitPhrase )
+    if (fDontExitPhrase)
     {
         dwSearch = dwSearch + BREAK_CONDITION_ExitPhrase;
     }
 
-    IFC( epSave.MoveToPointer( ep ));
-    hr = THR( ep.Scan( eTextDir, dwSearch, &dwFound ));
+    IFC(epSave.MoveToPointer(ep));
+    hr = THR(ep.Scan(eTextDir, dwSearch, &dwFound));
 
-    if( ! ep.CheckFlag( dwFound , BREAK_CONDITION_TEXT ))
+    if (!ep.CheckFlag(dwFound, BREAK_CONDITION_TEXT))
     {
 
         // We didn't find any text, lets look the other way
 
 
-        eTextDir = Reverse( eTextDir ); // Reverse our direction, keeping track of which way we are really going
-        IFC( ep.MoveToPointer( epSave )); // Go back to where we started...
-        hr = THR( ep.Scan( eTextDir, dwSearch, &dwFound ));
+        eTextDir = Reverse(eTextDir); // Reverse our direction, keeping track of which way we are really going
+        IFC(ep.MoveToPointer(epSave)); // Go back to where we started...
+        hr = THR(ep.Scan(eTextDir, dwSearch, &dwFound));
     }
 
-    if( ep.CheckFlag( dwFound , BREAK_CONDITION_TEXT ))
+    if (ep.CheckFlag(dwFound, BREAK_CONDITION_TEXT))
     {
 
         // We found something, back up one space
@@ -2600,17 +2599,17 @@ CHTMLEditor::AdjustIntoPhrase(IMarkupPointer  *pPointer, Direction eTextDir, BOO
 
         LONG lChars = 1;
         MARKUP_CONTEXT_TYPE eCtxt = CONTEXT_TYPE_None;
-        hr = THR( ep.Move( Reverse( eTextDir ), TRUE, &eCtxt, NULL, &lChars, NULL ));
-        if( hr == E_HITBOUNDARY )
+        hr = THR(ep.Move(Reverse(eTextDir), TRUE, &eCtxt, NULL, &lChars, NULL));
+        if (hr == E_HITBOUNDARY)
         {
-            Assert( hr != E_HITBOUNDARY );
+            Assert(hr != E_HITBOUNDARY);
             goto Cleanup;
         }
 
     }
     else
     {
-        IFC( ep.MoveToPointer(epSave) );
+        IFC(ep.MoveToPointer(epSave));
     }
 
 Cleanup:
@@ -2619,37 +2618,37 @@ Cleanup:
 
 BOOL
 CHTMLEditor::IsNonTextBlock(
-    ELEMENT_TAG_ID          eTag )
+    ELEMENT_TAG_ID          eTag)
 {
     BOOL fIsNonTextBlock = FALSE;
 
-    switch( eTag )
+    switch (eTag)
     {
-        case TAGID_NULL:
-        case TAGID_UL:
-        case TAGID_OL:
-        case TAGID_DL:
-        case TAGID_DIR:
-        case TAGID_MENU:
-        case TAGID_FORM:
-        case TAGID_FIELDSET:
-        case TAGID_TABLE:
-        case TAGID_THEAD:
-        case TAGID_TBODY:
-        case TAGID_TFOOT:
-        case TAGID_COL:
-        case TAGID_COLGROUP:
-        case TAGID_TC:
-        case TAGID_TH:
-        case TAGID_TR:
-            fIsNonTextBlock = TRUE;
-            break;
+    case TAGID_NULL:
+    case TAGID_UL:
+    case TAGID_OL:
+    case TAGID_DL:
+    case TAGID_DIR:
+    case TAGID_MENU:
+    case TAGID_FORM:
+    case TAGID_FIELDSET:
+    case TAGID_TABLE:
+    case TAGID_THEAD:
+    case TAGID_TBODY:
+    case TAGID_TFOOT:
+    case TAGID_COL:
+    case TAGID_COLGROUP:
+    case TAGID_TC:
+    case TAGID_TH:
+    case TAGID_TR:
+        fIsNonTextBlock = TRUE;
+        break;
 
-        default:
-            fIsNonTextBlock = FALSE;
+    default:
+        fIsNonTextBlock = FALSE;
     }
 
-    return( fIsNonTextBlock );
+    return(fIsNonTextBlock);
 }
 
 TCHAR *
@@ -2678,7 +2677,7 @@ RemoveEmptyCharFormat(IMarkupServices *pMarkupServices, IHTMLElement **ppElement
     BOOL                bHeading = FALSE;
     SP_IHTMLElement     spNewElement;
 
-    IFC( pMarkupServices->GetElementTagId(*ppElement, &tagId) );
+    IFC(pMarkupServices->GetElementTagId(*ppElement, &tagId));
 
     switch (tagId)
     {
@@ -2704,13 +2703,13 @@ RemoveEmptyCharFormat(IMarkupServices *pMarkupServices, IHTMLElement **ppElement
     case TAGID_SUB:
     case TAGID_SUP:
 
-        IFC( pMarkupServices->CreateMarkupPointer(&spLeft) );
-        IFC( spLeft->MoveAdjacentToElement(*ppElement, ELEM_ADJ_AfterBegin ) );
+        IFC(pMarkupServices->CreateMarkupPointer(&spLeft));
+        IFC(spLeft->MoveAdjacentToElement(*ppElement, ELEM_ADJ_AfterBegin));
 
-        IFC( pMarkupServices->CreateMarkupPointer(&spRight) );
-        IFC( spRight->MoveAdjacentToElement(*ppElement, ELEM_ADJ_BeforeEnd ) );
+        IFC(pMarkupServices->CreateMarkupPointer(&spRight));
+        IFC(spRight->MoveAdjacentToElement(*ppElement, ELEM_ADJ_BeforeEnd));
 
-        IFC( spLeft->IsEqualTo(spRight, &bEqual) );
+        IFC(spLeft->IsEqualTo(spRight, &bEqual));
 
 
         // If the pointers are not equal, allow one nbsp to be inside.
@@ -2722,14 +2721,14 @@ RemoveEmptyCharFormat(IMarkupServices *pMarkupServices, IHTMLElement **ppElement
             long                cch = 1; // Walk one character at a time.
             TCHAR               ch;
 
-            IFC( pMarkupServices->CreateMarkupPointer(&spWalk) );
-            IFC( spWalk->MoveToPointer(spLeft) );
+            IFC(pMarkupServices->CreateMarkupPointer(&spWalk));
+            IFC(spWalk->MoveToPointer(spLeft));
 
-            IFC( spWalk->Right(TRUE, &mctContext, NULL, &cch, &ch) );
-            if (   mctContext == CONTEXT_TYPE_Text
-                && cch && WCH_NBSP == ch )
+            IFC(spWalk->Right(TRUE, &mctContext, NULL, &cch, &ch));
+            if (mctContext == CONTEXT_TYPE_Text
+                && cch && WCH_NBSP == ch)
             {
-                IFC( spWalk->IsEqualTo(spRight, &bEqual) );
+                IFC(spWalk->IsEqualTo(spRight, &bEqual));
             }
         }
 
@@ -2737,21 +2736,21 @@ RemoveEmptyCharFormat(IMarkupServices *pMarkupServices, IHTMLElement **ppElement
         {
             if (bHeading)
             {
-                IFC( CGetBlockFmtCommand::GetDefaultBlockTag(pMarkupServices, &tagId) );
-                IFC( pMarkupServices->CreateElement(tagId, NULL, &spNewElement) );
+                IFC(CGetBlockFmtCommand::GetDefaultBlockTag(pMarkupServices, &tagId));
+                IFC(pMarkupServices->CreateElement(tagId, NULL, &spNewElement));
 
-                IFC( ReplaceElement(pMarkupServices, *ppElement, spNewElement, spLeft, spRight) );
+                IFC(ReplaceElement(pMarkupServices, *ppElement, spNewElement, spLeft, spRight));
 
                 ReplaceInterface(ppElement, (IHTMLElement *)spNewElement);
 
                 if (psl)
                 {
-                    IGNORE_HR( psl->SpringLoadComposeSettings(spLeft, TRUE) );
+                    IGNORE_HR(psl->SpringLoadComposeSettings(spLeft, TRUE));
                 }
             }
             else
             {
-                IFC( pMarkupServices->RemoveElement(*ppElement) );
+                IFC(pMarkupServices->RemoveElement(*ppElement));
                 hr = S_FALSE;
             }
 
@@ -2759,7 +2758,7 @@ RemoveEmptyCharFormat(IMarkupServices *pMarkupServices, IHTMLElement **ppElement
         break;
 
     default:
-         hr = S_OK; // nothing to remove
+        hr = S_OK; // nothing to remove
     }
 
 Cleanup:
@@ -2793,17 +2792,17 @@ CHTMLEditor::HandleEnter(
     // Create helper pointers
 
 
-    IFC( GetMarkupServices()->CreateMarkupPointer(&spStart) );
-    IFC( GetMarkupServices()->CreateMarkupPointer(&spEnd) );
+    IFC(GetMarkupServices()->CreateMarkupPointer(&spStart));
+    IFC(GetMarkupServices()->CreateMarkupPointer(&spEnd));
 
 
     // Walk up to get the block element
 
 
-    IFC( GetMarkupServices()->BeginUndoUnit( _T("Typing") ));
+    IFC(GetMarkupServices()->BeginUndoUnit(_T("Typing")));
 
-    IFC( pCaret->CurrentScope(&spElement) );
-    IFC( FindListItem(GetMarkupServices(), spElement, &spBlockElement) );
+    IFC(pCaret->CurrentScope(&spElement));
+    IFC(FindListItem(GetMarkupServices(), spElement, &spBlockElement));
     if (spBlockElement)
     {
         bListMode = TRUE;
@@ -2814,29 +2813,29 @@ CHTMLEditor::HandleEnter(
         SP_IMarkupPointer   spTest;
         BOOL                bEqual;
 
-        IFC( pCaret->CurrentScope(&spElement) );
-        IFC( FindOrInsertBlockElement(spElement, &spBlockElement, pCaret, TRUE) );
+        IFC(pCaret->CurrentScope(&spElement));
+        IFC(FindOrInsertBlockElement(spElement, &spBlockElement, pCaret, TRUE));
 
         // If we are not after begin or before end, it is safe to flatten
-        IFC( GetMarkupServices()->CreateMarkupPointer(&spTest) );
-        IFC( spTest->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_AfterBegin) );
+        IFC(GetMarkupServices()->CreateMarkupPointer(&spTest));
+        IFC(spTest->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_AfterBegin));
 
-        IFC( spTest->IsEqualTo(pCaret, &bEqual) );
+        IFC(spTest->IsEqualTo(pCaret, &bEqual));
         if (!bEqual)
         {
-            IFC( spTest->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_BeforeEnd) );
-            IFC( spTest->IsEqualTo(pCaret, &bEqual) );
+            IFC(spTest->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_BeforeEnd));
+            IFC(spTest->IsEqualTo(pCaret, &bEqual));
             if (!bEqual)
             {
                 // We need to flatten the block element so we don't introduce overlap
-                IFC( bpCurrent.MoveTo(spBlockElement) );
+                IFC(bpCurrent.MoveTo(spBlockElement));
                 if (bpCurrent.GetType() == NT_Block)
                 {
                     // we need a pointer with right gravity but we can't change the gravity of the input pointer
-                    IFC( bpCurrent.FlattenNode() );
+                    IFC(bpCurrent.FlattenNode());
 
-                    IFC( pCaret->CurrentScope(&spElement) );
-                    IFC( FindOrInsertBlockElement(spElement, &spBlockElement, pCaret) );
+                    IFC(pCaret->CurrentScope(&spElement));
+                    IFC(FindOrInsertBlockElement(spElement, &spBlockElement, pCaret));
                 }
             }
         }
@@ -2848,7 +2847,7 @@ CHTMLEditor::HandleEnter(
 
     if (psl)
     {
-        IFC( psl->SpringLoad(pCaret, SL_TRY_COMPOSE_SETTINGS) );
+        IFC(psl->SpringLoad(pCaret, SL_TRY_COMPOSE_SETTINGS));
     }
 
 
@@ -2857,104 +2856,104 @@ CHTMLEditor::HandleEnter(
     // Except Anchors
 
 
-    IFC( spBlockElement->QueryInterface(IID_IObjectIdentity, (LPVOID *)&spIdent) );
-    IFC( pCaret->CurrentScope(&spCurElement) );
+    IFC(spBlockElement->QueryInterface(IID_IObjectIdentity, (LPVOID *)&spIdent));
+    IFC(pCaret->CurrentScope(&spCurElement));
 
 
     // fExtraDiv works when the default block element is a DIV.
     // Refer to comment farther down for more information.
 
-    if ( fExtraDiv )
+    if (fExtraDiv)
     {
-        IFC( CGetBlockFmtCommand::GetDefaultBlockTag(GetMarkupServices(), &tagIdDefaultBlock));
+        IFC(CGetBlockFmtCommand::GetDefaultBlockTag(GetMarkupServices(), &tagIdDefaultBlock));
     }
 
     for (;;)
     {
-        IFC( spStart->MoveAdjacentToElement(spCurElement, ELEM_ADJ_AfterBegin) );
-        IFC( spEnd->MoveAdjacentToElement(spCurElement, ELEM_ADJ_BeforeEnd) );
-        IFC( GetMarkupServices()->GetElementTagId(spCurElement, &tagId) );
-        IFC( CCommand::SplitElement(GetMarkupServices(), spCurElement, spStart, pCaret, spEnd, & spNewElement) );
-        IFC( pCaret->MoveAdjacentToElement(spNewElement, ELEM_ADJ_BeforeBegin) );
-        IFC( GetMarkupServices()->GetElementTagId(spNewElement, &tagId) );
+        IFC(spStart->MoveAdjacentToElement(spCurElement, ELEM_ADJ_AfterBegin));
+        IFC(spEnd->MoveAdjacentToElement(spCurElement, ELEM_ADJ_BeforeEnd));
+        IFC(GetMarkupServices()->GetElementTagId(spCurElement, &tagId));
+        IFC(CCommand::SplitElement(GetMarkupServices(), spCurElement, spStart, pCaret, spEnd, &spNewElement));
+        IFC(pCaret->MoveAdjacentToElement(spNewElement, ELEM_ADJ_BeforeBegin));
+        IFC(GetMarkupServices()->GetElementTagId(spNewElement, &tagId));
 
         switch (tagId)
         {
-            case TAGID_A:
+        case TAGID_A:
 
-                // If we are splitting the anchor in the middle or end, the first element remains
-                // an anchor while the second does not.  If we split the anchor at the start,
-                // the second element remains an anchor while the first is deleted.
+            // If we are splitting the anchor in the middle or end, the first element remains
+            // an anchor while the second does not.  If we split the anchor at the start,
+            // the second element remains an anchor while the first is deleted.
 
 
-                if (DoesSegmentContainText(GetMarkupServices(), GetViewServices(), spStart, pCaret))
+            if (DoesSegmentContainText(GetMarkupServices(), GetViewServices(), spStart, pCaret))
+            {
+                IFC(GetMarkupServices()->RemoveElement(spNewElement));
+                spNewElement = NULL;
+
+                if (psl)
                 {
-                    IFC( GetMarkupServices()->RemoveElement( spNewElement ));
-                    spNewElement = NULL;
-
-                    if (psl)
-                    {
-                        IFC( psl->SpringLoad(pCaret, SL_RESET | SL_TRY_COMPOSE_SETTINGS) );
-                    }
+                    IFC(psl->SpringLoad(pCaret, SL_RESET | SL_TRY_COMPOSE_SETTINGS));
                 }
-                else
-                {
-                    IFC( GetMarkupServices()->RemoveElement( spCurElement ));
-                    spCurElement = NULL;
-                }
-                break;
+            }
+            else
+            {
+                IFC(GetMarkupServices()->RemoveElement(spCurElement));
+                spCurElement = NULL;
+            }
+            break;
 
-            case TAGID_DIV:
+        case TAGID_DIV:
 
-                // If the split block element was a div, and fExtraDiv
-                // is TRUE, then (because naked divs have no inter-block
-                // spacing) insert am empty div to achieve the empty line effect.
+            // If the split block element was a div, and fExtraDiv
+            // is TRUE, then (because naked divs have no inter-block
+            // spacing) insert am empty div to achieve the empty line effect.
 
-                if ( fExtraDiv && tagIdDefaultBlock == TAGID_DIV)
-                {
-                    // We correctly assume that pCaret is before the inserted element
-                    IFC( GetMarkupServices()->CreateElement( TAGID_DIV, NULL, &spDivElement ));
-                    IFC( InsertElement(spDivElement, pCaret, pCaret ));
-                }
-                IFC( GetViewServices()->InflateBlockElement(spNewElement) );
-                break;
+            if (fExtraDiv && tagIdDefaultBlock == TAGID_DIV)
+            {
+                // We correctly assume that pCaret is before the inserted element
+                IFC(GetMarkupServices()->CreateElement(TAGID_DIV, NULL, &spDivElement));
+                IFC(InsertElement(spDivElement, pCaret, pCaret));
+            }
+            IFC(GetViewServices()->InflateBlockElement(spNewElement));
+            break;
 
-            case TAGID_P:
-            case TAGID_BLOCKQUOTE:
-                IFC( GetViewServices()->InflateBlockElement(spNewElement) );
-                break;
+        case TAGID_P:
+        case TAGID_BLOCKQUOTE:
+            IFC(GetViewServices()->InflateBlockElement(spNewElement));
+            break;
 
-            case TAGID_LI:
-                IFC( spNewElement->removeAttribute(_T("value"), 0, NULL) )
+        case TAGID_LI:
+            IFC(spNewElement->removeAttribute(_T("value"), 0, NULL))
                 break;
         }
 
-        if( spNewElement != NULL && psl )
+        if (spNewElement != NULL && psl)
         {
             if (spCurElement != NULL)
                 hr = spIdent->IsEqualObject(spCurElement);
             else
                 hr = S_FALSE; // can't be top level if we deleted it
 
-            IFC( RemoveEmptyCharFormat(GetMarkupServices(), &(spNewElement.p), (hr == S_OK), psl) ); // pNewElement may morph
+            IFC(RemoveEmptyCharFormat(GetMarkupServices(), &(spNewElement.p), (hr == S_OK), psl)); // pNewElement may morph
         }
         else
         {
             hr = S_OK;
         }
 
-        if( spNewElement != NULL && S_OK == hr )
+        if (spNewElement != NULL && S_OK == hr)
         {
             SP_IMarkupPointer spNewCaretPos;
 
-            IFC( GetMarkupServices()->CreateMarkupPointer(&spNewCaretPos) );
-            IFC( spNewCaretPos->MoveAdjacentToElement(spNewElement, ELEM_ADJ_AfterBegin) );
-            IFC( LaunderSpaces(spNewCaretPos, spNewCaretPos) );
+            IFC(GetMarkupServices()->CreateMarkupPointer(&spNewCaretPos));
+            IFC(spNewCaretPos->MoveAdjacentToElement(spNewElement, ELEM_ADJ_AfterBegin));
+            IFC(LaunderSpaces(spNewCaretPos, spNewCaretPos));
 
             if (ppInsertPosOut && !(*ppInsertPosOut))
             {
-                IFC( GetMarkupServices()->CreateMarkupPointer(ppInsertPosOut) );
-                IFC( (*ppInsertPosOut)->MoveToPointer(spNewCaretPos) );
+                IFC(GetMarkupServices()->CreateMarkupPointer(ppInsertPosOut));
+                IFC((*ppInsertPosOut)->MoveToPointer(spNewCaretPos));
             }
         }
 
@@ -2965,7 +2964,7 @@ CHTMLEditor::HandleEnter(
                 break;
         }
 
-        IFC( pCaret->CurrentScope(&spCurElement) );
+        IFC(pCaret->CurrentScope(&spCurElement));
     }
 
     Assert(spNewElement != NULL); // we must exit by hitting the block element
@@ -2999,13 +2998,13 @@ CHTMLEditor::GetSegmentElement(ISegmentList *pSegmentList, INT i, IHTMLElement *
 
     *ppElement = NULL;
 
-    IFR( GetMarkupServices()->CreateMarkupPointer(&spStart) );
-    IFR( GetMarkupServices()->CreateMarkupPointer(&spEnd) );
+    IFR(GetMarkupServices()->CreateMarkupPointer(&spStart));
+    IFR(GetMarkupServices()->CreateMarkupPointer(&spEnd));
 
     IFR(MovePointersToSegmentHelper(GetViewServices(), pSegmentList, i, &(spStart.p), &(spEnd.p)));
 
     // Get the element
-    IFR( GetViewServices()->RightOrSlave(spStart, FALSE, NULL, ppElement, NULL, NULL) );
+    IFR(GetViewServices()->RightOrSlave(spStart, FALSE, NULL, ppElement, NULL, NULL));
     Assert(*ppElement);
 
     return S_OK;
@@ -3013,14 +3012,14 @@ CHTMLEditor::GetSegmentElement(ISegmentList *pSegmentList, INT i, IHTMLElement *
 
 
 HRESULT
-CHTMLEditor::IsInEditContext( IMarkupPointer * pPointer, BOOL *pfInEdit )
+CHTMLEditor::IsInEditContext(IMarkupPointer * pPointer, BOOL *pfInEdit)
 {
     Assert(_pSelMan != NULL);
-    if ( ! _pSelMan )
+    if (!_pSelMan)
     {
-        return( E_FAIL );
+        return(E_FAIL);
     }
-    return _pSelMan->IsInEditContext( pPointer, pfInEdit );
+    return _pSelMan->IsInEditContext(pPointer, pfInEdit);
 }
 
 
@@ -3030,10 +3029,10 @@ CHTMLEditor::IsInEditContext( IMarkupPointer * pPointer, BOOL *pfInEdit )
 
 
 HRESULT
-CHTMLEditor::FindOrInsertBlockElement( IHTMLElement     *pElement,
-                                       IHTMLElement     **ppBlockElement,
-                                       IMarkupPointer   *pCaret /* = NULL */,
-                                       BOOL             fStopAtBlockquote /* = FALSE */ )
+CHTMLEditor::FindOrInsertBlockElement(IHTMLElement     *pElement,
+                                      IHTMLElement     **ppBlockElement,
+                                      IMarkupPointer   *pCaret /* = NULL */,
+                                      BOOL             fStopAtBlockquote /* = FALSE */)
 {
     HRESULT             hr;
     SP_IHTMLElement     spParentElement;
@@ -3048,16 +3047,16 @@ CHTMLEditor::FindOrInsertBlockElement( IHTMLElement     *pElement,
 
     do
     {
-        IFC( GetViewServices()->IsLayoutElement(spBlockElement, &bLayoutElement) );
+        IFC(GetViewServices()->IsLayoutElement(spBlockElement, &bLayoutElement));
 
         if (bLayoutElement)
             break; // need to insert below
 
-        IFC( GetViewServices()->IsBlockElement(spBlockElement, &bBlockElement) );
+        IFC(GetViewServices()->IsBlockElement(spBlockElement, &bBlockElement));
 
         if (fStopAtBlockquote)
         {
-            IFC( GetMarkupServices()->GetElementTagId(spBlockElement, &tagId) );
+            IFC(GetMarkupServices()->GetElementTagId(spBlockElement, &tagId));
             if (tagId == TAGID_BLOCKQUOTE)
                 break; // need to insert below
         }
@@ -3069,8 +3068,7 @@ CHTMLEditor::FindOrInsertBlockElement( IHTMLElement     *pElement,
 
         if (spParentElement != NULL)
             spBlockElement = spParentElement;
-    }
-    while (spParentElement != NULL);
+    } while (spParentElement != NULL);
 
 
 
@@ -3083,35 +3081,35 @@ CHTMLEditor::FindOrInsertBlockElement( IHTMLElement     *pElement,
         DWORD dwFound;
 
         // Expand left
-        IFC( epLeft->MoveToPointer(pCaret) );
-        IFC( epLeft.Scan(LEFT, dwSearch, &dwFound) );
+        IFC(epLeft->MoveToPointer(pCaret));
+        IFC(epLeft.Scan(LEFT, dwSearch, &dwFound));
         if (epLeft.CheckFlag(dwFound, dwSearch))
-            IFC( epLeft.Scan(RIGHT, dwSearch, &dwFound) );
+            IFC(epLeft.Scan(RIGHT, dwSearch, &dwFound));
 
         // Expand right
-        IFC( epRight->MoveToPointer(pCaret) );
-        IFC( epRight.Scan(RIGHT, dwSearch, &dwFound) );
+        IFC(epRight->MoveToPointer(pCaret));
+        IFC(epRight.Scan(RIGHT, dwSearch, &dwFound));
         if (epRight.CheckFlag(dwFound, dwSearch))
-            IFC( epRight.Scan(LEFT, dwSearch, &dwFound) );
+            IFC(epRight.Scan(LEFT, dwSearch, &dwFound));
     }
     else
     {
         // Just use the block element as the boundary
-        IFC( epLeft->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_AfterBegin) );
-        IFC( epRight->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_BeforeEnd) );
+        IFC(epLeft->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_AfterBegin));
+        IFC(epRight->MoveAdjacentToElement(spBlockElement, ELEM_ADJ_BeforeEnd));
     }
 
-    IFC( CGetBlockFmtCommand::GetDefaultBlockTag(GetMarkupServices(), &tagId) );
-    IFC( GetMarkupServices()->CreateElement(tagId, NULL, &spBlockElement) );
-    IFC( GetViewServices()->InflateBlockElement(spBlockElement) );
+    IFC(CGetBlockFmtCommand::GetDefaultBlockTag(GetMarkupServices(), &tagId));
+    IFC(GetMarkupServices()->CreateElement(tagId, NULL, &spBlockElement));
+    IFC(GetViewServices()->InflateBlockElement(spBlockElement));
 
     if (pCaret)
     {
-        IFC( InsertBlockElement(GetMarkupServices(), spBlockElement, epLeft, epRight, pCaret) );
+        IFC(InsertBlockElement(GetMarkupServices(), spBlockElement, epLeft, epRight, pCaret));
     }
     else
     {
-        IFC( InsertElement(spBlockElement, epLeft, epRight) );
+        IFC(InsertElement(spBlockElement, epLeft, epRight));
     }
 
 Cleanup:
@@ -3133,11 +3131,11 @@ CHTMLEditor::IsPhraseElement(IHTMLElement *pElement)
     BOOL            fNotPhrase = TRUE;
 
     // Make sure the element is not a site or block element
-    IFC( GetViewServices()->IsSite(pElement, &fNotPhrase, NULL, NULL, NULL) );
+    IFC(GetViewServices()->IsSite(pElement, &fNotPhrase, NULL, NULL, NULL));
     if (fNotPhrase)
         return FALSE;
 
-    IFC( GetViewServices()->IsBlockElement(pElement, &fNotPhrase) );
+    IFC(GetViewServices()->IsBlockElement(pElement, &fNotPhrase));
     if (fNotPhrase)
         return FALSE;
 
@@ -3158,21 +3156,21 @@ Cleanup:
 
 
 BOOL
-CHTMLEditor::EqualContainers( IMarkupContainer* pIMarkup1, IMarkupContainer* pIMarkup2 )
+CHTMLEditor::EqualContainers(IMarkupContainer* pIMarkup1, IMarkupContainer* pIMarkup2)
 {
     HRESULT hr = S_OK;
     IUnknown* pIObj1 = NULL;
-    IUnknown* pIObj2 = NULL ;
+    IUnknown* pIObj2 = NULL;
     BOOL fSame = FALSE;
 
-    IFC( pIMarkup1->QueryInterface( IID_IUnknown, (void**) & pIObj1));
-    IFC( pIMarkup2->QueryInterface( IID_IUnknown, (void**) & pIObj2));
+    IFC(pIMarkup1->QueryInterface(IID_IUnknown, (void**)& pIObj1));
+    IFC(pIMarkup2->QueryInterface(IID_IUnknown, (void**)& pIObj2));
 
-    fSame = pIObj1 == pIObj2 ;
+    fSame = pIObj1 == pIObj2;
 
 Cleanup:
-    ReleaseInterface( pIObj1 );
-    ReleaseInterface( pIObj2 );
+    ReleaseInterface(pIObj1);
+    ReleaseInterface(pIObj2);
 
     return fSame;
 }
@@ -3193,7 +3191,7 @@ Cleanup:
 
 HRESULT
 CHTMLEditor::MovePointersToEqualContainers(
-                        IMarkupPointer* pIInner, IMarkupPointer* pIOuter )
+    IMarkupPointer* pIInner, IMarkupPointer* pIOuter)
 {
     HRESULT hr = S_OK;
     IMarkupContainer* pIInnerMarkup = NULL;
@@ -3201,35 +3199,35 @@ CHTMLEditor::MovePointersToEqualContainers(
     IHTMLElement* pIElement = NULL;
     IHTMLElement* pIOuterElement = NULL;
     BOOL fFound = FALSE;
-    IFC( pIInner->GetContainer( & pIInnerMarkup ));
-    IFC( pIOuter->GetContainer( & pIOuterMarkup ));
+    IFC(pIInner->GetContainer(&pIInnerMarkup));
+    IFC(pIOuter->GetContainer(&pIOuterMarkup));
 
-    Assert(! EqualContainers( pIInnerMarkup, pIOuterMarkup ));
+    Assert(!EqualContainers(pIInnerMarkup, pIOuterMarkup));
 
-    while ( ! EqualContainers( pIInnerMarkup, pIOuterMarkup ))
+    while (!EqualContainers(pIInnerMarkup, pIOuterMarkup))
     {
-        ClearInterface( & pIElement);
-        ClearInterface( & pIOuterElement );
+        ClearInterface(&pIElement);
+        ClearInterface(&pIOuterElement);
 
-        IFC( GetViewServices()->CurrentScopeOrSlave(pIInner, & pIElement ));
+        IFC(GetViewServices()->CurrentScopeOrSlave(pIInner, &pIElement));
 
 
         // GetElementForSelection only handles Inputs. This will have to be
         // updated when more embedded masters are done for post IE5.
 
-        IFC( GetViewServices()->GetElementForSelection( pIElement, & pIOuterElement));
-        IFC( pIInner->MoveAdjacentToElement( pIOuterElement, ELEM_ADJ_BeforeBegin ));
+        IFC(GetViewServices()->GetElementForSelection(pIElement, &pIOuterElement));
+        IFC(pIInner->MoveAdjacentToElement(pIOuterElement, ELEM_ADJ_BeforeBegin));
 
-        ClearInterface( & pIInnerMarkup );
-        IFC( pIInner->GetContainer( & pIInnerMarkup ));
+        ClearInterface(&pIInnerMarkup);
+        IFC(pIInner->GetContainer(&pIInnerMarkup));
 
-        if ( EqualContainers( pIInnerMarkup, pIOuterMarkup ))
+        if (EqualContainers(pIInnerMarkup, pIOuterMarkup))
         {
             fFound = TRUE;
             break;
         }
 
-        if ( SameElements( pIElement, pIOuterElement ))
+        if (SameElements(pIElement, pIOuterElement))
         {
 
             // drilling up did nothing - don't loop forever
@@ -3238,7 +3236,7 @@ CHTMLEditor::MovePointersToEqualContainers(
         }
     }
 
-    if ( fFound )
+    if (fFound)
     {
         hr = S_OK;
     }
@@ -3246,11 +3244,11 @@ CHTMLEditor::MovePointersToEqualContainers(
         hr = S_FALSE;
 
 Cleanup:
-    ReleaseInterface( pIInnerMarkup );
-    ReleaseInterface( pIOuterMarkup );
-    ReleaseInterface( pIElement);
-    ReleaseInterface( pIOuterElement );
+    ReleaseInterface(pIInnerMarkup);
+    ReleaseInterface(pIOuterMarkup);
+    ReleaseInterface(pIElement);
+    ReleaseInterface(pIOuterElement);
 
-    RRETURN1( hr, S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 

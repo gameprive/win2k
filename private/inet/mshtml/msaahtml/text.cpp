@@ -1,15 +1,10 @@
-
 //      File:   TEXT.CPP
 //      Date:   7/28/97
 //      Desc:   Contains implementation of CTextAE class.  CTextAE
 //              implements the accessible proxy for the Trident Table
 //              object.
 
-
-
 //  Includes
-
-
 #include "stdafx.h"
 #include <tchar.h>
 #include "text.h"
@@ -17,7 +12,6 @@
 #include "document.h"
 #include "window.h"
 #include "anchor.h"
-
 
 
 //  Defines
@@ -60,8 +54,8 @@
 //                          that this object corresponds to.
 //  RETURNS:
 //      None.
-CTextAE::CTextAE( CTridentAO* pAOParent, UINT nChildID, HWND hWnd )
-: CTridentAE( pAOParent, -1, nChildID, hWnd )
+CTextAE::CTextAE(CTridentAO* pAOParent, UINT nChildID, HWND hWnd)
+    : CTridentAE(pAOParent, -1, nChildID, hWnd)
 {
 
     // Assign the delegating IUnknown to CTextAE :
@@ -86,7 +80,7 @@ CTextAE::CTextAE( CTridentAO* pAOParent, UINT nChildID, HWND hWnd )
 
 #ifdef _DEBUG
     // Set symbolic name of object for easy identification
-    lstrcpy(m_szAOMName,_T("Text"));
+    lstrcpy(m_szAOMName, _T("Text"));
 #endif
 }
 
@@ -99,13 +93,13 @@ CTextAE::~CTextAE()
 
 void CTextAE::ReleaseTridentInterfaces()
 {
-    if ( m_pIHTMLTxtRange )
+    if (m_pIHTMLTxtRange)
     {
         m_pIHTMLTxtRange->Release();
         m_pIHTMLTxtRange = NULL;
     }
 
-    if ( m_pIHTMLDocument2 )
+    if (m_pIHTMLDocument2)
     {
         m_pIHTMLDocument2->Release();
         m_pIHTMLDocument2 = NULL;
@@ -113,7 +107,7 @@ void CTextAE::ReleaseTridentInterfaces()
 }
 
 
-HRESULT CTextAE::Init( IUnknown* pTxtRngObjIUnk, IUnknown* pTOMDocIUnk )
+HRESULT CTextAE::Init(IUnknown* pTxtRngObjIUnk, IUnknown* pTOMDocIUnk)
 //  CTextAE::Init()
 //  DESCRIPTION:
 //      Initialization : set values of data members
@@ -128,20 +122,20 @@ HRESULT CTextAE::Init( IUnknown* pTxtRngObjIUnk, IUnknown* pTOMDocIUnk )
     // validate parameters
     assert(pTxtRngObjIUnk);
     assert(pTOMDocIUnk);
-    if( (!pTxtRngObjIUnk) || (!pTOMDocIUnk)  )
+    if ((!pTxtRngObjIUnk) || (!pTOMDocIUnk))
         return(E_INVALIDARG);
 
     //  Obtain a referenced pointer to the TOM Document.
-    hr = pTOMDocIUnk->QueryInterface( IID_IHTMLDocument2, (void**) &m_pIHTMLDocument2 );
-    if ( hr != S_OK )
+    hr = pTOMDocIUnk->QueryInterface(IID_IHTMLDocument2, (void**)&m_pIHTMLDocument2);
+    if (hr != S_OK)
         return hr;
-    if ( !m_pIHTMLDocument2 )
+    if (!m_pIHTMLDocument2)
         return E_NOINTERFACE;
 
     // store the text range IUnknown in the m_pTOMObjIUnk
     // parameter so that QIs on TOM objects dont GPF :
     // (they will just fail)
-    if(hr = pTxtRngObjIUnk->QueryInterface(IID_IUnknown,(void **)&m_pTOMObjIUnk))
+    if (hr = pTxtRngObjIUnk->QueryInterface(IID_IUnknown, (void **)&m_pTOMObjIUnk))
         return(hr);
 
     //  Create a duplicate of the text range and hold
@@ -150,14 +144,14 @@ HRESULT CTextAE::Init( IUnknown* pTxtRngObjIUnk, IUnknown* pTOMDocIUnk )
     //  the text range out from under us.
 
 
-    CComQIPtr<IHTMLTxtRange,&IID_IHTMLTxtRange> pIHTMLTxtRange( pTxtRngObjIUnk );
-    if ( !pTxtRngObjIUnk )
+    CComQIPtr<IHTMLTxtRange, &IID_IHTMLTxtRange> pIHTMLTxtRange(pTxtRngObjIUnk);
+    if (!pTxtRngObjIUnk)
         return E_NOINTERFACE;
 
-    hr = pIHTMLTxtRange->duplicate( &m_pIHTMLTxtRange );
-    if ( hr != S_OK )
+    hr = pIHTMLTxtRange->duplicate(&m_pIHTMLTxtRange);
+    if (hr != S_OK)
         return hr;
-    if ( !m_pIHTMLTxtRange )
+    if (!m_pIHTMLTxtRange)
         return E_NOINTERFACE;
 
 #ifdef _DEBUG
@@ -171,8 +165,6 @@ HRESULT CTextAE::Init( IUnknown* pTxtRngObjIUnk, IUnknown* pTOMDocIUnk )
 
     return hr;
 }
-
-
 
 
 // IUnknown interface implementation
@@ -190,7 +182,7 @@ HRESULT CTextAE::Init( IUnknown* pTxtRngObjIUnk, IUnknown* pTOMDocIUnk )
 //      E_NOINTERFACE | NOERROR.
 STDMETHODIMP CTextAE::QueryInterface(REFIID riid, void** ppv)
 {
-    if(!ppv)
+    if (!ppv)
         return(E_INVALIDARG);
 
     *ppv = NULL;
@@ -198,7 +190,7 @@ STDMETHODIMP CTextAE::QueryInterface(REFIID riid, void** ppv)
     if (riid == IID_IUnknown)
     {
         *ppv = (LPUNKNOWN)this;
-        ((LPUNKNOWN) *ppv)->AddRef();
+        ((LPUNKNOWN)*ppv)->AddRef();
     }
     else
         return(E_NOINTERFACE);
@@ -236,24 +228,24 @@ HRESULT CTextAE::GetAccName(long lChild, BSTR * pbstrName)
     // validate inputs
 
 
-    assert( pbstrName );
+    assert(pbstrName);
 
-    if(!pbstrName)
+    if (!pbstrName)
         return(E_INVALIDARG);
 
-    if ( !m_bstrName )
+    if (!m_bstrName)
     {
 
         //  Get the accName of the object from the
         //  corresponding TOM text range.
 
 
-        hr = m_pIHTMLTxtRange->get_text( &m_bstrName );
+        hr = m_pIHTMLTxtRange->get_text(&m_bstrName);
 
-        if ( hr != S_OK )
+        if (hr != S_OK)
             return hr;
 
-        if ( !m_bstrName )
+        if (!m_bstrName)
             return E_FAIL;
     }
 
@@ -287,18 +279,18 @@ HRESULT CTextAE::GetAccName(long lChild, BSTR * pbstrName)
 
 HRESULT CTextAE::GetAccState(long lChild, long *plState)
 {
-    HRESULT         hr              = NOERROR;
-    CWindowAO *     pWindowAO       = NULL;
-    IHTMLTxtRange * pIHTMLTxtRange  = NULL;
-    BOOL            bSelected       = FALSE;
+    HRESULT         hr = NOERROR;
+    CWindowAO *     pWindowAO = NULL;
+    IHTMLTxtRange * pIHTMLTxtRange = NULL;
+    BOOL            bSelected = FALSE;
 
 
     // validate inputs
 
 
-    assert( plState );
+    assert(plState);
 
-    if(!plState)
+    if (!plState)
         return(E_INVALIDARG);
 
 
@@ -315,15 +307,15 @@ HRESULT CTextAE::GetAccState(long lChild, long *plState)
 
     CAnchorAO*  pAnc = NULL;
 
-    hr = m_pParent->IsAncestorAnchor( &pAnc );
+    hr = m_pParent->IsAncestorAnchor(&pAnc);
 
-    if ( hr == S_OK )
+    if (hr == S_OK)
     {
         long    lTmpState = 0;
 
-        hr = pAnc->GetAccState( CHILDID_SELF, &lTmpState );
+        hr = pAnc->GetAccState(CHILDID_SELF, &lTmpState);
 
-        if ( hr == S_OK )
+        if (hr == S_OK)
             *plState |= lTmpState;
     }
 
@@ -338,9 +330,9 @@ HRESULT CTextAE::GetAccState(long lChild, long *plState)
 
     long lDummy;
 
-    hr = AccLocation( &lDummy, &lDummy, &lDummy, &lDummy, CHILDID_SELF );
+    hr = AccLocation(&lDummy, &lDummy, &lDummy, &lDummy, CHILDID_SELF);
 
-    if (SUCCEEDED( hr ) && m_bOffScreen)
+    if (SUCCEEDED(hr) && m_bOffScreen)
         *plState |= STATE_SYSTEM_INVISIBLE;
 
 
@@ -355,24 +347,24 @@ HRESULT CTextAE::GetAccState(long lChild, long *plState)
 
     pWindowAO = (CWindowAO *)(m_pParent->GetDocumentAO()->GetParent());
 
-    hr = pWindowAO->IsFocused( &bBrowserWindowHasFocus, &bParentWindowHasFocus );
+    hr = pWindowAO->IsFocused(&bBrowserWindowHasFocus, &bParentWindowHasFocus);
 
-    if ( hr == S_OK && bBrowserWindowHasFocus )
+    if (hr == S_OK && bBrowserWindowHasFocus)
     {
         *plState |= STATE_SYSTEM_SELECTABLE;
 
-        if ( bParentWindowHasFocus )
+        if (bParentWindowHasFocus)
         {
 
             // get the selection (if any) and compare it
             // to this text range.
 
 
-            if(hr = m_pParent->GetDocumentAO()->IsTextRangeSelected(m_pIHTMLTxtRange,&bSelected))
+            if (hr = m_pParent->GetDocumentAO()->IsTextRangeSelected(m_pIHTMLTxtRange, &bSelected))
                 return(hr);
             else
             {
-                if(bSelected)
+                if (bSelected)
                     *plState |= STATE_SYSTEM_SELECTED;
             }
         }
@@ -407,12 +399,12 @@ HRESULT CTextAE::AccDoDefaultAction(long lChild)
 
     CAnchorAO*  pAnc = NULL;
 
-    HRESULT hr = m_pParent->IsAncestorAnchor( &pAnc );
+    HRESULT hr = m_pParent->IsAncestorAnchor(&pAnc);
 
-    if ( hr == S_OK )
-        return pAnc->AccDoDefaultAction( CHILDID_SELF );
+    if (hr == S_OK)
+        return pAnc->AccDoDefaultAction(CHILDID_SELF);
     else
-        return CTridentAE::AccDoDefaultAction( lChild );
+        return CTridentAE::AccDoDefaultAction(lChild);
 }
 
 
@@ -442,12 +434,12 @@ HRESULT CTextAE::GetAccDefaultAction(long lChild, BSTR * pbstrDefAction)
 
     CAnchorAO*  pAnc = NULL;
 
-    HRESULT hr = m_pParent->IsAncestorAnchor( &pAnc );
+    HRESULT hr = m_pParent->IsAncestorAnchor(&pAnc);
 
-    if ( hr == S_OK )
-        return pAnc->GetAccDefaultAction( CHILDID_SELF, pbstrDefAction );
+    if (hr == S_OK)
+        return pAnc->GetAccDefaultAction(CHILDID_SELF, pbstrDefAction);
     else
-        return CTridentAE::GetAccDefaultAction( lChild, pbstrDefAction );
+        return CTridentAE::GetAccDefaultAction(lChild, pbstrDefAction);
 }
 
 
@@ -472,19 +464,19 @@ HRESULT CTextAE::GetAccDefaultAction(long lChild, BSTR * pbstrDefAction)
 
 
 
-HRESULT CTextAE::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth,long * pcyHeight, long lChild)
+HRESULT CTextAE::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth, long * pcyHeight, long lChild)
 {
     HRESULT hr;
 
-    assert( pxLeft && pyTop && pcxWidth && pcyHeight );
+    assert(pxLeft && pyTop && pcxWidth && pcyHeight);
 
-    if( (!pxLeft) || (!pyTop) || (!pcxWidth) || (!pcyHeight) )
+    if ((!pxLeft) || (!pyTop) || (!pcxWidth) || (!pcyHeight))
         return E_INVALIDARG;
 
-    *pxLeft     = 0;
-    *pyTop      = 0;
-    *pcxWidth   = 0;
-    *pcyHeight  = 0;
+    *pxLeft = 0;
+    *pyTop = 0;
+    *pcxWidth = 0;
+    *pcyHeight = 0;
 
 
     // location is determined by getting the metrics from
@@ -493,8 +485,8 @@ HRESULT CTextAE::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth,long *
 
     RECT rc;
 
-    hr = getBoundingRect( &rc, TRUE );
-    if ( hr != S_OK )
+    hr = getBoundingRect(&rc, TRUE);
+    if (hr != S_OK)
         goto Cleanup;
 
 
@@ -503,11 +495,11 @@ HRESULT CTextAE::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth,long *
     // its parent AO.
 
 
-    if ( m_pParent->GetAOMType() != AOMITEM_DOCUMENT )
+    if (m_pParent->GetAOMType() != AOMITEM_DOCUMENT)
     {
 #ifdef _DEBUG
         BSTR bstrText;
-        assert( m_pIHTMLTxtRange->get_text(&bstrText) == S_OK );
+        assert(m_pIHTMLTxtRange->get_text(&bstrText) == S_OK);
         SysFreeString(bstrText);
 #endif
 
@@ -516,22 +508,22 @@ HRESULT CTextAE::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth,long *
         long lWidth = 0;
         long lHeight = 0;
 
-        hr = m_pParent->AccLocation( &lLeft, &lTop, &lWidth, &lHeight, CHILDID_SELF );
-        if ( hr == S_OK )
+        hr = m_pParent->AccLocation(&lLeft, &lTop, &lWidth, &lHeight, CHILDID_SELF);
+        if (hr == S_OK)
         {
-            if ( rc.left < lLeft           ||
-                 rc.top < lTop             ||
-                 rc.right > lLeft + lWidth ||
-                 rc.bottom > lTop + lHeight )
+            if (rc.left < lLeft ||
+                rc.top < lTop ||
+                rc.right > lLeft + lWidth ||
+                rc.bottom > lTop + lHeight)
             {
 
                 // set the text's location to the parent's.
 
 
-                *pxLeft     = lLeft;
-                *pyTop      = lTop;
-                *pcxWidth   = lWidth;
-                *pcyHeight  = lHeight;
+                *pxLeft = lLeft;
+                *pyTop = lTop;
+                *pcxWidth = lWidth;
+                *pcyHeight = lHeight;
 
                 goto Cleanup;
             }
@@ -546,10 +538,10 @@ HRESULT CTextAE::AccLocation(long * pxLeft, long * pyTop, long * pcxWidth,long *
     // set the outbound params to the adjusted values.
 
 
-    *pxLeft     = rc.left;
-    *pyTop      = rc.top;
-    *pcxWidth   = rc.right - rc.left;
-    *pcyHeight  = rc.bottom - rc.top;
+    *pxLeft = rc.left;
+    *pyTop = rc.top;
+    *pcxWidth = rc.right - rc.left;
+    *pcyHeight = rc.bottom - rc.top;
 
 Cleanup:
     return hr;
@@ -599,7 +591,7 @@ HRESULT CTextAE::AccSelect(long flagsSel, long lChild)
     if ((flagsSel & SELFLAG_NONE) ||
         (flagsSel & SELFLAG_EXTENDSELECTION) ||
         (flagsSel & SELFLAG_ADDSELECTION) ||
-        (flagsSel & SELFLAG_REMOVESELECTION) )
+        (flagsSel & SELFLAG_REMOVESELECTION))
     {
         return E_INVALIDARG;
     }
@@ -608,7 +600,7 @@ HRESULT CTextAE::AccSelect(long flagsSel, long lChild)
     // set focus
 
 
-    if(flagsSel & SELFLAG_TAKEFOCUS)
+    if (flagsSel & SELFLAG_TAKEFOCUS)
     {
 
         // if ancestor is an anchor, delegate to it.
@@ -616,10 +608,10 @@ HRESULT CTextAE::AccSelect(long flagsSel, long lChild)
 
         CAnchorAO*  pAnc = NULL;
 
-        hr = m_pParent->IsAncestorAnchor( &pAnc );
+        hr = m_pParent->IsAncestorAnchor(&pAnc);
 
-        if ( hr == S_OK )
-            return pAnc->AccSelect( flagsSel, CHILDID_SELF );
+        if (hr == S_OK)
+            return pAnc->AccSelect(flagsSel, CHILDID_SELF);
         else
         {
 
@@ -635,7 +627,7 @@ HRESULT CTextAE::AccSelect(long flagsSel, long lChild)
 
             assert(m_pIHTMLTxtRange);
 
-            if(hr = m_pIHTMLTxtRange->scrollIntoView(1))
+            if (hr = m_pIHTMLTxtRange->scrollIntoView(1))
                 return(hr);
         }
 
@@ -647,15 +639,15 @@ HRESULT CTextAE::AccSelect(long flagsSel, long lChild)
     // is currently focused).
 
 
-    if(flagsSel & SELFLAG_TAKESELECTION)
+    if (flagsSel & SELFLAG_TAKESELECTION)
     {
 
-        if(hr = GetAccState(CHILDID_SELF,&lState))
+        if (hr = GetAccState(CHILDID_SELF, &lState))
             return(hr);
 
-        if(lState & STATE_SYSTEM_SELECTABLE)
+        if (lState & STATE_SYSTEM_SELECTABLE)
         {
-            if(hr = m_pIHTMLTxtRange->select())
+            if (hr = m_pIHTMLTxtRange->select())
                 return(hr);
         }
         else
@@ -695,7 +687,7 @@ HRESULT CTextAE::GetAccValue(long lChild, BSTR * pbstrValue)
     // validate inputs.
 
 
-    if(!pbstrValue)
+    if (!pbstrValue)
         return(E_INVALIDARG);
 
     *pbstrValue = NULL;
@@ -708,10 +700,10 @@ HRESULT CTextAE::GetAccValue(long lChild, BSTR * pbstrValue)
 
     CAnchorAO*  pAnc = NULL;
 
-    hr = m_pParent->IsAncestorAnchor( &pAnc );
+    hr = m_pParent->IsAncestorAnchor(&pAnc);
 
-    if ( hr == S_OK )
-        return pAnc->GetAccValue( CHILDID_SELF, pbstrValue );
+    if (hr == S_OK)
+        return pAnc->GetAccValue(CHILDID_SELF, pbstrValue);
 
 
     // otherwise, we don't support a value.
@@ -740,7 +732,7 @@ HRESULT CTextAE::GetAccValue(long lChild, BSTR * pbstrValue)
 
 
 
-HRESULT CTextAE::GetAccKeyboardShortcut( long lChild, BSTR* pbstrKeyboardShortcut )
+HRESULT CTextAE::GetAccKeyboardShortcut(long lChild, BSTR* pbstrKeyboardShortcut)
 {
     HRESULT hr;
 
@@ -748,13 +740,13 @@ HRESULT CTextAE::GetAccKeyboardShortcut( long lChild, BSTR* pbstrKeyboardShortcu
     // validate inputs.
 
 
-    if ( !pbstrKeyboardShortcut )
+    if (!pbstrKeyboardShortcut)
         return E_INVALIDARG;
 
     *pbstrKeyboardShortcut = NULL;
 
 
-    assert( m_pParent );
+    assert(m_pParent);
 
 
     // if ancestor is an anchor, delegate to it.
@@ -762,10 +754,10 @@ HRESULT CTextAE::GetAccKeyboardShortcut( long lChild, BSTR* pbstrKeyboardShortcu
 
     CAnchorAO*  pAnc = NULL;
 
-    hr = m_pParent->IsAncestorAnchor( &pAnc );
+    hr = m_pParent->IsAncestorAnchor(&pAnc);
 
-    if ( hr == S_OK )
-        return pAnc->GetAccKeyboardShortcut( CHILDID_SELF, pbstrKeyboardShortcut );
+    if (hr == S_OK)
+        return pAnc->GetAccKeyboardShortcut(CHILDID_SELF, pbstrKeyboardShortcut);
 
 
     // otherwise, we don't have a shortcut.
@@ -798,7 +790,7 @@ HRESULT CTextAE::GetAccKeyboardShortcut( long lChild, BSTR* pbstrKeyboardShortcu
 //  S_OK if contains, S_FALSE if not, else standard COM error.
 
 
-HRESULT CTextAE::ContainsPoint(long xLeft,long yTop, IHTMLTxtRange * pIHTMLTxtRange)
+HRESULT CTextAE::ContainsPoint(long xLeft, long yTop, IHTMLTxtRange * pIHTMLTxtRange)
 {
     HRESULT hr = E_FAIL;
 
@@ -810,7 +802,7 @@ HRESULT CTextAE::ContainsPoint(long xLeft,long yTop, IHTMLTxtRange * pIHTMLTxtRa
     // validate inputs
 
 
-    if(!pIHTMLTxtRange)
+    if (!pIHTMLTxtRange)
     {
         return(E_INVALIDARG);
     }
@@ -820,7 +812,7 @@ HRESULT CTextAE::ContainsPoint(long xLeft,long yTop, IHTMLTxtRange * pIHTMLTxtRa
     // OR if error, bail.
 
 
-    if(hr = containsTextRange(pIHTMLTxtRange))
+    if (hr = containsTextRange(pIHTMLTxtRange))
     {
         return(hr);
     }
@@ -829,7 +821,7 @@ HRESULT CTextAE::ContainsPoint(long xLeft,long yTop, IHTMLTxtRange * pIHTMLTxtRa
     // is this point in our bounding rect ?
 
 
-    if(hr = getBoundingRect(&rcClient,FALSE))
+    if (hr = getBoundingRect(&rcClient, FALSE))
     {
         return(hr);
     }
@@ -843,9 +835,9 @@ HRESULT CTextAE::ContainsPoint(long xLeft,long yTop, IHTMLTxtRange * pIHTMLTxtRa
     // range rectangle.
 
 
-    ClientToScreen(m_hWnd,&ptTest);
+    ClientToScreen(m_hWnd, &ptTest);
 
-    if(PtInRect(&rcClient,ptTest))
+    if (PtInRect(&rcClient, ptTest))
     {
         return(S_OK);
     }
@@ -885,7 +877,7 @@ HRESULT CTextAE::ContainsPoint(long xLeft,long yTop, IHTMLTxtRange * pIHTMLTxtRa
 //  S_OK if point onscreen, S_FALSE if point offscreen, else std. COM error.
 
 
-HRESULT CTextAE::isInClientWindow(long xLeft,long yTop, long cxWidth, long cyHeight)
+HRESULT CTextAE::isInClientWindow(long xLeft, long yTop, long cxWidth, long cyHeight)
 {
     assert(cxWidth > -1);
     assert(cyHeight > -1);
@@ -902,17 +894,17 @@ HRESULT CTextAE::isInClientWindow(long xLeft,long yTop, long cxWidth, long cyHei
     // client window.
 
 
-    if(xLeft < 0)
+    if (xLeft < 0)
     {
-        if(xLeft + cxWidth < 0)
+        if (xLeft + cxWidth < 0)
         {
             return(S_FALSE);
         }
     }
 
-    if(yTop < 0)
+    if (yTop < 0)
     {
-        if(yTop + cyHeight < 0)
+        if (yTop + cyHeight < 0)
         {
             return(S_FALSE);
         }
@@ -924,14 +916,14 @@ HRESULT CTextAE::isInClientWindow(long xLeft,long yTop, long cxWidth, long cyHei
 
 
     RECT rcClient;
-    GetClientRect(m_hWnd,&rcClient);
+    GetClientRect(m_hWnd, &rcClient);
 
-    if(xLeft > rcClient.right)
+    if (xLeft > rcClient.right)
     {
         return(S_FALSE);
     }
 
-    if(yTop > rcClient.bottom)
+    if (yTop > rcClient.bottom)
     {
         return(S_FALSE);
     }
@@ -945,134 +937,94 @@ HRESULT CTextAE::isInClientWindow(long xLeft,long yTop, long cxWidth, long cyHei
 //  CTextAE::getBoundingRect()
 
 //  DESCRIPTION:
-
-//  returns the bounding rect, in the client coordinates of the
-//  owner window.
-
+//  returns the bounding rect, in the client coordinates of the owner window.
 
 //  PARAMETERS:
-
 //  pRect       : pointer to rect to fill out w/coordinates.
 //  bOrigin     : TRUE gets the top and left coords of the first character in the
-//                range, FALSE gets the  top and left coords of the bounding
-//                rect.
+//                range, FALSE gets the  top and left coords of the bounding rect.
 
 //  RETURNS:
-
 //  S_OK if rect obtained | standard COM error.
-
-
-HRESULT CTextAE::getBoundingRect(RECT * pRect,BOOL bOrigin)
+HRESULT CTextAE::getBoundingRect(RECT * pRect, BOOL bOrigin)
 {
     HRESULT hr = E_FAIL;
 
+    long xLeft = 0;
+    long yTop = 0;
+    long xRight = 0;
+    long yBottom = 0;
 
-    long xLeft      = 0;
-    long yTop       = 0;
-    long xRight     = 0;
-    long yBottom    = 0;
-
-    long xOrigin    = 0;
-    long yOrigin    = 0;
-    long xBoundingLeft  =   0;
-    long yBoundingTop   =   0;
+    long xOrigin = 0;
+    long yOrigin = 0;
+    long xBoundingLeft = 0;
+    long yBoundingTop = 0;
     long cxBoundingWidth = 0;
-    long cyBoundingHeight= 0;
-    long cxWidth    = 0;
-    long cyHeight   = 0;
+    long cyBoundingHeight = 0;
+    long cxWidth = 0;
+    long cyHeight = 0;
 
-    assert( pRect );
+    assert(pRect);
 
 #ifdef _DEBUG
-
     BSTR bstrText;
 
-    if(hr = m_pIHTMLTxtRange->get_text(&bstrText))
+    if (hr = m_pIHTMLTxtRange->get_text(&bstrText))
         return(hr);
 
     SysFreeString(bstrText);
-
 #endif
 
-
     // initialize outbound parameter
-
-
     pRect->top = pRect->bottom = pRect->right = pRect->left = 0;
 
 
     // get the bounds of the text range encapsulated
     // by this CTextAE.
 
+    CComQIPtr<IHTMLTextRangeMetrics, &IID_IHTMLTextRangeMetrics> pIHTMLTextRangeMetrics(m_pIHTMLTxtRange);
 
-    CComQIPtr<IHTMLTextRangeMetrics,&IID_IHTMLTextRangeMetrics> pIHTMLTextRangeMetrics(m_pIHTMLTxtRange);
-
-    if(!pIHTMLTextRangeMetrics)
+    if (!pIHTMLTextRangeMetrics)
         return(E_NOINTERFACE);
 
-
     // left x offset
-
-
-    if(hr = pIHTMLTextRangeMetrics->get_boundingLeft(&xBoundingLeft) )
+    if (hr = pIHTMLTextRangeMetrics->get_boundingLeft(&xBoundingLeft))
         return(hr);
-
 
     // left y offset
-
-
-    if(hr = pIHTMLTextRangeMetrics->get_boundingTop(&yBoundingTop) )
+    if (hr = pIHTMLTextRangeMetrics->get_boundingTop(&yBoundingTop))
         return(hr);
-
-
 
     // get width
-
-
-    if(hr = pIHTMLTextRangeMetrics->get_boundingWidth(&cxBoundingWidth) )
+    if (hr = pIHTMLTextRangeMetrics->get_boundingWidth(&cxBoundingWidth))
         return(hr);
-
 
     // get height
-
-
-    if(hr = pIHTMLTextRangeMetrics->get_boundingHeight(&cyBoundingHeight) )
+    if (hr = pIHTMLTextRangeMetrics->get_boundingHeight(&cyBoundingHeight))
         return(hr);
-
-
 
     // if the width or the height are zero, the text
     // range is not visible.
-
-
-    if ( cxBoundingWidth == 0 || cyBoundingHeight == 0 )
+    if (cxBoundingWidth == 0 || cyBoundingHeight == 0)
     {
         m_bOffScreen = TRUE;
         return S_OK;
     }
-
-
 
     // if the origin flag was set, then get the left
     // and top offsets of the start of the text range,
     // and see if they are different than the
     // bounding left and top offsets and adjust for
     // the difference.
-
-
-    if(bOrigin)
+    if (bOrigin)
     {
-
-        if(hr = pIHTMLTextRangeMetrics->get_offsetLeft(&xOrigin))
+        if (hr = pIHTMLTextRangeMetrics->get_offsetLeft(&xOrigin))
             return(hr);
-
 
         // if left origin coord is > than left bounding
         // coord, then set bounding left to origin coord.
         // adjust width accordingly.
-
-
-        if(xOrigin > xBoundingLeft)
+        if (xOrigin > xBoundingLeft)
         {
             xLeft = xOrigin;
             cxWidth = cxBoundingWidth - (xOrigin - xBoundingLeft);
@@ -1083,17 +1035,13 @@ HRESULT CTextAE::getBoundingRect(RECT * pRect,BOOL bOrigin)
             cxWidth = cxBoundingWidth;
         }
 
-
-        if(hr = pIHTMLTextRangeMetrics->get_offsetTop(&yOrigin))
+        if (hr = pIHTMLTextRangeMetrics->get_offsetTop(&yOrigin))
             return(hr);
-
 
         // if top origin coord is > than top bounding coord,
         // then set bounding top to origin coord.
         // adjust height accordingly.
-
-
-        if(yOrigin > yBoundingTop)
+        if (yOrigin > yBoundingTop)
         {
             yTop = yOrigin;
             cyHeight = cyBoundingHeight - (yOrigin - yBoundingTop);
@@ -1103,51 +1051,33 @@ HRESULT CTextAE::getBoundingRect(RECT * pRect,BOOL bOrigin)
             yTop = yBoundingTop;
             cyHeight = cyBoundingHeight;
         }
-
     }
     else
     {
-
-
         // set the xLeft,yTop,cxWidth, and cyHeight to
         // the bounding coordinates
-
-
-        xLeft   = xBoundingLeft;
-        yTop    = yBoundingTop;
+        xLeft = xBoundingLeft;
+        yTop = yBoundingTop;
         cxWidth = cxBoundingWidth;
-        cyHeight= cyBoundingHeight;
-
+        cyHeight = cyBoundingHeight;
     }
 
-    if(hr = isInClientWindow(xLeft,yTop,cxWidth,cyHeight))
+    if (hr = isInClientWindow(xLeft, yTop, cxWidth, cyHeight))
     {
-
-
         // return code of S_FALSE means that the text
         // is NOT onscreen.
-
-
-        if(hr == S_FALSE)
+        if (hr == S_FALSE)
         {
-
-
             // if the origin flag has been
             // set, try to see if the bounding xTop and yLeft
             // are still offscreen.
-
-
-            if(bOrigin)
+            if (bOrigin)
             {
-
-
                 // if the bounding rect is in the window, continue
                 // on as before.
-
-
-                if(hr = isInClientWindow(xBoundingLeft,yBoundingTop,cxBoundingWidth,cyBoundingHeight))
+                if (hr = isInClientWindow(xBoundingLeft, yBoundingTop, cxBoundingWidth, cyBoundingHeight))
                 {
-                    if(hr != S_FALSE)
+                    if (hr != S_FALSE)
                         return(hr);
                 }
             }
@@ -1162,107 +1092,71 @@ HRESULT CTextAE::getBoundingRect(RECT * pRect,BOOL bOrigin)
         }
     }
 
-
     // isInClientWindow() set the offscreen state.
     // Now convert the xLeft and yTop to screen
     // coordinates and re-evaluate width and height.
-
 
     POINT ptScreen;
 
     ptScreen.x = xLeft;
     ptScreen.y = yTop;
 
-    ClientToScreen(m_hWnd,&ptScreen);
+    ClientToScreen(m_hWnd, &ptScreen);
 
     xLeft = ptScreen.x;
     yTop = ptScreen.y;
 
-
     // assign rect members.
-
-
-    pRect->left     = xLeft;
-    pRect->top      = yTop;
-    pRect->right    = xLeft + cxWidth;
-    pRect->bottom   = yTop + cyHeight;
+    pRect->left = xLeft;
+    pRect->top = yTop;
+    pRect->right = xLeft + cxWidth;
+    pRect->bottom = yTop + cyHeight;
 
     return(S_OK);
 }
 
 
-
 //  CTextAE::containsTextRange()
 
 //  DESCRIPTION:
-
-//  checks to see if the text range associated with this textAO contains
-//  the input text range..
+//  checks to see if the text range associated with this textAO contains the input text range..
 
 //  PARAMETERS:
-
 //  pDocTxtRange    input text range to check against.
 
 //  RETURNS:
-
 //  S_OK if the obj. contains the text range, S_FALS if not, else
 //  standard COM error.
-
-
-
 HRESULT CTextAE::containsTextRange(IHTMLTxtRange *pDocTxtRange)
 {
     HRESULT hr = E_FAIL;
     short sInRange = 0;
 
-
     // validate inputs.
-
-
-    assert( pDocTxtRange );
-
+    assert(pDocTxtRange);
     assert(m_pIHTMLTxtRange);
 
-
 #ifdef _DEBUG
-
     BSTR bstrText;
 
-    if(hr = m_pIHTMLTxtRange->get_text(&bstrText))
+    if (hr = m_pIHTMLTxtRange->get_text(&bstrText))
         return(hr);
 
     SysFreeString(bstrText);
-
 #endif
 
-
-
     // Is the input range in the internal text range ?
-
-
-    if(hr = m_pIHTMLTxtRange->inRange( pDocTxtRange,&sInRange ))
+    if (hr = m_pIHTMLTxtRange->inRange(pDocTxtRange, &sInRange))
         return(hr);
 
-    if(sInRange)
+    if (sInRange)
     {
-
-
-        // yes it is
-
-
-        return(S_OK);
+        return(S_OK);// yes it is
     }
     else
-    {
-
-
-        // no its not.
-
-
-        return(S_FALSE);
+    {        
+        return(S_FALSE);// no its not.
     }
-
-
 }
 
 

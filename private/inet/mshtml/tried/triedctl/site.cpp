@@ -22,37 +22,37 @@
  *  hWnd            HWND of the window associated with the site
  *  pFR             PCFrame to the parent structure.
 */
-CSite::CSite(CProxyFrame* pFR )
+CSite::CSite(CProxyFrame* pFR)
 {
-    m_cRef                        = 0;
-    m_hWnd                        = NULL;
-    m_pFR                        = pFR;
-    m_dwPropNotifyCookie        = 0;
-    m_dwOleObjectCookie            = 0;
+    m_cRef = 0;
+    m_hWnd = NULL;
+    m_pFR = pFR;
+    m_dwPropNotifyCookie = 0;
+    m_dwOleObjectCookie = 0;
 
-    m_pObj                        = NULL;
-    m_bFiltered                    = TRUE;//FALSE;
+    m_pObj = NULL;
+    m_bFiltered = TRUE;//FALSE;
 
-    m_pIOleObject                = NULL;
-    m_pIOleIPObject                = NULL;
-    m_pIOleDocView                = NULL;
-    m_pIOleCommandTarget        = NULL;
+    m_pIOleObject = NULL;
+    m_pIOleIPObject = NULL;
+    m_pIOleDocView = NULL;
+    m_pIOleCommandTarget = NULL;
 
-    m_pImpIOleClientSite        = NULL;
-    m_pImpIAdviseSink            = NULL;
-    m_pImpIOleIPSite            = NULL;
-    m_pImpIOleDocumentSite        = NULL;
-    m_pImpIDocHostUIHandler        = NULL;
-    m_pImpIDocHostShowUI        = NULL;
-    m_pImpAmbientIDispatch        = NULL;
-    m_pImpIPropertyNotifySink    = NULL;
-    m_pImpIOleControlSite        = NULL;
+    m_pImpIOleClientSite = NULL;
+    m_pImpIAdviseSink = NULL;
+    m_pImpIOleIPSite = NULL;
+    m_pImpIOleDocumentSite = NULL;
+    m_pImpIDocHostUIHandler = NULL;
+    m_pImpIDocHostShowUI = NULL;
+    m_pImpAmbientIDispatch = NULL;
+    m_pImpIPropertyNotifySink = NULL;
+    m_pImpIOleControlSite = NULL;
 
-    m_pTriEdDocEvtSink            = NULL;
-    m_pTriEdWndEvtSink            = NULL;
-    m_bfSaveAsUnicode            = FALSE;
-    m_cpCodePage                = CP_ACP;
-    m_piMLang                    = NULL;
+    m_pTriEdDocEvtSink = NULL;
+    m_pTriEdWndEvtSink = NULL;
+    m_bfSaveAsUnicode = FALSE;
+    m_cpCodePage = CP_ACP;
+    m_piMLang = NULL;
 }
 
 
@@ -61,21 +61,21 @@ CSite::~CSite(void)
     //Object pointers cleaned up in Close.
 
     //We delete our own interfaces since we control them
-    DeleteInterfaceImp( m_pImpIOleDocumentSite );
-    DeleteInterfaceImp( m_pImpIOleIPSite );
-    DeleteInterfaceImp( m_pImpIAdviseSink );
-    DeleteInterfaceImp( m_pImpIOleClientSite );
-    DeleteInterfaceImp( m_pImpIDocHostUIHandler );
-    DeleteInterfaceImp( m_pImpIDocHostShowUI );
-    DeleteInterfaceImp( m_pImpAmbientIDispatch);
-    DeleteInterfaceImp( m_pImpIPropertyNotifySink);
-    DeleteInterfaceImp( m_pImpIOleControlSite );
+    DeleteInterfaceImp(m_pImpIOleDocumentSite);
+    DeleteInterfaceImp(m_pImpIOleIPSite);
+    DeleteInterfaceImp(m_pImpIAdviseSink);
+    DeleteInterfaceImp(m_pImpIOleClientSite);
+    DeleteInterfaceImp(m_pImpIDocHostUIHandler);
+    DeleteInterfaceImp(m_pImpIDocHostShowUI);
+    DeleteInterfaceImp(m_pImpAmbientIDispatch);
+    DeleteInterfaceImp(m_pImpIPropertyNotifySink);
+    DeleteInterfaceImp(m_pImpIOleControlSite);
 
-    if ( NULL != m_pTriEdDocEvtSink )
+    if (NULL != m_pTriEdDocEvtSink)
     {
         delete m_pTriEdDocEvtSink;
     }
-    if ( NULL != m_pTriEdWndEvtSink )
+    if (NULL != m_pTriEdWndEvtSink)
     {
         delete m_pTriEdWndEvtSink;
     }
@@ -90,7 +90,7 @@ CSite::~CSite(void)
  * Purpose:
  *  IUnknown members for CSite object.
 */
-STDMETHODIMP CSite::QueryInterface( REFIID riid, void **ppv )
+STDMETHODIMP CSite::QueryInterface(REFIID riid, void **ppv)
 {
     *ppv = NULL;
 
@@ -104,59 +104,59 @@ STDMETHODIMP CSite::QueryInterface( REFIID riid, void **ppv )
     OutputDebugString(_T(")\n"));
 #endif
 
-    if ( IID_IOleClientSite == riid )
+    if (IID_IOleClientSite == riid)
     {
         *ppv = m_pImpIOleClientSite;
     }
 
-    if ( IID_IAdviseSink == riid )
+    if (IID_IAdviseSink == riid)
     {
         *ppv = m_pImpIAdviseSink;
     }
 
-    if ( IID_IOleWindow == riid || IID_IOleInPlaceSite == riid )
+    if (IID_IOleWindow == riid || IID_IOleInPlaceSite == riid)
     {
         *ppv = m_pImpIOleIPSite;
     }
 
-    if ( IID_IOleDocumentSite == riid )
+    if (IID_IOleDocumentSite == riid)
     {
         *ppv = m_pImpIOleDocumentSite;
     }
 
-    if ( IID_IDocHostUIHandler == riid )
+    if (IID_IDocHostUIHandler == riid)
     {
         *ppv = m_pImpIDocHostUIHandler;
     }
 
-    if ( IID_IDocHostShowUI == riid )
+    if (IID_IDocHostShowUI == riid)
     {
         *ppv = m_pImpIDocHostShowUI;
     }
 
-    if ( IID_IDispatch == riid )
+    if (IID_IDispatch == riid)
     {
         *ppv = m_pImpAmbientIDispatch;
     }
 
-    if ( IID_IPropertyNotifySink== riid )
+    if (IID_IPropertyNotifySink == riid)
     {
         *ppv = m_pImpIPropertyNotifySink;
     }
 
-    if ( IID_IOleControlSite== riid )
+    if (IID_IOleControlSite == riid)
     {
         *ppv = m_pImpIOleControlSite;
     }
 
-    if ( NULL != *ppv )
+    if (NULL != *ppv)
     {
         ((LPUNKNOWN)*ppv)->AddRef();
         return NOERROR;
     }
 
     // Try the frame instead
-    return GetFrame()->QueryInterface( riid, ppv );
+    return GetFrame()->QueryInterface(riid, ppv);
 
 }
 
@@ -168,7 +168,7 @@ STDMETHODIMP_(ULONG) CSite::AddRef(void)
 
 STDMETHODIMP_(ULONG) CSite::Release(void)
 {
-    if ( 0 != --m_cRef )
+    if (0 != --m_cRef)
     {
         return m_cRef;
     }
@@ -205,20 +205,20 @@ HRESULT CSite::HrCreate(IUnknown* pUnk, IUnknown** ppUnkTriEdit)
     // It is valid for pUnk and ppUnkTriEdit to be NULL
 
     // Create the site's interface implementations which MSHTML.DLL will call
-    m_pImpIOleClientSite = new CImpIOleClientSite( this, this );
-    m_pImpIAdviseSink = new CImpIAdviseSink( this, this );
-    m_pImpIOleIPSite = new CImpIOleInPlaceSite( this, this );
-    m_pImpIOleDocumentSite = new CImpIOleDocumentSite( this, this );
-    m_pImpIDocHostUIHandler = new CImpIDocHostUIHandler( this, this );
-    m_pImpIDocHostShowUI = new CImpIDocHostShowUI( this, this );
-    m_pImpAmbientIDispatch = new CImpAmbientIDispatch( this, this );
-    m_pImpIPropertyNotifySink = new CImplPropertyNotifySink( this, this );
-    m_pImpIOleControlSite = new  CImpIOleControlSite ( this, this );
+    m_pImpIOleClientSite = new CImpIOleClientSite(this, this);
+    m_pImpIAdviseSink = new CImpIAdviseSink(this, this);
+    m_pImpIOleIPSite = new CImpIOleInPlaceSite(this, this);
+    m_pImpIOleDocumentSite = new CImpIOleDocumentSite(this, this);
+    m_pImpIDocHostUIHandler = new CImpIDocHostUIHandler(this, this);
+    m_pImpIDocHostShowUI = new CImpIDocHostShowUI(this, this);
+    m_pImpAmbientIDispatch = new CImpAmbientIDispatch(this, this);
+    m_pImpIPropertyNotifySink = new CImplPropertyNotifySink(this, this);
+    m_pImpIOleControlSite = new  CImpIOleControlSite(this, this);
 
-    m_pTriEdDocEvtSink = new CTriEditEventSink ( m_pFR, DIID_HTMLDocumentEvents );
-    m_pTriEdWndEvtSink = new CTriEditEventSink ( m_pFR, DIID_HTMLWindowEvents );
+    m_pTriEdDocEvtSink = new CTriEditEventSink(m_pFR, DIID_HTMLDocumentEvents);
+    m_pTriEdWndEvtSink = new CTriEditEventSink(m_pFR, DIID_HTMLWindowEvents);
 
-    if ( NULL == m_pImpIOleClientSite
+    if (NULL == m_pImpIOleClientSite
         || NULL == m_pImpIAdviseSink
         || NULL == m_pImpIOleIPSite
         || NULL == m_pImpIOleDocumentSite
@@ -237,7 +237,7 @@ HRESULT CSite::HrCreate(IUnknown* pUnk, IUnknown** ppUnkTriEdit)
 
 
     // Create TriEdit
-    hr = CoCreateInstance( CLSID_TriEditDocument, pUnk, CLSCTX_INPROC_SERVER, IID_IUnknown, (void **)&m_pObj );
+    hr = CoCreateInstance(CLSID_TriEditDocument, pUnk, CLSCTX_INPROC_SERVER, IID_IUnknown, (void **)&m_pObj);
     if (SUCCEEDED(hr))
     {
         if (ppUnkTriEdit)
@@ -246,15 +246,15 @@ HRESULT CSite::HrCreate(IUnknown* pUnk, IUnknown** ppUnkTriEdit)
             *ppUnkTriEdit = m_pObj;
         }
     }
-    else if ( REGDB_E_CLASSNOTREG == hr )
+    else if (REGDB_E_CLASSNOTREG == hr)
     {
-        DllUnregisterServer ();
+        DllUnregisterServer();
     }
 
-// RJ - 2/26/98
-// defer call ObjectInitialize() until control has been created
-// so that props for IDHUIHandler::GetHostInfo can be set by host. ObjectInitialize
-// (really SetClientSite results in IDHUIHandler::GetHostInfo being called
+    // RJ - 2/26/98
+    // defer call ObjectInitialize() until control has been created
+    // so that props for IDHUIHandler::GetHostInfo can be set by host. ObjectInitialize
+    // (really SetClientSite results in IDHUIHandler::GetHostInfo being called
 #if 0
     hr = ObjectInitialize();
 #endif
@@ -285,19 +285,19 @@ HRESULT CSite::HrObjectInitialize()
     }
 
     // cache IOleObject
-    if (FAILED(hr = m_pObj->QueryInterface( IID_IOleObject, (void **)&m_pIOleObject )))
+    if (FAILED(hr = m_pObj->QueryInterface(IID_IOleObject, (void **)&m_pIOleObject)))
         return hr;
 
     _ASSERTE(m_pIOleObject);
 
     // SetClientSite is critical for DocObjects
-    m_pIOleObject->SetClientSite( m_pImpIOleClientSite );
+    m_pIOleObject->SetClientSite(m_pImpIOleClientSite);
 
     _ASSERTE(0 == m_dwOleObjectCookie);
     m_pIOleObject->Advise(m_pImpIAdviseSink, &m_dwOleObjectCookie);
 
     // cache IOleCommandTarget
-    if (FAILED(hr = m_pObj->QueryInterface( IID_IOleCommandTarget, (void **) &m_pIOleCommandTarget)))
+    if (FAILED(hr = m_pObj->QueryInterface(IID_IOleCommandTarget, (void **)&m_pIOleCommandTarget)))
         return hr;
 
     _ASSERTE(m_pIOleCommandTarget);
@@ -306,29 +306,29 @@ HRESULT CSite::HrObjectInitialize()
         return hr;
 
     // Hook up the proxy frame to the Trident Document events
-    if (FAILED(hr = m_pTriEdDocEvtSink->Advise ( m_pIOleObject )))
+    if (FAILED(hr = m_pTriEdDocEvtSink->Advise(m_pIOleObject)))
         return hr;
 
-    CComQIPtr<IHTMLDocument2, &IID_IHTMLDocument2>piHtmlDoc ( m_pIOleObject );
-    _ASSERTE ( piHtmlDoc );
-    if ( piHtmlDoc )
+    CComQIPtr<IHTMLDocument2, &IID_IHTMLDocument2>piHtmlDoc(m_pIOleObject);
+    _ASSERTE(piHtmlDoc);
+    if (piHtmlDoc)
     {
         CComPtr<IHTMLWindow2>    piHtmlWindow = NULL;
-        hr = piHtmlDoc->get_parentWindow ( &piHtmlWindow );
-        if ( SUCCEEDED ( hr ) )
+        hr = piHtmlDoc->get_parentWindow(&piHtmlWindow);
+        if (SUCCEEDED(hr))
         {
-            hr = m_pTriEdWndEvtSink->Advise ( piHtmlWindow );
+            hr = m_pTriEdWndEvtSink->Advise(piHtmlWindow);
         }
     }
-    if ( FAILED ( hr ) )
+    if (FAILED(hr))
         return hr;
 
     // Attempt to create the IMultiLanguage2 object, avaialable only with IE5.
     // It's OK if this fails.
-    CoCreateInstance ( CLSID_CMultiLanguage, NULL, CLSCTX_INPROC_SERVER, IID_IMultiLanguage2Correct, (void**)&m_piMLang );
+    CoCreateInstance(CLSID_CMultiLanguage, NULL, CLSCTX_INPROC_SERVER, IID_IMultiLanguage2Correct, (void**)&m_piMLang);
 
     // Put the object in the running state
-    OleRun( m_pIOleObject );
+    OleRun(m_pIOleObject);
 
     return hr;
 }
@@ -358,28 +358,28 @@ void CSite::Close(BOOL fCommit)
 
     _ASSERTE(SUCCEEDED(hr));
 
-    if ( NULL != m_pIOleIPObject )
+    if (NULL != m_pIOleIPObject)
     {
         m_pIOleIPObject->InPlaceDeactivate();
     }
 
-    ReleaseInterface( m_pIOleDocView );
-    ReleaseInterface( m_pIOleCommandTarget );
-    ReleaseInterface( m_piMLang );
+    ReleaseInterface(m_pIOleDocView);
+    ReleaseInterface(m_pIOleCommandTarget);
+    ReleaseInterface(m_piMLang);
 
-    if ( NULL != m_pIOleObject )
+    if (NULL != m_pIOleObject)
     {
         hr = m_pIOleObject->Unadvise(m_dwOleObjectCookie);
         _ASSERTE(SUCCEEDED(hr));
 
-        m_pTriEdDocEvtSink->Unadvise ();
-        m_pTriEdWndEvtSink->Unadvise ();
+        m_pTriEdDocEvtSink->Unadvise();
+        m_pTriEdWndEvtSink->Unadvise();
 
-        m_pIOleObject->Close( fCommit ? OLECLOSE_SAVEIFDIRTY : OLECLOSE_NOSAVE );
-        ReleaseInterface( m_pIOleObject );
+        m_pIOleObject->Close(fCommit ? OLECLOSE_SAVEIFDIRTY : OLECLOSE_NOSAVE);
+        ReleaseInterface(m_pIOleObject);
     }
 
-    ReleaseInterface( m_pObj );
+    ReleaseInterface(m_pObj);
 }
 
 
@@ -412,10 +412,10 @@ CSite::InitialActivate(LONG iVerb, HWND hWnd)
 
 void CSite::Activate(LONG iVerb)
 {
-    RECT rc = {0};
+    RECT rc = { 0 };
 
     // There is no window when we're being called to discard - (InPlaceDeactivate)
-    if ( iVerb !=  OLEIVERB_DISCARDUNDOSTATE )
+    if (iVerb != OLEIVERB_DISCARDUNDOSTATE)
     {
         _ASSERTE(m_hWnd);
         GetClientRect(m_hWnd, &rc);
@@ -438,9 +438,9 @@ void CSite::Activate(LONG iVerb)
  *  None
 */
 
-void CSite::UpdateObjectRects( void )
+void CSite::UpdateObjectRects(void)
 {
-    if ( NULL != m_pIOleDocView )
+    if (NULL != m_pIOleDocView)
     {
         RECT    rc;
 
@@ -475,7 +475,7 @@ void CSite::OnReadyStateChanged()
             _ASSERTE(Var.vt == VT_I4 || Var.vt == VT_I2);
 
             // we get the ready state so we can warn about sending while downloading
-            GetFrame()->OnReadyStateChanged((READYSTATE) Var.lVal);
+            GetFrame()->OnReadyStateChanged((READYSTATE)Var.lVal);
         }
 
         _ASSERTE(SUCCEEDED(hr));
@@ -488,8 +488,8 @@ void CSite::OnReadyStateChanged()
 HRESULT
 CSite::HrRegisterPropNotifySink(BOOL fRegister)
 {
-    IConnectionPointContainer   *pCPContainer=0;
-    IConnectionPoint            *pCP=0;
+    IConnectionPointContainer   *pCPContainer = 0;
+    IConnectionPoint            *pCP = 0;
     HRESULT                     hr = S_OK;
 
     _ASSERTE(m_pObj);
@@ -546,7 +546,7 @@ CSite::HrSaveToStream(LPSTREAM pStream)
     }
 
     // This can return an ASCII stream, even if we loaded Unicode into the control!
-    hr = HrConvertStreamToUnicode ( pStream );
+    hr = HrConvertStreamToUnicode(pStream);
 
 cleanup:
     return hr;
@@ -575,10 +575,10 @@ CSite::HrSaveToStreamAndFilter(LPSTREAM* ppStream, DWORD dwFilterFlags)
         goto cleanup;
     }
 
-    m_pFR->GetBrowseMode ( &vbBrowse );
-    if ( vbBrowse )
+    m_pFR->GetBrowseMode(&vbBrowse);
+    if (vbBrowse)
     {
-        piStream->AddRef ();
+        piStream->AddRef();
         piFilteredStream = piStream;
     }
     else
@@ -689,9 +689,9 @@ cleanup:
 }
 
 
-HRESULT CSite::GetContainer ( LPOLECONTAINER* ppContainer )
+HRESULT CSite::GetContainer(LPOLECONTAINER* ppContainer)
 {
-    return m_pFR->GetContainer ( ppContainer );
+    return m_pFR->GetContainer(ppContainer);
 }
 
 
@@ -705,31 +705,31 @@ HRESULT CSite::GetContainer ( LPOLECONTAINER* ppContainer )
  *  IUnknown members for CImpIOleControlSite object.
 */
 
-CImpIOleControlSite::CImpIOleControlSite( PCSite pSite, LPUNKNOWN pUnkOuter )
+CImpIOleControlSite::CImpIOleControlSite(PCSite pSite, LPUNKNOWN pUnkOuter)
 {
     m_cRef = 0;
     m_pSite = pSite;
     m_pUnkOuter = pUnkOuter;
 }
 
-CImpIOleControlSite::~CImpIOleControlSite( void )
+CImpIOleControlSite::~CImpIOleControlSite(void)
 {
 }
 
 
-STDMETHODIMP CImpIOleControlSite::QueryInterface( REFIID riid, void **ppv )
+STDMETHODIMP CImpIOleControlSite::QueryInterface(REFIID riid, void **ppv)
 {
-    return m_pUnkOuter->QueryInterface( riid, ppv );
+    return m_pUnkOuter->QueryInterface(riid, ppv);
 }
 
 
-STDMETHODIMP_(ULONG) CImpIOleControlSite::AddRef( void )
+STDMETHODIMP_(ULONG) CImpIOleControlSite::AddRef(void)
 {
     ++m_cRef;
     return m_pUnkOuter->AddRef();
 }
 
-STDMETHODIMP_(ULONG) CImpIOleControlSite::Release( void )
+STDMETHODIMP_(ULONG) CImpIOleControlSite::Release(void)
 {
     --m_cRef;
     return m_pUnkOuter->Release();

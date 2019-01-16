@@ -1,40 +1,30 @@
-
 // CtlHelp.Cpp
 
 // Copyright 1995-1996 Microsoft Corporation.  All Rights Reserved.
 
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 // ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 
 // helper routines for our COleControl implementation
 
-
 #include "IPServer.H"
 #include "CtrlObj.H"
-
 #include "CtlHelp.H"
 #include "Util.H"
 #include <windows.h>
 
 // for ASSERT and FAIL
-
 SZTHISFILE
 
-
 // this is used by the window reflection code.
-
 extern BYTE g_fRegisteredReflect;
 extern char g_szReflectClassName [];
 
 
 // define this here, since it's the only guid we really need to define in the
 // framework -- the user control defines all other interesting guids.
-
-static const GUID IID_IControlPrv =
-{ 0xd97180, 0xfcf7, 0x11ce, { 0xa0, 0x9e, 0x0, 0xaa, 0x0, 0x62, 0xbe, 0x57 } };
+static const GUID IID_IControlPrv = { 0xd97180, 0xfcf7, 0x11ce, { 0xa0, 0x9e, 0x0, 0xaa, 0x0, 0x62, 0xbe, 0x57 } };
 
 
 // this table is used for copying data around, and persisting properties.
@@ -76,15 +66,9 @@ const BYTE g_rgcbPromotedDataTypeSize[] = {
 
 
 // _SpecialKeyState
-
-// returns a short with some information on which of the SHIFT, ALT, and CTRL
-// keys are set.
-
+// returns a short with some information on which of the SHIFT, ALT, and CTRL keys are set.
 // Output:
 //    short        - bit 0 is shift, bit 1 is ctrl, bit 2 is ALT.
-
-// Notes:
-
 short _SpecialKeyState()
 {
     // don't appear to be able to reduce number of calls to GetKeyState

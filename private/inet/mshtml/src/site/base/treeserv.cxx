@@ -64,11 +64,11 @@
 //    IMarkupServices methods
 
 HRESULT
-CDoc::CreateMarkupPointer ( CMarkupPointer * * ppPointer )
+CDoc::CreateMarkupPointer(CMarkupPointer * * ppPointer)
 {
-    Assert( ppPointer );
+    Assert(ppPointer);
 
-    *ppPointer = new CMarkupPointer( this );
+    *ppPointer = new CMarkupPointer(this);
     if (!*ppPointer)
         return E_OUTOFMEMORY;
 
@@ -76,45 +76,45 @@ CDoc::CreateMarkupPointer ( CMarkupPointer * * ppPointer )
 }
 
 HRESULT
-CDoc::CreateMarkupPointer ( IMarkupPointer ** ppIPointer )
+CDoc::CreateMarkupPointer(IMarkupPointer ** ppIPointer)
 {
     HRESULT hr;
     CMarkupPointer * pPointer = NULL;
 
-    hr = THR( CreateMarkupPointer( & pPointer ) );
+    hr = THR(CreateMarkupPointer(&pPointer));
 
     if (hr)
         goto Cleanup;
 
     hr = THR(
         pPointer->QueryInterface(
-            IID_IMarkupPointer, (void **) ppIPointer ) );
+            IID_IMarkupPointer, (void **)ppIPointer));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    ReleaseInterface( pPointer );
+    ReleaseInterface(pPointer);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CDoc::MovePointersToRange (
+CDoc::MovePointersToRange(
     IHTMLTxtRange * pIRange,
     IMarkupPointer *  pIPointerStart,
-    IMarkupPointer *  pIPointerFinish )
+    IMarkupPointer *  pIPointerFinish)
 {
     HRESULT hr = S_OK;
     CAutoRange *pRange;
-    CMarkupPointer *pPointerStart=NULL, *pPointerFinish=NULL;
+    CMarkupPointer *pPointerStart = NULL, *pPointerFinish = NULL;
 
     // check argument sanity
-    if (pIRange==NULL          || !IsOwnerOf(pIRange) ||
-        (pIPointerStart !=NULL && !IsOwnerOf(pIPointerStart))  ||
-        (pIPointerFinish!=NULL && !IsOwnerOf(pIPointerFinish)) )
+    if (pIRange == NULL || !IsOwnerOf(pIRange) ||
+        (pIPointerStart != NULL && !IsOwnerOf(pIPointerStart)) ||
+        (pIPointerFinish != NULL && !IsOwnerOf(pIPointerFinish)))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -151,22 +151,22 @@ CDoc::MovePointersToRange (
     // move the pointers
 
     if (pPointerStart)
-        hr = pRange->GetLeft( pPointerStart );
+        hr = pRange->GetLeft(pPointerStart);
 
     if (!hr && pPointerFinish)
-        hr = pRange->GetRight( pPointerFinish );
+        hr = pRange->GetRight(pPointerFinish);
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CDoc::MoveRangeToPointers (
+CDoc::MoveRangeToPointers(
     IMarkupPointer *  pIPointerStart,
     IMarkupPointer *  pIPointerFinish,
-    IHTMLTxtRange * pIRange )
+    IHTMLTxtRange * pIRange)
 {
     HRESULT        hr = S_OK;
     CAutoRange *   pRange;
@@ -178,33 +178,33 @@ CDoc::MoveRangeToPointers (
         goto Cleanup;
     }
 
-    if (!IsOwnerOf( pIRange ) ||
-        !IsOwnerOf( pIPointerStart )  || !IsOwnerOf( pIPointerFinish ))
+    if (!IsOwnerOf(pIRange) ||
+        !IsOwnerOf(pIPointerStart) || !IsOwnerOf(pIPointerFinish))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pIPointerStart->IsPositioned( &fPositioned ) );
+    hr = THR(pIPointerStart->IsPositioned(&fPositioned));
     if (hr)
         goto Cleanup;
-    if (! fPositioned)
+    if (!fPositioned)
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pIPointerFinish->IsPositioned( &fPositioned ) );
+    hr = THR(pIPointerFinish->IsPositioned(&fPositioned));
     if (hr)
         goto Cleanup;
-    if (! fPositioned)
+    if (!fPositioned)
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
     // get the internal objects corresponding to the arguments
-    hr = THR( pIRange->QueryInterface( CLSID_CRange, (void**) & pRange ) );
+    hr = THR(pIRange->QueryInterface(CLSID_CRange, (void**)& pRange));
 
     if (hr)
     {
@@ -212,26 +212,26 @@ CDoc::MoveRangeToPointers (
         goto Cleanup;
     }
 
-    hr = THR( pRange->SetLeftAndRight( pIPointerStart, pIPointerFinish, FALSE ));
+    hr = THR(pRange->SetLeftAndRight(pIPointerStart, pIPointerFinish, FALSE));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CDoc::InsertElement (
+CDoc::InsertElement(
     CElement *       pElementInsert,
     CMarkupPointer * pPointerStart,
     CMarkupPointer * pPointerFinish,
-    DWORD            dwFlags )
+    DWORD            dwFlags)
 {
     HRESULT     hr = S_OK;
     CTreePosGap tpgStart, tpgFinish;
 
-    Assert( pElementInsert );
-    Assert( pPointerStart );
+    Assert(pElementInsert);
+    Assert(pPointerStart);
 
 
     // If the the finish is not specified, set it to the start to make the element span
@@ -241,7 +241,7 @@ CDoc::InsertElement (
     if (!pPointerFinish)
         pPointerFinish = pPointerStart;
 
-    Assert( ! pElementInsert->GetFirstBranch() );
+    Assert(!pElementInsert->GetFirstBranch());
 
 
     // If the element is no scope, then we must ignore the finish
@@ -254,21 +254,21 @@ CDoc::InsertElement (
     // Make sure the start if before the finish
 
 
-    Assert( pPointerStart->IsLeftOfOrEqualTo( pPointerFinish ) );
+    Assert(pPointerStart->IsLeftOfOrEqualTo(pPointerFinish));
 
 
     // Make sure both pointers are positioned, and in the same tree
 
 
-    Assert( pPointerStart->IsPositioned() );
-    Assert( pPointerFinish->IsPositioned() );
-    Assert( pPointerStart->Markup() == pPointerFinish->Markup() );
+    Assert(pPointerStart->IsPositioned());
+    Assert(pPointerFinish->IsPositioned());
+    Assert(pPointerStart->Markup() == pPointerFinish->Markup());
 
 
     // Make sure unembedded markup pointers go in for the modification
 
 
-    hr = THR( pPointerStart->Markup()->EmbedPointers() );
+    hr = THR(pPointerStart->Markup()->EmbedPointers());
 
     if (hr)
         goto Cleanup;
@@ -282,19 +282,19 @@ CDoc::InsertElement (
     // args.  It would be nice to treat the inputs specially in the
     // operation and not have to embed them......
 
-    tpgStart.MoveTo( pPointerStart->GetEmbeddedTreePos(), TPG_LEFT );
-    tpgFinish.MoveTo( pPointerFinish->GetEmbeddedTreePos(), TPG_LEFT );
+    tpgStart.MoveTo(pPointerStart->GetEmbeddedTreePos(), TPG_LEFT);
+    tpgFinish.MoveTo(pPointerFinish->GetEmbeddedTreePos(), TPG_LEFT);
 
     hr = THR(
         pPointerStart->Markup()->InsertElementInternal(
-            pElementInsert, & tpgStart, & tpgFinish, dwFlags ) );
+            pElementInsert, &tpgStart, &tpgFinish, dwFlags));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
@@ -305,7 +305,7 @@ CDoc::InsertElement(
 {
     HRESULT          hr = S_OK;
     CElement *       pElementInsert;
-    CMarkupPointer * pPointerStart, * pPointerFinish;
+    CMarkupPointer * pPointerStart, *pPointerFinish;
 
 
     // If the the finish is not specified, set it to the start to make the element span
@@ -319,9 +319,9 @@ CDoc::InsertElement(
     // Make sure all the arguments are specified and belong to this document
 
 
-    if (!pIElementInsert || !IsOwnerOf( pIElementInsert ) ||
-        !pIPointerStart  || !IsOwnerOf( pIPointerStart  )  ||
-        !pIPointerFinish || !IsOwnerOf( pIPointerFinish ) )
+    if (!pIElementInsert || !IsOwnerOf(pIElementInsert) ||
+        !pIPointerStart || !IsOwnerOf(pIPointerStart) ||
+        !pIPointerFinish || !IsOwnerOf(pIPointerFinish))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -331,7 +331,7 @@ CDoc::InsertElement(
     // get the internal objects corresponding to the arguments
 
 
-    hr = THR( pIElementInsert->QueryInterface( CLSID_CElement, (void **) & pElementInsert ) );
+    hr = THR(pIElementInsert->QueryInterface(CLSID_CElement, (void **)& pElementInsert));
 
     if (hr)
     {
@@ -339,7 +339,7 @@ CDoc::InsertElement(
         goto Cleanup;
     }
 
-    Assert( pElementInsert );
+    Assert(pElementInsert);
 
 
     // The element must not already be in a tree
@@ -355,7 +355,7 @@ CDoc::InsertElement(
     // Get the "real" objects associated with these pointer interfaces
 
 
-    hr = THR( pIPointerStart->QueryInterface( CLSID_CMarkupPointer, (void **) & pPointerStart ) );
+    hr = THR(pIPointerStart->QueryInterface(CLSID_CMarkupPointer, (void **)& pPointerStart));
 
     if (hr)
     {
@@ -363,7 +363,7 @@ CDoc::InsertElement(
         goto Cleanup;
     }
 
-    hr = THR( pIPointerFinish->QueryInterface( CLSID_CMarkupPointer, (void **) & pPointerFinish ) );
+    hr = THR(pIPointerFinish->QueryInterface(CLSID_CMarkupPointer, (void **)& pPointerFinish));
 
     if (hr)
     {
@@ -391,7 +391,7 @@ CDoc::InsertElement(
     // Make sure the start if before the finish
 
 
-    EnsureLogicalOrder( pPointerStart, pPointerFinish );
+    EnsureLogicalOrder(pPointerStart, pPointerFinish);
 
 #if TREE_SYNC
     // this is a big HACK, to temporarily get markup-sync working for netdocs.  it
@@ -399,7 +399,7 @@ CDoc::InsertElement(
     // trident team: do not bother trying to maintain this code, delete if it causes problems
     if (_SyncLogger.IsLogging())
     {
-        hr = THR(_SyncLogger.InsertElementHandler(pIPointerStart,pIPointerFinish,pIElementInsert));
+        hr = THR(_SyncLogger.InsertElementHandler(pIPointerStart, pIPointerFinish, pIElementInsert));
         if (S_OK != hr)
         {
             goto Cleanup;
@@ -407,21 +407,21 @@ CDoc::InsertElement(
     }
 #endif // TREE_SYNC
 
-    hr = THR( InsertElement( pElementInsert, pPointerStart, pPointerFinish ) );
+    hr = THR(InsertElement(pElementInsert, pPointerStart, pPointerFinish));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CDoc::RemoveElement (
+CDoc::RemoveElement(
     CElement *  pElementRemove,
-    DWORD       dwFlags )
+    DWORD       dwFlags)
 {
     HRESULT    hr = S_OK;
 
@@ -430,13 +430,13 @@ CDoc::RemoveElement (
     // with this document.
 
 
-    Assert( pElementRemove );
+    Assert(pElementRemove);
 
 
     //  Assert that the element is in the markup
 
 
-    Assert( pElementRemove->IsInMarkup() );
+    Assert(pElementRemove->IsInMarkup());
 
 #if TREE_SYNC
     // this is a big HACK, to temporarily get markup-sync working for netdocs.  it
@@ -456,18 +456,18 @@ CDoc::RemoveElement (
     // Now, remove the element
 
 
-    hr = THR( pElementRemove->GetMarkup()->RemoveElementInternal( pElementRemove, dwFlags ) );
+    hr = THR(pElementRemove->GetMarkup()->RemoveElementInternal(pElementRemove, dwFlags));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::RemoveElement ( IHTMLElement * pIElementRemove )
+CDoc::RemoveElement(IHTMLElement * pIElementRemove)
 {
     HRESULT    hr = S_OK;
     CElement * pElementRemove = NULL;
@@ -477,7 +477,7 @@ CDoc::RemoveElement ( IHTMLElement * pIElementRemove )
     // with this document.
 
 
-    if (!pIElementRemove || !IsOwnerOf( pIElementRemove ))
+    if (!pIElementRemove || !IsOwnerOf(pIElementRemove))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -489,7 +489,7 @@ CDoc::RemoveElement ( IHTMLElement * pIElementRemove )
 
     hr = THR(
         pIElementRemove->QueryInterface(
-            CLSID_CElement, (void **) & pElementRemove ) );
+            CLSID_CElement, (void **)& pElementRemove));
 
     if (hr)
     {
@@ -511,116 +511,7 @@ CDoc::RemoveElement ( IHTMLElement * pIElementRemove )
     // Do the remove
 
 
-    hr = THR( RemoveElement( pElementRemove ) );
-
-    if (hr)
-        goto Cleanup;
-
-Cleanup:
-
-    RRETURN( hr );
-}
-
-HRESULT
-CDoc::Remove (
-    CMarkupPointer * pPointerStart,
-    CMarkupPointer * pPointerFinish,
-    DWORD            dwFlags )
-{
-    return CutCopyMove( pPointerStart, pPointerFinish, NULL, TRUE, dwFlags );
-}
-
-HRESULT
-CDoc::Copy (
-    CMarkupPointer * pPointerSourceStart,
-    CMarkupPointer * pPointerSourceFinish,
-    CMarkupPointer * pPointerTarget,
-    DWORD            dwFlags )
-{
-    return
-        CutCopyMove(
-            pPointerSourceStart, pPointerSourceFinish,
-            pPointerTarget, FALSE, dwFlags );
-}
-
-HRESULT
-CDoc::Move (
-    CMarkupPointer * pPointerSourceStart,
-    CMarkupPointer * pPointerSourceFinish,
-    CMarkupPointer * pPointerTarget,
-    DWORD            dwFlags )
-{
-    return
-        CutCopyMove(
-            pPointerSourceStart, pPointerSourceFinish,
-            pPointerTarget, TRUE, dwFlags );
-}
-
-HRESULT
-CDoc::Remove (
-    IMarkupPointer * pIPointerStart,
-    IMarkupPointer * pIPointerFinish )
-{
-    return CutCopyMove( pIPointerStart, pIPointerFinish, NULL, TRUE );
-}
-
-HRESULT
-CDoc::Copy(
-    IMarkupPointer * pIPointerStart,
-    IMarkupPointer * pIPointerFinish,
-    IMarkupPointer * pIPointerTarget )
-{
-    return CutCopyMove( pIPointerStart, pIPointerFinish, pIPointerTarget, FALSE );
-}
-
-
-HRESULT
-CDoc::Move(
-    IMarkupPointer * pIPointerStart,
-    IMarkupPointer * pIPointerFinish,
-    IMarkupPointer * pIPointerTarget )
-{
-    return CutCopyMove( pIPointerStart, pIPointerFinish, pIPointerTarget, TRUE );
-}
-
-
-HRESULT
-CDoc::InsertText (
-    CMarkupPointer * pPointerTarget,
-    const OLECHAR *  pchText,
-    long             cch,
-    DWORD            dwFlags )
-{
-    HRESULT hr = S_OK;
-
-    Assert( pPointerTarget );
-    Assert( pPointerTarget->IsPositioned() );
-
-    hr = THR( pPointerTarget->Markup()->EmbedPointers() );
-
-    if (hr)
-        goto Cleanup;
-
-    if (cch < 0)
-        cch = pchText ? _tcslen( pchText ) : 0;
-
-#if TREE_SYNC
-    // this is a big HACK, to temporarily get markup-sync working for netdocs.  it
-    // will totally change in the future.
-    // trident team: do not bother trying to maintain this code, delete if it causes problems
-    if (_SyncLogger.IsLogging())
-    {
-        hr = THR(_SyncLogger.InsertTextHandler(pchText,cch,pPointerTarget));
-        if (hr != S_OK)
-        {
-            goto Cleanup;
-        }
-    }
-#endif // TREE_SYNC
-
-    hr = THR(
-        pPointerTarget->Markup()->InsertTextInternal(
-            pPointerTarget->GetEmbeddedTreePos(), pchText, cch, dwFlags ) );
+    hr = THR(RemoveElement(pElementRemove));
 
     if (hr)
         goto Cleanup;
@@ -631,12 +522,121 @@ Cleanup:
 }
 
 HRESULT
-CDoc::InsertText ( OLECHAR * pchText, long cch, IMarkupPointer * pIPointerTarget )
+CDoc::Remove(
+    CMarkupPointer * pPointerStart,
+    CMarkupPointer * pPointerFinish,
+    DWORD            dwFlags)
+{
+    return CutCopyMove(pPointerStart, pPointerFinish, NULL, TRUE, dwFlags);
+}
+
+HRESULT
+CDoc::Copy(
+    CMarkupPointer * pPointerSourceStart,
+    CMarkupPointer * pPointerSourceFinish,
+    CMarkupPointer * pPointerTarget,
+    DWORD            dwFlags)
+{
+    return
+        CutCopyMove(
+            pPointerSourceStart, pPointerSourceFinish,
+            pPointerTarget, FALSE, dwFlags);
+}
+
+HRESULT
+CDoc::Move(
+    CMarkupPointer * pPointerSourceStart,
+    CMarkupPointer * pPointerSourceFinish,
+    CMarkupPointer * pPointerTarget,
+    DWORD            dwFlags)
+{
+    return
+        CutCopyMove(
+            pPointerSourceStart, pPointerSourceFinish,
+            pPointerTarget, TRUE, dwFlags);
+}
+
+HRESULT
+CDoc::Remove(
+    IMarkupPointer * pIPointerStart,
+    IMarkupPointer * pIPointerFinish)
+{
+    return CutCopyMove(pIPointerStart, pIPointerFinish, NULL, TRUE);
+}
+
+HRESULT
+CDoc::Copy(
+    IMarkupPointer * pIPointerStart,
+    IMarkupPointer * pIPointerFinish,
+    IMarkupPointer * pIPointerTarget)
+{
+    return CutCopyMove(pIPointerStart, pIPointerFinish, pIPointerTarget, FALSE);
+}
+
+
+HRESULT
+CDoc::Move(
+    IMarkupPointer * pIPointerStart,
+    IMarkupPointer * pIPointerFinish,
+    IMarkupPointer * pIPointerTarget)
+{
+    return CutCopyMove(pIPointerStart, pIPointerFinish, pIPointerTarget, TRUE);
+}
+
+
+HRESULT
+CDoc::InsertText(
+    CMarkupPointer * pPointerTarget,
+    const OLECHAR *  pchText,
+    long             cch,
+    DWORD            dwFlags)
+{
+    HRESULT hr = S_OK;
+
+    Assert(pPointerTarget);
+    Assert(pPointerTarget->IsPositioned());
+
+    hr = THR(pPointerTarget->Markup()->EmbedPointers());
+
+    if (hr)
+        goto Cleanup;
+
+    if (cch < 0)
+        cch = pchText ? _tcslen(pchText) : 0;
+
+#if TREE_SYNC
+    // this is a big HACK, to temporarily get markup-sync working for netdocs.  it
+    // will totally change in the future.
+    // trident team: do not bother trying to maintain this code, delete if it causes problems
+    if (_SyncLogger.IsLogging())
+    {
+        hr = THR(_SyncLogger.InsertTextHandler(pchText, cch, pPointerTarget));
+        if (hr != S_OK)
+        {
+            goto Cleanup;
+        }
+    }
+#endif // TREE_SYNC
+
+    hr = THR(
+        pPointerTarget->Markup()->InsertTextInternal(
+            pPointerTarget->GetEmbeddedTreePos(), pchText, cch, dwFlags));
+
+    if (hr)
+        goto Cleanup;
+
+Cleanup:
+
+    RRETURN(hr);
+}
+
+HRESULT
+CDoc::InsertText(OLECHAR * pchText, long cch, IMarkupPointer * pIPointerTarget)
 {
     HRESULT          hr = S_OK;
     CMarkupPointer * pPointerTarget;
 
-    if (!pIPointerTarget || !IsOwnerOf( pIPointerTarget ))
+    if (!pIPointerTarget || !IsOwnerOf(pIPointerTarget))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -648,7 +648,7 @@ CDoc::InsertText ( OLECHAR * pchText, long cch, IMarkupPointer * pIPointerTarget
 
     hr = THR(
         pIPointerTarget->QueryInterface(
-            CLSID_CMarkupPointer, (void **) & pPointerTarget ) );
+            CLSID_CMarkupPointer, (void **)& pPointerTarget));
 
     if (hr)
     {
@@ -670,24 +670,24 @@ CDoc::InsertText ( OLECHAR * pchText, long cch, IMarkupPointer * pIPointerTarget
     // Do it
 
 
-    hr = THR( InsertText( pPointerTarget, pchText, cch ) );
+    hr = THR(InsertText(pPointerTarget, pchText, cch));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CDoc::ParseString (
+CDoc::ParseString(
     OLECHAR *            pchHTML,
     DWORD                dwFlags,
     IMarkupContainer * * ppIContainerResult,
     IMarkupPointer *     pIPointerStart,
-    IMarkupPointer *     pIPointerFinish )
+    IMarkupPointer *     pIPointerFinish)
 {
     HRESULT hr = S_OK;
     HGLOBAL hHtmlText = NULL;
@@ -698,22 +698,22 @@ CDoc::ParseString (
         goto Cleanup;
     }
 
-    extern HRESULT HtmlStringToSignaturedHGlobal (
-        HGLOBAL * phglobal, const TCHAR * pStr, long cch );
+    extern HRESULT HtmlStringToSignaturedHGlobal(
+        HGLOBAL * phglobal, const TCHAR * pStr, long cch);
 
     hr = THR(
         HtmlStringToSignaturedHGlobal(
-            & hHtmlText, pchHTML, _tcslen( pchHTML ) ) );
+            &hHtmlText, pchHTML, _tcslen(pchHTML)));
 
     if (hr)
         goto Cleanup;
 
-    Assert( hHtmlText );
+    Assert(hHtmlText);
 
     hr = THR(
         ParseGlobal(
             hHtmlText, dwFlags, ppIContainerResult,
-            pIPointerStart, pIPointerFinish ) );
+            pIPointerStart, pIPointerFinish));
 
     if (hr)
         goto Cleanup;
@@ -721,38 +721,38 @@ CDoc::ParseString (
 Cleanup:
 
     if (hHtmlText)
-        GlobalFree( hHtmlText );
+        GlobalFree(hHtmlText);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 static HRESULT
-PrepareStream (
+PrepareStream(
     HGLOBAL hGlobal,
     IStream * * ppIStream,
     BOOL fInsertFrags,
-    HTMPASTEINFO * phtmpasteinfo )
+    HTMPASTEINFO * phtmpasteinfo)
 {
     CStreamReadBuff * pstreamReader = NULL;
     LPSTR pszGlobal = NULL;
     long lSize;
     BOOL fIsEmpty, fHasSignature;
-    TCHAR szVersion[ 24 ];
-    TCHAR szSourceUrl [ pdlUrlLen ];
+    TCHAR szVersion[24];
+    TCHAR szSourceUrl[pdlUrlLen];
     long iStartHTML, iEndHTML;
     long iStartFragment, iEndFragment;
     long iStartSelection, iEndSelection;
     ULARGE_INTEGER ul = { 0, 0 };
     HRESULT hr = S_OK;
 
-    Assert( hGlobal );
-    Assert( ppIStream );
+    Assert(hGlobal);
+    Assert(ppIStream);
 
 
     // Get access to the bytes of the global
 
 
-    pszGlobal = LPSTR( GlobalLock( hGlobal ) );
+    pszGlobal = LPSTR(GlobalLock(hGlobal));
 
     if (!pszGlobal)
     {
@@ -768,16 +768,16 @@ PrepareStream (
 
     // BUGBUG: Support nonnative signature and sizeof(wchar) == 4/2 (davidd)
 
-    fHasSignature = * (WCHAR *) pszGlobal == NATIVE_UNICODE_SIGNATURE;
+    fHasSignature = *(WCHAR *)pszGlobal == NATIVE_UNICODE_SIGNATURE;
 
     if (fHasSignature)
     {
-        lSize = _tcslen( (TCHAR *) pszGlobal ) * sizeof( TCHAR );
-        fIsEmpty = (lSize - sizeof( TCHAR )) == 0;
+        lSize = _tcslen((TCHAR *)pszGlobal) * sizeof(TCHAR);
+        fIsEmpty = (lSize - sizeof(TCHAR)) == 0;
     }
     else
     {
-        lSize = lstrlenA( pszGlobal );
+        lSize = lstrlenA(pszGlobal);
         fIsEmpty = lSize == 0;
     }
 
@@ -796,7 +796,7 @@ PrepareStream (
     // Create if the stream got the load context
 
 
-    hr = THR( CreateStreamOnHGlobal( hGlobal, FALSE, ppIStream ) );
+    hr = THR(CreateStreamOnHGlobal(hGlobal, FALSE, ppIStream));
 
     if (hr)
         goto Cleanup;
@@ -809,30 +809,30 @@ PrepareStream (
     // Make sure we don't have unicode in the hGlobal
 
 #ifdef UNIX
-    U_QUAD_PART(ul)= lSize;
-    Assert( U_QUAD_PART(ul) <= GlobalSize( hGlobal ) );
+    U_QUAD_PART(ul) = lSize;
+    Assert(U_QUAD_PART(ul) <= GlobalSize(hGlobal));
 #else
     ul.QuadPart = lSize;
-    Assert( ul.QuadPart <= GlobalSize( hGlobal ) );
+    Assert(ul.QuadPart <= GlobalSize(hGlobal));
 #endif
 
-    hr = THR( (*ppIStream)->SetSize( ul ) );
+    hr = THR((*ppIStream)->SetSize(ul));
 
     if (hr)
         goto Cleanup;
 
-    iStartHTML      = -1;
-    iEndHTML        = -1;
-    iStartFragment  = -1;
-    iEndFragment    = -1;
+    iStartHTML = -1;
+    iEndHTML = -1;
+    iStartFragment = -1;
+    iEndFragment = -1;
     iStartSelection = -1;
-    iEndSelection   = -1;
+    iEndSelection = -1;
 
 
     // Locate the required contextual information in the stream
 
 
-    pstreamReader = new CStreamReadBuff ( * ppIStream, CP_UTF_8 );
+    pstreamReader = new CStreamReadBuff(*ppIStream, CP_UTF_8);
     if (pstreamReader == NULL)
     {
         hr = E_OUTOFMEMORY;
@@ -841,7 +841,7 @@ PrepareStream (
 
     hr = THR(
         pstreamReader->GetStringValue(
-            _T("Version"), szVersion, ARRAY_SIZE( szVersion ) ) );
+            _T("Version"), szVersion, ARRAY_SIZE(szVersion)));
 
     if (hr == S_FALSE)
         goto PlainStream;
@@ -851,7 +851,7 @@ PrepareStream (
 
     hr = THR(
         pstreamReader->GetLongValue(
-            _T( "StartHTML" ), & iStartHTML ) );
+            _T("StartHTML"), &iStartHTML));
 
     if (hr == S_FALSE)
         goto PlainStream;
@@ -861,7 +861,7 @@ PrepareStream (
 
     hr = THR(
         pstreamReader->GetLongValue(
-            _T( "EndHTML" ), & iEndHTML ) );
+            _T("EndHTML"), &iEndHTML));
 
     if (hr == S_FALSE)
         goto PlainStream;
@@ -871,7 +871,7 @@ PrepareStream (
 
     hr = THR(
         pstreamReader->GetLongValue(
-            _T( "StartFragment" ), & iStartFragment ) );
+            _T("StartFragment"), &iStartFragment));
 
     if (hr == S_FALSE)
         goto PlainStream;
@@ -881,7 +881,7 @@ PrepareStream (
 
     hr = THR(
         pstreamReader->GetLongValue(
-            _T( "EndFragment" ), & iEndFragment ) );
+            _T("EndFragment"), &iEndFragment));
 
 
     // Locate optional contextual information
@@ -889,7 +889,7 @@ PrepareStream (
 
     hr = THR(
         pstreamReader->GetLongValue(
-            _T( "StartSelection" ), & iStartSelection ) );
+            _T("StartSelection"), &iStartSelection));
 
     if (hr && hr != S_FALSE)
         goto Cleanup;
@@ -898,7 +898,7 @@ PrepareStream (
     {
         hr = THR(
             pstreamReader->GetLongValue(
-                _T( "EndSelection" ), & iEndSelection ) );
+                _T("EndSelection"), &iEndSelection));
 
         if (hr && hr != S_FALSE)
             goto Cleanup;
@@ -920,14 +920,14 @@ PrepareStream (
 
     hr = THR(
         pstreamReader->GetStringValue(
-            _T( "SourceURL" ), szSourceUrl, ARRAY_SIZE( szSourceUrl ) ) );
+            _T("SourceURL"), szSourceUrl, ARRAY_SIZE(szSourceUrl)));
 
     if (hr && hr != S_FALSE)
         goto Cleanup;
 
     if (phtmpasteinfo && hr != S_FALSE)
     {
-        hr = THR( phtmpasteinfo->cstrSourceUrl.Set( szSourceUrl ) );
+        hr = THR(phtmpasteinfo->cstrSourceUrl.Set(szSourceUrl));
 
         if (hr)
             goto Cleanup;
@@ -944,15 +944,15 @@ PrepareStream (
         // context.  there must always be a fragment, however
 
         iStartHTML = iStartFragment;
-        iEndHTML   = iEndFragment;
+        iEndHTML = iEndFragment;
     }
 
-    if (iStartHTML     < 0 || iEndHTML     < 0 ||
+    if (iStartHTML < 0 || iEndHTML     < 0 ||
         iStartFragment < 0 || iEndFragment < 0 ||
-        iStartHTML     > iEndHTML     ||
+        iStartHTML     > iEndHTML ||
         iStartFragment > iEndFragment ||
         iStartHTML > iStartFragment ||
-        iEndHTML   < iEndFragment)
+        iEndHTML < iEndFragment)
     {
         hr = E_FAIL;
         goto Cleanup;
@@ -990,10 +990,10 @@ PrepareStream (
         iEndSelection = iEndFragment;
     }
 
-    phtmpasteinfo->cbSelBegin  = iStartSelection;
-    phtmpasteinfo->cbSelEnd    = iEndSelection;
+    phtmpasteinfo->cbSelBegin = iStartSelection;
+    phtmpasteinfo->cbSelEnd = iEndSelection;
 
-    pstreamReader->SetPosition( iStartHTML );
+    pstreamReader->SetPosition(iStartHTML);
 
     hr = S_OK;
 
@@ -1005,24 +1005,24 @@ Cleanup:
     delete pstreamReader;
 
     if (pszGlobal)
-        GlobalUnlock( hGlobal );
+        GlobalUnlock(hGlobal);
 
-    RRETURN( hr );
+    RRETURN(hr);
 
 PlainStream:
 
-    pstreamReader->SetPosition( 0 );
+    pstreamReader->SetPosition(0);
     pstreamReader->SwitchCodePage(g_cpDefault);
 
     if (fInsertFrags)
     {
-        phtmpasteinfo->cbSelBegin  = fHasSignature ? sizeof( TCHAR ) : 0;
-        phtmpasteinfo->cbSelEnd    = lSize;
+        phtmpasteinfo->cbSelBegin = fHasSignature ? sizeof(TCHAR) : 0;
+        phtmpasteinfo->cbSelEnd = lSize;
     }
     else
     {
-        phtmpasteinfo->cbSelBegin  = -1;
-        phtmpasteinfo->cbSelEnd    = -1;
+        phtmpasteinfo->cbSelBegin = -1;
+        phtmpasteinfo->cbSelEnd = -1;
     }
 
     hr = S_OK;
@@ -1031,10 +1031,10 @@ PlainStream:
 }
 
 static HRESULT
-MoveToPointer (
+MoveToPointer(
     CDoc *           pDoc,
     CMarkupPointer * pMarkupPointer,
-    CTreePos *       ptp )
+    CTreePos *       ptp)
 {
     HRESULT hr = S_OK;
 
@@ -1042,7 +1042,7 @@ MoveToPointer (
     {
         if (ptp)
         {
-            hr = THR( ptp->GetMarkup()->RemovePointerPos( ptp, NULL, NULL ) );
+            hr = THR(ptp->GetMarkup()->RemovePointerPos(ptp, NULL, NULL));
 
             if (hr)
                 goto Cleanup;
@@ -1053,7 +1053,7 @@ MoveToPointer (
 
     if (!ptp)
     {
-        hr = THR( pMarkupPointer->Unposition() );
+        hr = THR(pMarkupPointer->Unposition());
 
         if (hr)
             goto Cleanup;
@@ -1061,31 +1061,31 @@ MoveToPointer (
         goto Cleanup;
     }
 
-    hr = THR( pMarkupPointer->MoveToOrphan( ptp ) );
+    hr = THR(pMarkupPointer->MoveToOrphan(ptp));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::ParseGlobal (
+CDoc::ParseGlobal(
     HGLOBAL          hGlobal,
     DWORD            dwFlags,
     CMarkup * *      ppMarkupResult,
     CMarkupPointer * pPointerSelStart,
-    CMarkupPointer * pPointerSelFinish )
+    CMarkupPointer * pPointerSelFinish)
 {
     HRESULT hr = S_OK;
     IStream * pIStream = NULL;
     HTMPASTEINFO htmpasteinfo;
 
-    Assert( pPointerSelStart );
-    Assert( pPointerSelFinish );
-    Assert( ppMarkupResult );
+    Assert(pPointerSelStart);
+    Assert(pPointerSelFinish);
+    Assert(ppMarkupResult);
 
 
     // Returning NULL suggests that there was absolutely nothing to parse.
@@ -1100,7 +1100,7 @@ CDoc::ParseGlobal (
     // Prepare the stream ...
 
 
-    hr = THR( PrepareStream( hGlobal, & pIStream, TRUE, & htmpasteinfo ) );
+    hr = THR(PrepareStream(hGlobal, &pIStream, TRUE, &htmpasteinfo));
 
     if (hr)
         goto Cleanup;
@@ -1117,12 +1117,12 @@ CDoc::ParseGlobal (
     // of the parse
 
 
-    hr = THR( CreateMarkup( ppMarkupResult ) );
+    hr = THR(CreateMarkup(ppMarkupResult));
 
     if (hr)
         goto Cleanup;
 
-    Assert( *ppMarkupResult );
+    Assert(*ppMarkupResult);
 
 
     // Prepare the frag/sel begin/end for the return
@@ -1137,13 +1137,13 @@ CDoc::ParseGlobal (
 
     _fPasteIE40Absolutify = dwFlags & PARSE_ABSOLUTIFYIE40URLS;
 
-    Assert( !_fMarkupServicesParsing );
+    Assert(!_fMarkupServicesParsing);
 
     _fMarkupServicesParsing = TRUE;
 
-    hr = THR( (*ppMarkupResult)->Load( pIStream, & htmpasteinfo ) );
+    hr = THR((*ppMarkupResult)->Load(pIStream, &htmpasteinfo));
 
-    Assert( _fMarkupServicesParsing );
+    Assert(_fMarkupServicesParsing);
 
     _fMarkupServicesParsing = FALSE;
 
@@ -1156,21 +1156,21 @@ CDoc::ParseGlobal (
 
     hr = THR(
         MoveToPointer(
-            this, pPointerSelStart,  htmpasteinfo.ptpSelBegin ) );
+            this, pPointerSelStart, htmpasteinfo.ptpSelBegin));
 
     if (hr)
         goto Cleanup;
 
     hr = THR(
         MoveToPointer(
-            this, pPointerSelFinish, htmpasteinfo.ptpSelEnd   ) );
+            this, pPointerSelFinish, htmpasteinfo.ptpSelEnd));
 
     if (hr)
         goto Cleanup;
 
 #if DBG == 1
-    pPointerSelStart->SetDebugName( _T( "Selection Start" ) );
-    pPointerSelFinish->SetDebugName( _T( "Selection Finish" ) );
+    pPointerSelStart->SetDebugName(_T("Selection Start"));
+    pPointerSelFinish->SetDebugName(_T("Selection Finish"));
 #endif
 
 
@@ -1179,22 +1179,22 @@ CDoc::ParseGlobal (
 
 
     if (pPointerSelStart->IsPositioned() && pPointerSelFinish->IsPositioned())
-        EnsureLogicalOrder( pPointerSelStart, pPointerSelFinish );
+        EnsureLogicalOrder(pPointerSelStart, pPointerSelFinish);
 
 Cleanup:
 
-    ReleaseInterface( pIStream );
+    ReleaseInterface(pIStream);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::ParseGlobal (
+CDoc::ParseGlobal(
     HGLOBAL              hGlobal,
     DWORD                dwFlags,
     IMarkupContainer * * ppIContainerResult,
     IMarkupPointer *     pIPointerSelStart,
-    IMarkupPointer *     pIPointerSelFinish )
+    IMarkupPointer *     pIPointerSelFinish)
 {
     HRESULT          hr = S_OK;
     CMarkup *        pMarkup = NULL;
@@ -1216,7 +1216,7 @@ CDoc::ParseGlobal (
     {
         hr = THR(
             pIPointerSelStart->QueryInterface(
-                CLSID_CMarkupPointer, (void **) & pPointerSelStart ) );
+                CLSID_CMarkupPointer, (void **)& pPointerSelStart));
 
         if (hr)
             goto Cleanup;
@@ -1226,7 +1226,7 @@ CDoc::ParseGlobal (
     {
         hr = THR(
             pIPointerSelFinish->QueryInterface(
-                CLSID_CMarkupPointer, (void **) & pPointerSelFinish ) );
+                CLSID_CMarkupPointer, (void **)& pPointerSelFinish));
 
         if (hr)
             goto Cleanup;
@@ -1234,7 +1234,7 @@ CDoc::ParseGlobal (
 
     hr = THR(
         ParseGlobal(
-            hGlobal, dwFlags, & pMarkup, pPointerSelStart, pPointerSelFinish ) );
+            hGlobal, dwFlags, &pMarkup, pPointerSelStart, pPointerSelFinish));
 
     if (hr)
         goto Cleanup;
@@ -1243,7 +1243,7 @@ CDoc::ParseGlobal (
     {
         hr = THR(
             pMarkup->QueryInterface(
-                IID_IMarkupContainer, (void **) ppIContainerResult ) );
+                IID_IMarkupContainer, (void **)ppIContainerResult));
 
         if (hr)
             goto Cleanup;
@@ -1254,7 +1254,7 @@ Cleanup:
     if (pMarkup)
         pMarkup->Release();
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -1266,18 +1266,18 @@ Cleanup:
 
 
 static inline BOOL
-IsEqualTo ( IMarkupPointer * p1, IMarkupPointer * p2 )
+IsEqualTo(IMarkupPointer * p1, IMarkupPointer * p2)
 {
     BOOL fEqual;
-    IGNORE_HR( p1->IsEqualTo( p2, & fEqual ) );
+    IGNORE_HR(p1->IsEqualTo(p2, &fEqual));
     return fEqual;
 }
 
 static inline int
-OldCompare ( IMarkupPointer * p1, IMarkupPointer * p2 )
+OldCompare(IMarkupPointer * p1, IMarkupPointer * p2)
 {
     int result;
-    IGNORE_HR( OldCompare( p1, p2, & result ) );
+    IGNORE_HR(OldCompare(p1, p2, &result));
     return result;
 }
 
@@ -1298,49 +1298,49 @@ OldCompare ( IMarkupPointer * p1, IMarkupPointer * p2 )
 
 typedef CStackPtrAry < CTreeNode *, 32 > NodeArray;
 
-MtDefine( ComputeTotalOverlappers_aryNodes_pv, Locals, "ComputeTotalOverlappers aryNodes::_pv" );
+MtDefine(ComputeTotalOverlappers_aryNodes_pv, Locals, "ComputeTotalOverlappers aryNodes::_pv");
 
 static HRESULT
 ComputeTotalOverlappers(
     CMarkupPointer * pPointerStart,
     CMarkupPointer * pPointerFinish,
-    CTreeNode * *    ppNodeTarget )
+    CTreeNode * *    ppNodeTarget)
 {
     HRESULT     hr = S_OK;
     CTreeNode * pNode;
-    NodeArray   aryNodesStart( Mt( ComputeTotalOverlappers_aryNodes_pv ) );
-    NodeArray   aryNodesFinish( Mt( ComputeTotalOverlappers_aryNodes_pv ) );
+    NodeArray   aryNodesStart(Mt(ComputeTotalOverlappers_aryNodes_pv));
+    NodeArray   aryNodesFinish(Mt(ComputeTotalOverlappers_aryNodes_pv));
     int         iStart, iFinish;
 
-    Assert( ppNodeTarget );
-    Assert( pPointerStart && pPointerFinish );
-    Assert( pPointerStart->IsPositioned() );
-    Assert( pPointerFinish->IsPositioned() );
-    Assert( pPointerStart->Markup() == pPointerFinish->Markup() );
-    Assert( OldCompare( pPointerStart, pPointerFinish ) <= 0 );
+    Assert(ppNodeTarget);
+    Assert(pPointerStart && pPointerFinish);
+    Assert(pPointerStart->IsPositioned());
+    Assert(pPointerFinish->IsPositioned());
+    Assert(pPointerStart->Markup() == pPointerFinish->Markup());
+    Assert(OldCompare(pPointerStart, pPointerFinish) <= 0);
 
     *ppNodeTarget = NULL;
 
-    for ( pNode = pPointerStart->Branch() ; pNode ; pNode = pNode->Parent() )
-        IGNORE_HR( aryNodesStart.Append( pNode ) );
+    for (pNode = pPointerStart->Branch(); pNode; pNode = pNode->Parent())
+        IGNORE_HR(aryNodesStart.Append(pNode));
 
-    for ( pNode = pPointerFinish->Branch() ; pNode ; pNode = pNode->Parent() )
-        IGNORE_HR( aryNodesFinish.Append( pNode ) );
+    for (pNode = pPointerFinish->Branch(); pNode; pNode = pNode->Parent())
+        IGNORE_HR(aryNodesFinish.Append(pNode));
 
     iStart = aryNodesStart.Size() - 1;
     iFinish = aryNodesFinish.Size() - 1;
 
-    for ( ; ; )
+    for (; ; )
     {
         if (iStart < 0 || iFinish < 0)
         {
             if (iFinish + 1 < aryNodesFinish.Size())
-                *ppNodeTarget = aryNodesFinish[ iFinish + 1 ];
+                *ppNodeTarget = aryNodesFinish[iFinish + 1];
 
             goto Cleanup;
         }
 
-        if (aryNodesStart [ iStart ] == aryNodesFinish [ iFinish ])
+        if (aryNodesStart[iStart] == aryNodesFinish[iFinish])
             iFinish--;
 
         iStart--;
@@ -1348,7 +1348,7 @@ ComputeTotalOverlappers(
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -1359,7 +1359,7 @@ Cleanup:
 
 
 
-MtDefine( ValidateElements_aryNodes_pv, Locals, "ValidateElements aryNodes::_pv" );
+MtDefine(ValidateElements_aryNodes_pv, Locals, "ValidateElements aryNodes::_pv");
 
 
 // BUGBUG
@@ -1371,44 +1371,44 @@ MtDefine( ValidateElements_aryNodes_pv, Locals, "ValidateElements aryNodes::_pv"
 
 
 HRESULT
-CDoc::ValidateElements (
+CDoc::ValidateElements(
     CMarkupPointer *   pPointerStart,
     CMarkupPointer *   pPointerFinish,
     CMarkupPointer *   pPointerTarget,
     DWORD              dwFlags,
     CMarkupPointer * * ppPointerStatus,
     CTreeNode * *      ppNodeFailBottom,
-    CTreeNode * *      ppNodeFailTop )
+    CTreeNode * *      ppNodeFailTop)
 {
     HRESULT     hr = S_OK;
-    NodeArray   aryNodes ( Mt( ValidateElements_aryNodes_pv ) );
+    NodeArray   aryNodes(Mt(ValidateElements_aryNodes_pv));
     long        nNodesOk;
     CTreeNode * pNodeCommon;
     CTreeNode * pNode;
     CTreePos *  ptpWalk;
     CTreePos *  ptpFinish;
 
-    Assert( pPointerStart && pPointerFinish && ppPointerStatus );
-    Assert( pPointerStart->IsPositioned() );
-    Assert( pPointerFinish->IsPositioned() );
-    Assert( pPointerStart->Markup() ==pPointerFinish->Markup() );
-    Assert( !pPointerTarget  || pPointerTarget->IsPositioned() );
-    Assert( ppPointerStatus );
-    Assert( !*ppPointerStatus || (*ppPointerStatus)->IsPositioned() );
-    Assert( !*ppPointerStatus || (*ppPointerStatus)->Markup() == pPointerStart->Markup() );
+    Assert(pPointerStart && pPointerFinish && ppPointerStatus);
+    Assert(pPointerStart->IsPositioned());
+    Assert(pPointerFinish->IsPositioned());
+    Assert(pPointerStart->Markup() == pPointerFinish->Markup());
+    Assert(!pPointerTarget || pPointerTarget->IsPositioned());
+    Assert(ppPointerStatus);
+    Assert(!*ppPointerStatus || (*ppPointerStatus)->IsPositioned());
+    Assert(!*ppPointerStatus || (*ppPointerStatus)->Markup() == pPointerStart->Markup());
 
 
     // BUGBUG!!! Should not have to embed pointers here!
 
 
-    hr = THR( pPointerStart->Markup()->EmbedPointers() );
+    hr = THR(pPointerStart->Markup()->EmbedPointers());
 
     if (hr)
         goto Cleanup;
 
     if (pPointerTarget)
     {
-        hr = THR( pPointerTarget->Markup()->EmbedPointers() );
+        hr = THR(pPointerTarget->Markup()->EmbedPointers());
 
         if (hr)
             goto Cleanup;
@@ -1422,23 +1422,23 @@ CDoc::ValidateElements (
 
     if (!*ppPointerStatus)
     {
-        hr = THR( CreateMarkupPointer( ppPointerStatus ) );
+        hr = THR(CreateMarkupPointer(ppPointerStatus));
 
         if (hr)
             goto Cleanup;
 
-        hr = THR( (*ppPointerStatus)->SetGravity( POINTER_GRAVITY_Left ) );
+        hr = THR((*ppPointerStatus)->SetGravity(POINTER_GRAVITY_Left));
 
         if (hr)
             goto Cleanup;
 
-        hr = THR( (*ppPointerStatus)->MoveToPointer( pPointerStart ) );
+        hr = THR((*ppPointerStatus)->MoveToPointer(pPointerStart));
 
         if (hr)
             goto Cleanup;
     }
 
-    WHEN_DBG( (*ppPointerStatus)->SetDebugName( _T( "Validate Status" ) ) );
+    WHEN_DBG((*ppPointerStatus)->SetDebugName(_T("Validate Status")));
 
 
     // If the status pointer is outside the range to validate, then
@@ -1446,8 +1446,8 @@ CDoc::ValidateElements (
     // and return.
 
 
-    if (OldCompare( pPointerStart, *ppPointerStatus ) > 0 ||
-        OldCompare( pPointerFinish, *ppPointerStatus ) <= 0)
+    if (OldCompare(pPointerStart, *ppPointerStatus) > 0 ||
+        OldCompare(pPointerFinish, *ppPointerStatus) <= 0)
     {
         (*ppPointerStatus)->Release();
         *ppPointerStatus = NULL;
@@ -1463,13 +1463,13 @@ CDoc::ValidateElements (
 
 
     {
-        CTreeNode * pNodeStart  = pPointerStart->Branch();
+        CTreeNode * pNodeStart = pPointerStart->Branch();
         CTreeNode * pNodeFinish = pPointerFinish->Branch();
 
         pNodeCommon =
             (pNodeStart && pNodeFinish)
-                ? pNodeStart->GetFirstCommonAncestorNode( pNodeFinish, NULL )
-                : NULL;
+            ? pNodeStart->GetFirstCommonAncestorNode(pNodeFinish, NULL)
+            : NULL;
     }
 
 
@@ -1493,13 +1493,13 @@ CDoc::ValidateElements (
 
 
             if (pPointerTarget->Markup() == pPointerStart->Markup() &&
-                OldCompare( pPointerStart,  pPointerTarget ) < 0 &&
-                    OldCompare( pPointerFinish, pPointerTarget ) > 0)
+                OldCompare(pPointerStart, pPointerTarget) < 0 &&
+                OldCompare(pPointerFinish, pPointerTarget) > 0)
             {
-AssertSz( 0, "This path should never be used in IE5" );
+                AssertSz(0, "This path should never be used in IE5");
                 hr = THR(
                     ComputeTotalOverlappers(
-                        pPointerStart, pPointerFinish, & pNodeTarget ) );
+                        pPointerStart, pPointerFinish, &pNodeTarget));
 
                 if (hr)
                     goto Cleanup;
@@ -1518,23 +1518,23 @@ AssertSz( 0, "This path should never be used in IE5" );
         // Now, put tags in the tag array starting from the target
 
 
-        for ( pNode = pNodeTarget ;
-              pNode && pNode->Tag() != ETAG_ROOT ;
-              pNode = pNode->Parent() )
+        for (pNode = pNodeTarget;
+             pNode && pNode->Tag() != ETAG_ROOT;
+             pNode = pNode->Parent())
         {
             nNodesTarget++;
         }
 
-        hr = THR( aryNodes.Grow( nNodesTarget ) );
+        hr = THR(aryNodes.Grow(nNodesTarget));
 
         if (hr)
             goto Cleanup;
 
-        for ( i = 1, pNode = pNodeTarget ;
-              pNode && pNode->Tag() != ETAG_ROOT ;
-              pNode = pNode->Parent(), i++ )
+        for (i = 1, pNode = pNodeTarget;
+             pNode && pNode->Tag() != ETAG_ROOT;
+             pNode = pNode->Parent(), i++)
         {
-            aryNodes [ nNodesTarget - i ] = pNode;
+            aryNodes[nNodesTarget - i] = pNode;
         }
     }
 
@@ -1554,9 +1554,9 @@ AssertSz( 0, "This path should never be used in IE5" );
     // in scope.
 
 
-    for ( pNode = pPointerStart->Branch() ;
-          pNode != pNodeCommon ;
-          pNode = pNode->Parent() )
+    for (pNode = pPointerStart->Branch();
+         pNode != pNodeCommon;
+         pNode = pNode->Parent())
     {
         pNode->Element()->_fMark1 = 1;
     }
@@ -1569,9 +1569,9 @@ AssertSz( 0, "This path should never be used in IE5" );
 
     if (pPointerTarget)
     {
-        for ( pNode = pPointerFinish->Branch() ;
-              pNode != pNodeCommon ;
-              pNode = pNode->Parent() )
+        for (pNode = pPointerFinish->Branch();
+             pNode != pNodeCommon;
+             pNode = pNode->Parent())
         {
             pNode->Element()->_fMark1 = 0;
         }
@@ -1590,11 +1590,11 @@ AssertSz( 0, "This path should never be used in IE5" );
 
     ptpWalk = pPointerStart->GetEmbeddedTreePos();
 
-    if (! IsEqualTo( *ppPointerStatus, pPointerStart ))
+    if (!IsEqualTo(*ppPointerStatus, pPointerStart))
     {
         CTreePos * ptpStatus = (*ppPointerStatus)->GetEmbeddedTreePos();
 
-        for ( ; ptpWalk != ptpStatus ; ptpWalk = ptpWalk->NextTreePos() )
+        for (; ptpWalk != ptpStatus; ptpWalk = ptpWalk->NextTreePos())
         {
             if (ptpWalk->IsBeginElementScope())
                 ptpWalk->Branch()->Element()->_fMark1 = TRUE;
@@ -1610,27 +1610,27 @@ AssertSz( 0, "This path should never be used in IE5" );
     {
         int i;
 
-        for ( pNode = ptpWalk->GetBranch(), i = 0 ;
-              pNode != pNodeCommon ;
-              pNode = pNode->Parent() )
+        for (pNode = ptpWalk->GetBranch(), i = 0;
+             pNode != pNodeCommon;
+             pNode = pNode->Parent())
         {
             if (pNode->Element()->_fMark1)
                 i++;
         }
 
-        hr = THR( aryNodes.Grow( aryNodes.Size() + i ) );
+        hr = THR(aryNodes.Grow(aryNodes.Size() + i));
 
         if (hr)
             goto Cleanup;
 
         i = aryNodes.Size() - 1;
 
-        for ( pNode = ptpWalk->GetBranch() ;
-              pNode != pNodeCommon ;
-              pNode = pNode->Parent() )
+        for (pNode = ptpWalk->GetBranch();
+             pNode != pNodeCommon;
+             pNode = pNode->Parent())
         {
             if (pNode->Element()->_fMark1)
-                aryNodes[ i-- ] = pNode;
+                aryNodes[i--] = pNode;
         }
     }
 
@@ -1641,7 +1641,7 @@ AssertSz( 0, "This path should never be used in IE5" );
     ptpFinish = pPointerFinish->GetEmbeddedTreePos();
     nNodesOk = 0;
 
-    for ( ; ; )
+    for (; ; )
     {
         BOOL fDone;
         long iConflictTop, iConflictBottom;
@@ -1651,14 +1651,14 @@ AssertSz( 0, "This path should never be used in IE5" );
 
 
         extern HRESULT
-            ValidateNodeList (
+            ValidateNodeList(
                 CTreeNode **, long, long, BOOL, long *, long *);
 
         hr = THR(
             ValidateNodeList(
                 aryNodes, aryNodes.Size(), nNodesOk,
                 dwFlags & VALIDATE_ELEMENTS_REQUIREDCONTAINERS,
-                & iConflictTop, & iConflictBottom ) );
+                &iConflictTop, &iConflictBottom));
 
 
         // Returning S_FALSE indicates a conflict
@@ -1666,18 +1666,18 @@ AssertSz( 0, "This path should never be used in IE5" );
 
         if (hr == S_FALSE)
         {
-            CTreePosGap gap ( ptpWalk, TPG_LEFT );
+            CTreePosGap gap(ptpWalk, TPG_LEFT);
 
-            hr = THR( (*ppPointerStatus)->MoveToGap( & gap, pPointerStart->Markup() ) );
+            hr = THR((*ppPointerStatus)->MoveToGap(&gap, pPointerStart->Markup()));
 
             if (hr)
                 goto Cleanup;
 
             if (ppNodeFailBottom)
-                *ppNodeFailBottom = aryNodes[ iConflictBottom ];
+                *ppNodeFailBottom = aryNodes[iConflictBottom];
 
             if (ppNodeFailTop)
-                *ppNodeFailTop = aryNodes[ iConflictTop ];
+                *ppNodeFailTop = aryNodes[iConflictTop];
 
             hr = S_FALSE;
 
@@ -1699,7 +1699,7 @@ AssertSz( 0, "This path should never be used in IE5" );
         // to the finish before that, we are done.
 
 
-        for ( fDone = FALSE ; ; )
+        for (fDone = FALSE; ; )
         {
             ptpWalk = ptpWalk->NextTreePos();
 
@@ -1716,16 +1716,16 @@ AssertSz( 0, "This path should never be used in IE5" );
 
             if (ptpWalk->IsNode())
             {
-                Assert( ptpWalk->IsBeginNode() || ptpWalk->IsEndNode() );
+                Assert(ptpWalk->IsBeginNode() || ptpWalk->IsEndNode());
 
                 if (ptpWalk->IsBeginNode())
                 {
-                    Assert( ptpWalk->IsEdgeScope() );
+                    Assert(ptpWalk->IsEdgeScope());
 
                     pNode = ptpWalk->Branch();
                     pNode->Element()->_fMark1 = 1;
 
-                    IGNORE_HR( aryNodes.Append( pNode ) );
+                    IGNORE_HR(aryNodes.Append(pNode));
                 }
                 else
                 {
@@ -1734,15 +1734,15 @@ AssertSz( 0, "This path should never be used in IE5" );
                     // Walk the first half of the inclusion
 
 
-                    for ( cIncl = cPop = 0 ;
-                          ! ptpWalk->IsEdgeScope() ;
-                          cIncl++, ptpWalk = ptpWalk->NextTreePos() )
+                    for (cIncl = cPop = 0;
+                         !ptpWalk->IsEdgeScope();
+                         cIncl++, ptpWalk = ptpWalk->NextTreePos())
                     {
-                        Assert( ptpWalk != ptpFinish && ptpWalk->IsEndNode() );
+                        Assert(ptpWalk != ptpFinish && ptpWalk->IsEndNode());
 
                         Assert(
                             !ptpWalk->Branch()->Element()->_fMark1 ||
-                            aryNodes [ aryNodes.Size() - cPop - 1 ] == ptpWalk->Branch() );
+                            aryNodes[aryNodes.Size() - cPop - 1] == ptpWalk->Branch());
 
 
                         // We're counting the number of items to pop off the stack, not
@@ -1757,15 +1757,15 @@ AssertSz( 0, "This path should never be used in IE5" );
                     // Mae sure we got to the kernel of the inclusion
 
 
-                    Assert( ptpWalk->IsEndNode() );
-                    Assert( aryNodes [ aryNodes.Size() - cPop - 1 ] == ptpWalk->Branch() );
+                    Assert(ptpWalk->IsEndNode());
+                    Assert(aryNodes[aryNodes.Size() - cPop - 1] == ptpWalk->Branch());
 
 
                     // Pop the number of elements before the one going out of scope plus
                     // the real one going out of scope;
 
 
-                    aryNodes.SetSize( aryNodes.Size() - cPop - 1 );
+                    aryNodes.SetSize(aryNodes.Size() - cPop - 1);
 
 
                     // Reset the number of nodes which have already been verified to the current
@@ -1779,11 +1779,11 @@ AssertSz( 0, "This path should never be used in IE5" );
                     // kernel nodes back on.
 
 
-                    while ( cIncl-- )
+                    while (cIncl--)
                     {
                         ptpWalk = ptpWalk->NextTreePos();
 
-                        Assert( ptpWalk->IsBeginNode() && ! ptpWalk->IsEdgeScope() );
+                        Assert(ptpWalk->IsBeginNode() && !ptpWalk->IsEdgeScope());
 
 
                         // Make sure we don't put an element on which does not participate
@@ -1791,7 +1791,7 @@ AssertSz( 0, "This path should never be used in IE5" );
 
 
                         if (ptpWalk->Branch()->Element()->_fMark1)
-                            aryNodes.Append( ptpWalk->Branch() );
+                            aryNodes.Append(ptpWalk->Branch());
                     }
                 }
 
@@ -1808,21 +1808,21 @@ AssertSz( 0, "This path should never be used in IE5" );
     // any conflicts.  In this case, clear the status pointer.
 
 
-    Assert( *ppPointerStatus );
+    Assert(*ppPointerStatus);
 
     (*ppPointerStatus)->Release();
 
     *ppPointerStatus = NULL;
 
-    Assert( hr == S_OK );
+    Assert(hr == S_OK);
 
 Cleanup:
 
-    RRETURN1( hr, S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 HRESULT
-CDoc::BeginUndoUnit( OLECHAR * pchDescription )
+CDoc::BeginUndoUnit(OLECHAR * pchDescription)
 {
     HRESULT hr = S_OK;
 
@@ -1834,7 +1834,7 @@ CDoc::BeginUndoUnit( OLECHAR * pchDescription )
 
     if (!_uOpenUnitsCounter)
     {
-        _pMarkupServicesParentUndo = new CParentUndo( this );
+        _pMarkupServicesParentUndo = new CParentUndo(this);
 
         if (!_pMarkupServicesParentUndo)
         {
@@ -1842,22 +1842,22 @@ CDoc::BeginUndoUnit( OLECHAR * pchDescription )
             goto Cleanup;
         }
 
-        hr = THR( _pMarkupServicesParentUndo->Start( pchDescription ) );
+        hr = THR(_pMarkupServicesParentUndo->Start(pchDescription));
     }
 
     {
-        CSelectionUndo Undo( _pElemCurrent, GetCurrentMarkup() );
+        CSelectionUndo Undo(_pElemCurrent, GetCurrentMarkup());
     }
 
     _uOpenUnitsCounter++;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::EndUndoUnit ( )
+CDoc::EndUndoUnit()
 {
     HRESULT hr = S_OK;
 
@@ -1867,36 +1867,36 @@ CDoc::EndUndoUnit ( )
     _uOpenUnitsCounter--;
 
     {
-        CDeferredSelectionUndo DeferredUndo( _pPrimaryMarkup );
+        CDeferredSelectionUndo DeferredUndo(_pPrimaryMarkup);
     }
 
     if (_uOpenUnitsCounter == 0)
     {
-        Assert( _pMarkupServicesParentUndo );
+        Assert(_pMarkupServicesParentUndo);
 
-        hr = _pMarkupServicesParentUndo->Finish( S_OK );
+        hr = _pMarkupServicesParentUndo->Finish(S_OK);
 
         delete _pMarkupServicesParentUndo;
     }
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::IsScopedElement ( IHTMLElement * pIHTMLElement, BOOL * pfScoped )
+CDoc::IsScopedElement(IHTMLElement * pIHTMLElement, BOOL * pfScoped)
 {
     HRESULT hr = S_OK;
     CElement * pElement = NULL;
 
-    if (!pIHTMLElement || !pfScoped || !IsOwnerOf( pIHTMLElement ))
+    if (!pIHTMLElement || !pfScoped || !IsOwnerOf(pIHTMLElement))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pIHTMLElement->QueryInterface( CLSID_CElement, (void **) & pElement ) );
+    hr = THR(pIHTMLElement->QueryInterface(CLSID_CElement, (void **)& pElement));
 
     if (hr)
     {
@@ -1904,11 +1904,11 @@ CDoc::IsScopedElement ( IHTMLElement * pIHTMLElement, BOOL * pfScoped )
         goto Cleanup;
     }
 
-    *pfScoped = ! pElement->IsNoScope();
+    *pfScoped = !pElement->IsNoScope();
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -1921,97 +1921,97 @@ ELEMENT_TAG_ID
 #else
 static ELEMENT_TAG_ID
 #endif //VSTUDIO7
-TagIdFromETag ( ELEMENT_TAG etag )
+TagIdFromETag(ELEMENT_TAG etag)
 {
     ELEMENT_TAG_ID tagID = TAGID_NULL;
 
-    switch( etag )
+    switch (etag)
     {
 #define X(Y) case ETAG_##Y:tagID=TAGID_##Y;break;
-    X(UNKNOWN) X(A) X(ACRONYM) X(ADDRESS) X(APPLET) X(AREA) X(B) X(BASE) X(BASEFONT)
-    X(BDO) X(BGSOUND) X(BIG) X(BLINK) X(BLOCKQUOTE) X(BODY) X(BR) X(BUTTON) X(CAPTION)
-    X(CENTER) X(CITE) X(CODE) X(COL) X(COLGROUP) X(COMMENT) X(DD) X(DEL) X(DFN) X(DIR)
-    X(DIV) X(DL) X(DT) X(EM) X(EMBED) X(FIELDSET) X(FONT) X(FORM) X(FRAME)
-    X(FRAMESET) X(H1) X(H2) X(H3) X(H4) X(H5) X(H6) X(HEAD) X(HR) X(HTML) X(I) X(IFRAME)
-    X(IMG) X(INPUT) X(INS) X(KBD) X(LABEL) X(LEGEND) X(LI) X(LINK) X(LISTING)
-    X(MAP) X(MARQUEE) X(MENU) X(META) X(NEXTID) X(NOBR) X(NOEMBED) X(NOFRAMES)
-    X(NOSCRIPT) X(OBJECT) X(OL) X(OPTION) X(P) X(PARAM) X(PLAINTEXT) X(PRE) X(Q)
+        X(UNKNOWN) X(A) X(ACRONYM) X(ADDRESS) X(APPLET) X(AREA) X(B) X(BASE) X(BASEFONT)
+            X(BDO) X(BGSOUND) X(BIG) X(BLINK) X(BLOCKQUOTE) X(BODY) X(BR) X(BUTTON) X(CAPTION)
+            X(CENTER) X(CITE) X(CODE) X(COL) X(COLGROUP) X(COMMENT) X(DD) X(DEL) X(DFN) X(DIR)
+            X(DIV) X(DL) X(DT) X(EM) X(EMBED) X(FIELDSET) X(FONT) X(FORM) X(FRAME)
+            X(FRAMESET) X(H1) X(H2) X(H3) X(H4) X(H5) X(H6) X(HEAD) X(HR) X(HTML) X(I) X(IFRAME)
+            X(IMG) X(INPUT) X(INS) X(KBD) X(LABEL) X(LEGEND) X(LI) X(LINK) X(LISTING)
+            X(MAP) X(MARQUEE) X(MENU) X(META) X(NEXTID) X(NOBR) X(NOEMBED) X(NOFRAMES)
+            X(NOSCRIPT) X(OBJECT) X(OL) X(OPTION) X(P) X(PARAM) X(PLAINTEXT) X(PRE) X(Q)
 #ifdef  NEVER
-    X(HTMLAREA)
+            X(HTMLAREA)
 #endif
-    X(RP) X(RT) X(RUBY) X(S) X(SAMP) X(SCRIPT) X(SELECT) X(SMALL) X(SPAN)
-    X(STRIKE) X(STRONG) X(STYLE) X(SUB) X(SUP) X(TABLE) X(TBODY) X(TC) X(TD) X(TEXTAREA)
-    X(TFOOT) X(TH) X(THEAD) X(TR) X(TT) X(U) X(UL) X(VAR) X(WBR) X(XMP)
+            X(RP) X(RT) X(RUBY) X(S) X(SAMP) X(SCRIPT) X(SELECT) X(SMALL) X(SPAN)
+            X(STRIKE) X(STRONG) X(STYLE) X(SUB) X(SUP) X(TABLE) X(TBODY) X(TC) X(TD) X(TEXTAREA)
+            X(TFOOT) X(TH) X(THEAD) X(TR) X(TT) X(U) X(UL) X(VAR) X(WBR) X(XMP)
 #undef X
 
-    case ETAG_TITLE_ELEMENT :
-    case ETAG_TITLE_TAG :
+    case ETAG_TITLE_ELEMENT:
+    case ETAG_TITLE_TAG:
         tagID = TAGID_TITLE; break;
 
-    case ETAG_GENERIC :
-    case ETAG_GENERIC_BUILTIN :
-    case ETAG_GENERIC_LITERAL :
+    case ETAG_GENERIC:
+    case ETAG_GENERIC_BUILTIN:
+    case ETAG_GENERIC_LITERAL:
         tagID = TAGID_GENERIC; break;
 
-    case ETAG_RAW_COMMENT :
+    case ETAG_RAW_COMMENT:
         tagID = TAGID_COMMENT_RAW; break;
 
-    // BUGBUG (MohanB) For now, use INPUT's tag id for TXTSLAVE. Needs to be generified.
-    case ETAG_TXTSLAVE :
+        // BUGBUG (MohanB) For now, use INPUT's tag id for TXTSLAVE. Needs to be generified.
+    case ETAG_TXTSLAVE:
         tagID = TAGID_INPUT; break;
     }
 
-    AssertSz( tagID != TAGID_NULL, "Invalid ELEMENT_TAG" );
+    AssertSz(tagID != TAGID_NULL, "Invalid ELEMENT_TAG");
 
     return tagID;
 }
 
 ELEMENT_TAG
-ETagFromTagId ( ELEMENT_TAG_ID tagID )
+ETagFromTagId(ELEMENT_TAG_ID tagID)
 {
     ELEMENT_TAG etag = ETAG_NULL;
 
-    switch( tagID )
+    switch (tagID)
     {
 #define X(Y) case TAGID_##Y:etag=ETAG_##Y;break;
-    X(UNKNOWN) X(A) X(ACRONYM) X(ADDRESS) X(APPLET) X(AREA) X(B) X(BASE) X(BASEFONT)
-    X(BDO) X(BGSOUND) X(BIG) X(BLINK) X(BLOCKQUOTE) X(BODY) X(BR) X(BUTTON) X(CAPTION)
-    X(CENTER) X(CITE) X(CODE) X(COL) X(COLGROUP) X(COMMENT) X(DD) X(DEL) X(DFN) X(DIR)
-    X(DIV) X(DL) X(DT) X(EM) X(EMBED) X(FIELDSET) X(FONT) X(FORM) X(FRAME)
-    X(FRAMESET) X(GENERIC) X(H1) X(H2) X(H3) X(H4) X(H5) X(H6) X(HEAD) X(HR) X(HTML) X(I) X(IFRAME)
-    X(IMG) X(INPUT) X(INS) X(KBD) X(LABEL) X(LEGEND) X(LI) X(LINK) X(LISTING)
-    X(MAP) X(MARQUEE) X(MENU) X(META) X(NEXTID) X(NOBR) X(NOEMBED) X(NOFRAMES)
-    X(NOSCRIPT) X(OBJECT) X(OL) X(OPTION) X(P) X(PARAM) X(PLAINTEXT) X(PRE) X(Q)
+        X(UNKNOWN) X(A) X(ACRONYM) X(ADDRESS) X(APPLET) X(AREA) X(B) X(BASE) X(BASEFONT)
+            X(BDO) X(BGSOUND) X(BIG) X(BLINK) X(BLOCKQUOTE) X(BODY) X(BR) X(BUTTON) X(CAPTION)
+            X(CENTER) X(CITE) X(CODE) X(COL) X(COLGROUP) X(COMMENT) X(DD) X(DEL) X(DFN) X(DIR)
+            X(DIV) X(DL) X(DT) X(EM) X(EMBED) X(FIELDSET) X(FONT) X(FORM) X(FRAME)
+            X(FRAMESET) X(GENERIC) X(H1) X(H2) X(H3) X(H4) X(H5) X(H6) X(HEAD) X(HR) X(HTML) X(I) X(IFRAME)
+            X(IMG) X(INPUT) X(INS) X(KBD) X(LABEL) X(LEGEND) X(LI) X(LINK) X(LISTING)
+            X(MAP) X(MARQUEE) X(MENU) X(META) X(NEXTID) X(NOBR) X(NOEMBED) X(NOFRAMES)
+            X(NOSCRIPT) X(OBJECT) X(OL) X(OPTION) X(P) X(PARAM) X(PLAINTEXT) X(PRE) X(Q)
 #ifdef  NEVER
-    X(HTMLAREA)
+            X(HTMLAREA)
 #endif
-    X(RP) X(RT) X(RUBY) X(S) X(SAMP) X(SCRIPT) X(SELECT) X(SMALL) X(SPAN)
-    X(STRIKE) X(STRONG) X(STYLE) X(SUB) X(SUP) X(TABLE) X(TBODY) X(TC) X(TD) X(TEXTAREA)
-    X(TFOOT) X(TH) X(THEAD) X(TR) X(TT) X(U) X(UL) X(VAR) X(WBR) X(XMP)
+            X(RP) X(RT) X(RUBY) X(S) X(SAMP) X(SCRIPT) X(SELECT) X(SMALL) X(SPAN)
+            X(STRIKE) X(STRONG) X(STYLE) X(SUB) X(SUP) X(TABLE) X(TBODY) X(TC) X(TD) X(TEXTAREA)
+            X(TFOOT) X(TH) X(THEAD) X(TR) X(TT) X(U) X(UL) X(VAR) X(WBR) X(XMP)
 #undef X
 
-    case TAGID_TITLE : etag = ETAG_TITLE_ELEMENT; break;
-    case TAGID_COMMENT_RAW : etag = ETAG_RAW_COMMENT; break;
+    case TAGID_TITLE: etag = ETAG_TITLE_ELEMENT; break;
+    case TAGID_COMMENT_RAW: etag = ETAG_RAW_COMMENT; break;
     }
 
-    AssertSz( etag != ETAG_NULL, "Invalid ELEMENT_TAG_ID" );
+    AssertSz(etag != ETAG_NULL, "Invalid ELEMENT_TAG_ID");
 
     return etag;
 }
 
 HRESULT
-CDoc::GetElementTagId ( IHTMLElement * pIHTMLElement, ELEMENT_TAG_ID * ptagId )
+CDoc::GetElementTagId(IHTMLElement * pIHTMLElement, ELEMENT_TAG_ID * ptagId)
 {
     HRESULT hr;
     CElement * pElement = NULL;
 
-    if (!pIHTMLElement || !ptagId || !IsOwnerOf( pIHTMLElement ))
+    if (!pIHTMLElement || !ptagId || !IsOwnerOf(pIHTMLElement))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pIHTMLElement->QueryInterface( CLSID_CElement, (void **) & pElement ) );
+    hr = THR(pIHTMLElement->QueryInterface(CLSID_CElement, (void **)& pElement));
 
     if (hr)
     {
@@ -2019,15 +2019,15 @@ CDoc::GetElementTagId ( IHTMLElement * pIHTMLElement, ELEMENT_TAG_ID * ptagId )
         goto Cleanup;
     }
 
-    *ptagId = TagIdFromETag( pElement->Tag() );
+    *ptagId = TagIdFromETag(pElement->Tag());
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::GetTagIDForName ( BSTR bstrName, ELEMENT_TAG_ID * ptagId )
+CDoc::GetTagIDForName(BSTR bstrName, ELEMENT_TAG_ID * ptagId)
 {
     HRESULT hr = S_OK;
 
@@ -2037,15 +2037,15 @@ CDoc::GetTagIDForName ( BSTR bstrName, ELEMENT_TAG_ID * ptagId )
         goto Cleanup;
     }
 
-    *ptagId = TagIdFromETag( EtagFromName( bstrName, SysStringLen( bstrName ) ) );
+    *ptagId = TagIdFromETag(EtagFromName(bstrName, SysStringLen(bstrName)));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::GetNameForTagID ( ELEMENT_TAG_ID tagId, BSTR * pbstrName )
+CDoc::GetNameForTagID(ELEMENT_TAG_ID tagId, BSTR * pbstrName)
 {
     HRESULT hr = S_OK;
 
@@ -2055,21 +2055,21 @@ CDoc::GetNameForTagID ( ELEMENT_TAG_ID tagId, BSTR * pbstrName )
         goto Cleanup;
     }
 
-    hr = THR( FormsAllocString( NameFromEtag( ETagFromTagId( tagId ) ), pbstrName ) );
+    hr = THR(FormsAllocString(NameFromEtag(ETagFromTagId(tagId)), pbstrName));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::CreateElement (
+CDoc::CreateElement(
     ELEMENT_TAG_ID   tagID,
     OLECHAR *        pchAttributes,
-    IHTMLElement * * ppIHTMLElement )
+    IHTMLElement * * ppIHTMLElement)
 {
     HRESULT     hr = S_OK;
     ELEMENT_TAG etag;
@@ -2081,7 +2081,7 @@ CDoc::CreateElement (
         goto Cleanup;
     }
 
-    etag = ETagFromTagId( tagID );
+    etag = ETagFromTagId(tagID);
 
     if (etag == ETAG_NULL)
     {
@@ -2091,28 +2091,28 @@ CDoc::CreateElement (
 
     hr = THR(
         CreateElement(
-            etag, & pElement,
-            pchAttributes, pchAttributes ? _tcslen( pchAttributes ) : 0 ) );
+            etag, &pElement,
+            pchAttributes, pchAttributes ? _tcslen(pchAttributes) : 0));
 
     if (hr)
         goto Cleanup;
 
-    hr = THR( pElement->QueryInterface( IID_IHTMLElement, (void **) ppIHTMLElement ) );
+    hr = THR(pElement->QueryInterface(IID_IHTMLElement, (void **)ppIHTMLElement));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    CElement::ReleasePtr( pElement );
+    CElement::ReleasePtr(pElement);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::CloneElement (
+CDoc::CloneElement(
     IHTMLElement *  pElementCloneThis,
-    IHTMLElement ** ppElementClone )
+    IHTMLElement ** ppElementClone)
 {
     HRESULT hr;
     IHTMLDOMNode *pThisDOMNode = NULL;
@@ -2124,30 +2124,30 @@ CDoc::CloneElement (
         goto Cleanup;
     }
 
-    hr = THR( pElementCloneThis->QueryInterface( IID_IHTMLDOMNode, (void **) & pThisDOMNode ) );
+    hr = THR(pElementCloneThis->QueryInterface(IID_IHTMLDOMNode, (void **)& pThisDOMNode));
 
     if (hr)
         goto Cleanup;
 
     // BUBUG rgardner - should this be Deep ?
-    hr = THR( pThisDOMNode->cloneNode( FALSE /* Not Deep */, &pDOMNode ) );
+    hr = THR(pThisDOMNode->cloneNode(FALSE /* Not Deep */, &pDOMNode));
     if (hr)
         goto Cleanup;
 
-    hr = THR( pDOMNode->QueryInterface ( IID_IHTMLElement, (void**)ppElementClone ));
+    hr = THR(pDOMNode->QueryInterface(IID_IHTMLElement, (void**)ppElementClone));
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    ClearInterface( & pThisDOMNode );
-    ClearInterface( & pDOMNode );
+    ClearInterface(&pThisDOMNode);
+    ClearInterface(&pDOMNode);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::CreateMarkupContainer ( IMarkupContainer * * ppIMarkupContainer )
+CDoc::CreateMarkupContainer(IMarkupContainer * * ppIMarkupContainer)
 {
     HRESULT   hr;
     CMarkup * pMarkup = NULL;
@@ -2158,14 +2158,14 @@ CDoc::CreateMarkupContainer ( IMarkupContainer * * ppIMarkupContainer )
         goto Cleanup;
     }
 
-    hr = THR( CreateMarkup( & pMarkup ) );
+    hr = THR(CreateMarkup(&pMarkup));
 
     if (hr)
         goto Cleanup;
 
     hr = THR(
         pMarkup->QueryInterface(
-            IID_IMarkupContainer, (void **) ppIMarkupContainer ) );
+            IID_IMarkupContainer, (void **)ppIMarkupContainer));
 
     if (hr)
         goto Cleanup;
@@ -2175,7 +2175,7 @@ Cleanup:
     if (pMarkup)
         pMarkup->Release();
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -2184,13 +2184,13 @@ Cleanup:
 
 
 BOOL
-CDoc::IsOwnerOf ( IHTMLElement * pIElement )
+CDoc::IsOwnerOf(IHTMLElement * pIElement)
 {
     HRESULT    hr;
     BOOL       result = FALSE;
     CElement * pElement;
 
-    hr = THR( pIElement->QueryInterface( CLSID_CElement, (void **) & pElement ) );
+    hr = THR(pIElement->QueryInterface(CLSID_CElement, (void **)& pElement));
 
     if (hr)
         goto Cleanup;
@@ -2203,13 +2203,13 @@ Cleanup:
 
 
 BOOL
-CDoc::IsOwnerOf ( IMarkupPointer * pIPointer )
+CDoc::IsOwnerOf(IMarkupPointer * pIPointer)
 {
     HRESULT         hr;
     BOOL            result = FALSE;
     CMarkupPointer  *pPointer;
 
-    hr =  THR(pIPointer->QueryInterface( CLSID_CMarkupPointer, (void **) & pPointer ) );
+    hr = THR(pIPointer->QueryInterface(CLSID_CMarkupPointer, (void **)& pPointer));
     if (hr)
         goto Cleanup;
 
@@ -2220,13 +2220,13 @@ Cleanup:
 }
 
 BOOL
-CDoc::IsOwnerOf ( IHTMLTxtRange * pIRange )
+CDoc::IsOwnerOf(IHTMLTxtRange * pIRange)
 {
     HRESULT         hr;
     BOOL            result = FALSE;
     CAutoRange *    pRange;
 
-    hr = THR( pIRange->QueryInterface( CLSID_CRange, (void **) & pRange ) );
+    hr = THR(pIRange->QueryInterface(CLSID_CRange, (void **)& pRange));
 
     if (hr)
         goto Cleanup;
@@ -2239,7 +2239,7 @@ Cleanup:
 }
 
 BOOL
-CDoc::IsOwnerOf ( IMarkupContainer * pContainer )
+CDoc::IsOwnerOf(IMarkupContainer * pContainer)
 {
     HRESULT          hr;
     BOOL             result = FALSE;
@@ -2256,11 +2256,11 @@ Cleanup:
 }
 
 HRESULT
-CDoc::CutCopyMove (
+CDoc::CutCopyMove(
     IMarkupPointer * pIPointerStart,
     IMarkupPointer * pIPointerFinish,
     IMarkupPointer * pIPointerTarget,
-    BOOL             fRemove )
+    BOOL             fRemove)
 {
     HRESULT          hr = S_OK;
     CMarkupPointer * pPointerStart;
@@ -2271,9 +2271,9 @@ CDoc::CutCopyMove (
     // Check argument sanity
 
 
-    if (pIPointerStart  == NULL  || !IsOwnerOf( pIPointerStart  ) ||
-        pIPointerFinish == NULL  || !IsOwnerOf( pIPointerFinish ) ||
-        (pIPointerTarget != NULL && !IsOwnerOf( pIPointerTarget )) )
+    if (pIPointerStart == NULL || !IsOwnerOf(pIPointerStart) ||
+        pIPointerFinish == NULL || !IsOwnerOf(pIPointerFinish) ||
+        (pIPointerTarget != NULL && !IsOwnerOf(pIPointerTarget)))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -2285,7 +2285,7 @@ CDoc::CutCopyMove (
 
     hr = THR(
         pIPointerStart->QueryInterface(
-            CLSID_CMarkupPointer, (void **) & pPointerStart ) );
+            CLSID_CMarkupPointer, (void **)& pPointerStart));
 
     if (hr)
     {
@@ -2295,7 +2295,7 @@ CDoc::CutCopyMove (
 
     hr = THR(
         pIPointerFinish->QueryInterface(
-            CLSID_CMarkupPointer, (void **) & pPointerFinish ) );
+            CLSID_CMarkupPointer, (void **)& pPointerFinish));
 
     if (hr)
     {
@@ -2307,7 +2307,7 @@ CDoc::CutCopyMove (
     {
         hr = THR(
             pIPointerTarget->QueryInterface(
-                CLSID_CMarkupPointer, (void **) & pPointerTarget ) );
+                CLSID_CMarkupPointer, (void **)& pPointerTarget));
 
         if (hr)
         {
@@ -2336,7 +2336,7 @@ CDoc::CutCopyMove (
     // Make sure the start if before the finish
 
 
-    EnsureLogicalOrder( pPointerStart, pPointerFinish );
+    EnsureLogicalOrder(pPointerStart, pPointerFinish);
 
 
     // More checks
@@ -2354,20 +2354,20 @@ CDoc::CutCopyMove (
 
     hr = THR(
         CutCopyMove(
-            pPointerStart, pPointerFinish, pPointerTarget, fRemove, NULL ) );
+            pPointerStart, pPointerFinish, pPointerTarget, fRemove, NULL));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::CutCopyMove (
+CDoc::CutCopyMove(
     CMarkupPointer * pPointerStart,
     CMarkupPointer * pPointerFinish,
     CMarkupPointer * pPointerTarget,
     BOOL             fRemove,
-    DWORD            dwFlags )
+    DWORD            dwFlags)
 {
     HRESULT     hr = S_OK;
     CTreePosGap tpgStart;
@@ -2380,26 +2380,26 @@ CDoc::CutCopyMove (
     // Sanity check the args
 
 
-    Assert( pPointerStart );
-    Assert( pPointerFinish );
-    Assert( OldCompare( pPointerStart, pPointerFinish ) <= 0 );
-    Assert( pPointerStart->IsPositioned() );
-    Assert( pPointerFinish->IsPositioned() );
-    Assert( pPointerStart->Markup() == pPointerFinish->Markup() );
-    Assert( ! pPointerTarget || pPointerTarget->IsPositioned() );
+    Assert(pPointerStart);
+    Assert(pPointerFinish);
+    Assert(OldCompare(pPointerStart, pPointerFinish) <= 0);
+    Assert(pPointerStart->IsPositioned());
+    Assert(pPointerFinish->IsPositioned());
+    Assert(pPointerStart->Markup() == pPointerFinish->Markup());
+    Assert(!pPointerTarget || pPointerTarget->IsPositioned());
 
 
     // Make sure unembedded pointers get in before the modification
 
 
-    hr = THR( pPointerStart->Markup()->EmbedPointers() );
+    hr = THR(pPointerStart->Markup()->EmbedPointers());
 
     if (hr)
         goto Cleanup;
 
     if (pPointerTarget)
     {
-        hr = THR( pPointerTarget->Markup()->EmbedPointers() );
+        hr = THR(pPointerTarget->Markup()->EmbedPointers());
 
         if (hr)
             goto Cleanup;
@@ -2409,11 +2409,11 @@ CDoc::CutCopyMove (
     // Set up the gaps
 
 
-    tpgStart.MoveTo( pPointerStart->GetEmbeddedTreePos(), TPG_LEFT );
-    tpgFinish.MoveTo( pPointerFinish->GetEmbeddedTreePos(), TPG_RIGHT );
+    tpgStart.MoveTo(pPointerStart->GetEmbeddedTreePos(), TPG_LEFT);
+    tpgFinish.MoveTo(pPointerFinish->GetEmbeddedTreePos(), TPG_RIGHT);
 
     if (pPointerTarget)
-        tpgTarget.MoveTo( pPointerTarget->GetEmbeddedTreePos(), TPG_LEFT );
+        tpgTarget.MoveTo(pPointerTarget->GetEmbeddedTreePos(), TPG_LEFT);
 
     pMarkupSource = pPointerStart->Markup();
 
@@ -2426,7 +2426,7 @@ CDoc::CutCopyMove (
     // trident team: do not bother trying to maintain this code, delete if it causes problems
     if (_SyncLogger.IsLogging())
     {
-        hr = THR(_SyncLogger.CutCopyMoveHandler(pPointerStart,pPointerFinish,pPointerTarget,fRemove));
+        hr = THR(_SyncLogger.CutCopyMoveHandler(pPointerStart, pPointerFinish, pPointerTarget, fRemove));
         if (hr != S_OK)
         {
             goto Cleanup;
@@ -2442,19 +2442,19 @@ CDoc::CutCopyMove (
     {
         hr = THR(
             pMarkupSource->SpliceTreeInternal(
-                & tpgStart, & tpgFinish, pPointerTarget->Markup(),
-                & tpgTarget, fRemove, dwFlags ) );
+                &tpgStart, &tpgFinish, pPointerTarget->Markup(),
+                &tpgTarget, fRemove, dwFlags));
 
         if (hr)
             goto Cleanup;
     }
     else
     {
-        Assert( fRemove );
+        Assert(fRemove);
 
         hr = THR(
             pMarkupSource->SpliceTreeInternal(
-                & tpgStart, & tpgFinish, NULL, NULL, fRemove, dwFlags ) );
+                &tpgStart, &tpgFinish, NULL, NULL, fRemove, dwFlags));
 
         if (hr)
             goto Cleanup;
@@ -2472,21 +2472,21 @@ CDoc::CutCopyMove (
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 
 HRESULT
-CDoc::CreateMarkup( CMarkup ** ppMarkup, CElement * pElementMaster /*= NULL*/ )
+CDoc::CreateMarkup(CMarkup ** ppMarkup, CElement * pElementMaster /*= NULL*/)
 {
     HRESULT         hr;
     CRootElement *  pRootElement;
     CMarkup *       pMarkup = NULL;
 
-    Assert( ppMarkup );
+    Assert(ppMarkup);
 
-    pRootElement = new CRootElement( this );
+    pRootElement = new CRootElement(this);
 
     if (!pRootElement)
     {
@@ -2494,7 +2494,7 @@ CDoc::CreateMarkup( CMarkup ** ppMarkup, CElement * pElementMaster /*= NULL*/ )
         goto Cleanup;
     }
 
-    pMarkup = new CMarkup( this, pElementMaster );
+    pMarkup = new CMarkup(this, pElementMaster);
 
     if (!pMarkup)
     {
@@ -2502,7 +2502,7 @@ CDoc::CreateMarkup( CMarkup ** ppMarkup, CElement * pElementMaster /*= NULL*/ )
         goto Cleanup;
     }
 
-    hr = THR( pRootElement->Init() );
+    hr = THR(pRootElement->Init());
 
     if (hr)
         goto Cleanup;
@@ -2510,13 +2510,13 @@ CDoc::CreateMarkup( CMarkup ** ppMarkup, CElement * pElementMaster /*= NULL*/ )
     {
         CElement::CInit2Context   context(NULL, pMarkup);
 
-        hr = THR( pRootElement->Init2(&context) );
+        hr = THR(pRootElement->Init2(&context));
     }
 
     if (hr)
         goto Cleanup;
 
-    hr = THR( pMarkup->Init( pRootElement ) );
+    hr = THR(pMarkup->Init(pRootElement));
 
     if (hr)
         goto Cleanup;
@@ -2529,23 +2529,23 @@ Cleanup:
     if (pMarkup)
         pMarkup->Release();
 
-    CElement::ReleasePtr( pRootElement );
+    CElement::ReleasePtr(pRootElement);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
 CDoc::CreateMarkupWithElement(
     CMarkup ** ppMarkup,
     CElement * pElement,
-    CElement * pElementMaster /*= NULL*/ )
+    CElement * pElementMaster /*= NULL*/)
 {
     HRESULT   hr = S_OK;
     CMarkup * pMarkup = NULL;
 
-    Assert( pElement && !pElement->IsInMarkup() );
+    Assert(pElement && !pElement->IsInMarkup());
 
-    hr = THR( CreateMarkup( &pMarkup, pElementMaster ) );
+    hr = THR(CreateMarkup(&pMarkup, pElementMaster));
 
     if (hr)
         goto Cleanup;
@@ -2557,22 +2557,22 @@ CDoc::CreateMarkupWithElement(
         CTreePos * ptpNew;
         CTreeNode *pNodeNew;
 
-        Assert( ptpRootBegin );
+        Assert(ptpRootBegin);
 
         // Assert that the only thing in this tree is two WCH_NODE characters
-        Assert( pMarkup->Cch() == 2 );
+        Assert(pMarkup->Cch() == 2);
 
-        pNodeNew = new CTreeNode( pMarkup->Root()->GetFirstBranch(), pElement );
-        if( !pNodeNew )
+        pNodeNew = new CTreeNode(pMarkup->Root()->GetFirstBranch(), pElement);
+        if (!pNodeNew)
         {
             hr = E_OUTOFMEMORY;
             goto Cleanup;
         }
 
-        Assert( pNodeNew->GetEndPos()->IsUninit() );
-        ptpNew = pNodeNew->InitEndPos( TRUE );
-        hr = THR( pMarkup->Insert( ptpNew, ptpRootBegin, FALSE ) );
-        if(hr)
+        Assert(pNodeNew->GetEndPos()->IsUninit());
+        ptpNew = pNodeNew->InitEndPos(TRUE);
+        hr = THR(pMarkup->Insert(ptpNew, ptpRootBegin, FALSE));
+        if (hr)
         {
             // The node never made it into the tree
             // so delete it
@@ -2581,15 +2581,15 @@ CDoc::CreateMarkupWithElement(
             goto Cleanup;
         }
 
-        Assert( pNodeNew->GetBeginPos()->IsUninit() );
-        ptpNew = pNodeNew->InitBeginPos( TRUE );
-        hr = THR( pMarkup->Insert( ptpNew, ptpRootBegin, FALSE ) );
-        if(hr)
+        Assert(pNodeNew->GetBeginPos()->IsUninit());
+        ptpNew = pNodeNew->InitBeginPos(TRUE);
+        hr = THR(pMarkup->Insert(ptpNew, ptpRootBegin, FALSE));
+        if (hr)
             goto Cleanup;
 
         pNodeNew->PrivateEnterTree();
 
-        pElement->SetMarkupPtr( pMarkup );
+        pElement->SetMarkupPtr(pMarkup);
         pElement->__pNodeFirstBranch = pNodeNew;
         pElement->PrivateEnterTree();
 
@@ -2604,15 +2604,15 @@ CDoc::CreateMarkupWithElement(
         // only 2 WCH_NODE characters for the root
         Verify(
             ULONG(
-                CTxtPtr( pMarkup, 2 ).
-                    InsertRepeatingChar( 2, WCH_NODE ) ) == 2 );
+                CTxtPtr(pMarkup, 2).
+                InsertRepeatingChar(2, WCH_NODE)) == 2);
 
         // Don't send a notification but do update the
         // debug character count
-        WHEN_DBG( pMarkup->_cchTotalDbg += 2 );
-        WHEN_DBG( pMarkup->_cElementsTotalDbg += 1 );
+        WHEN_DBG(pMarkup->_cchTotalDbg += 2);
+        WHEN_DBG(pMarkup->_cElementsTotalDbg += 1);
 
-        Assert( pMarkup->IsNodeValid() );
+        Assert(pMarkup->IsNodeValid());
 
         pMarkup->SetLoaded(TRUE);
     }
@@ -2624,7 +2624,7 @@ CDoc::CreateMarkupWithElement(
     }
 
 Cleanup:
-    if(pMarkup)
+    if (pMarkup)
         pMarkup->Release();
 
     RRETURN(hr);
@@ -2648,7 +2648,7 @@ CMkpSyncLogger::~CMkpSyncLogger()
     IMarkupSyncLogSink *  pISink;
 
     // release interface pointers for any registered sinks
-    for (i = 0; i < _aryLogSinks.Size(); i ++)
+    for (i = 0; i < _aryLogSinks.Size(); i++)
     {
         pISink = _aryLogSinks.Item(i);
         ReleaseInterface(pISink);
@@ -2665,23 +2665,23 @@ CMkpSyncLogger::SetAttributeHandler(CElement * pElement, BSTR strPropertyName, V
     IHTMLDocument2 *    pIDoc = NULL;
 
     // validate and set up arguments
-    hr = THR(pElement->QueryInterface(IID_IHTMLElement,(void**)&pIElement));
+    hr = THR(pElement->QueryInterface(IID_IHTMLElement, (void**)&pIElement));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
-    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2,(void**)&pIDoc));
+    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2, (void**)&pIDoc));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
     // dispatch to all listeners
-    for (i = 0; i < _aryLogSinks.Size(); i ++)
+    for (i = 0; i < _aryLogSinks.Size(); i++)
     {
         pISink = _aryLogSinks.Item(i);
-        IGNORE_HR(pISink->SetAttribute(pIDoc,pIElement,strPropertyName,pvarPropertyValue,lFlags));
+        IGNORE_HR(pISink->SetAttribute(pIDoc, pIElement, strPropertyName, pvarPropertyValue, lFlags));
     }
 
 Cleanup:
@@ -2699,17 +2699,17 @@ CMkpSyncLogger::InsertElementHandler(IMarkupPointer * pIPointerStart, IMarkupPoi
     IHTMLDocument2 *    pIDoc = NULL;
 
     // validate and set up arguments
-    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2,(void**)&pIDoc));
+    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2, (void**)&pIDoc));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
     // dispatch to all listeners
-    for (i = 0; i < _aryLogSinks.Size(); i ++)
+    for (i = 0; i < _aryLogSinks.Size(); i++)
     {
         pISink = _aryLogSinks.Item(i);
-        IGNORE_HR(pISink->InsertElement(pIDoc,pIPointerStart,pIPointerFinish,pIElementInsert));
+        IGNORE_HR(pISink->InsertElement(pIDoc, pIPointerStart, pIPointerFinish, pIElementInsert));
     }
 
 Cleanup:
@@ -2730,13 +2730,13 @@ CMkpSyncLogger::RemoveElementHandler(CElement * pElementRemove)
     // validate and set up arguments
 
 
-    hr = THR(pElementRemove->QueryInterface(IID_IHTMLElement,(void**)&pIElement));
+    hr = THR(pElementRemove->QueryInterface(IID_IHTMLElement, (void**)&pIElement));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
-    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2,(void**)&pIDoc));
+    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2, (void**)&pIDoc));
     if (S_OK != hr)
     {
         goto Cleanup;
@@ -2746,10 +2746,10 @@ CMkpSyncLogger::RemoveElementHandler(CElement * pElementRemove)
     // dispatch to all listeners
 
 
-    for (i = 0; i < _aryLogSinks.Size(); i ++)
+    for (i = 0; i < _aryLogSinks.Size(); i++)
     {
         pISink = _aryLogSinks.Item(i);
-        IGNORE_HR(pISink->RemoveElement(pIDoc,pIElement));
+        IGNORE_HR(pISink->RemoveElement(pIDoc, pIElement));
     }
 
 Cleanup:
@@ -2771,23 +2771,23 @@ CMkpSyncLogger::InsertTextHandler(OLECHAR * pchText, long cch, CMarkupPointer * 
     // validate and set up arguments
 
 
-    hr = THR(pPointerTarget->QueryInterface(IID_IMarkupPointer,(void**)&pIPointer));
+    hr = THR(pPointerTarget->QueryInterface(IID_IMarkupPointer, (void**)&pIPointer));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
-    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2,(void**)&pIDoc));
+    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2, (void**)&pIDoc));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
     // dispatch to all listeners
-    for (i = 0; i < _aryLogSinks.Size(); i ++)
+    for (i = 0; i < _aryLogSinks.Size(); i++)
     {
         pISink = _aryLogSinks.Item(i);
-        IGNORE_HR(pISink->InsertText(pIDoc,pchText,cch,pIPointer));
+        IGNORE_HR(pISink->InsertText(pIDoc, pchText, cch, pIPointer));
     }
 
 Cleanup:
@@ -2811,13 +2811,13 @@ CMkpSyncLogger::CutCopyMoveHandler(CMarkupPointer * pPointerStart, CMarkupPointe
     // validate and set up arguments
 
 
-    hr = THR(pPointerStart->QueryInterface(IID_IMarkupPointer,(void**)&pIPointerStart));
+    hr = THR(pPointerStart->QueryInterface(IID_IMarkupPointer, (void**)&pIPointerStart));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
-    hr = THR(pPointerFinish->QueryInterface(IID_IMarkupPointer,(void**)&pIPointerFinish));
+    hr = THR(pPointerFinish->QueryInterface(IID_IMarkupPointer, (void**)&pIPointerFinish));
     if (S_OK != hr)
     {
         goto Cleanup;
@@ -2825,14 +2825,14 @@ CMkpSyncLogger::CutCopyMoveHandler(CMarkupPointer * pPointerStart, CMarkupPointe
 
     if (pPointerTarget != NULL)
     {
-        hr = THR(pPointerTarget->QueryInterface(IID_IMarkupPointer,(void**)&pIPointerTarget));
+        hr = THR(pPointerTarget->QueryInterface(IID_IMarkupPointer, (void**)&pIPointerTarget));
         if (S_OK != hr)
         {
             goto Cleanup;
         }
     }
 
-    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2,(void**)&pIDoc));
+    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2, (void**)&pIDoc));
     if (S_OK != hr)
     {
         goto Cleanup;
@@ -2842,10 +2842,10 @@ CMkpSyncLogger::CutCopyMoveHandler(CMarkupPointer * pPointerStart, CMarkupPointe
     // dispatch to all listeners
 
 
-    for (i = 0; i < _aryLogSinks.Size(); i ++)
+    for (i = 0; i < _aryLogSinks.Size(); i++)
     {
         pISink = _aryLogSinks.Item(i);
-        IGNORE_HR(pISink->CutCopyMove(pIDoc,pIPointerStart,pIPointerFinish,pIPointerTarget,fRemove));
+        IGNORE_HR(pISink->CutCopyMove(pIDoc, pIPointerStart, pIPointerFinish, pIPointerTarget, fRemove));
     }
 
 Cleanup:
@@ -2868,7 +2868,7 @@ CMkpSyncLogger::CutCopyMoveFinalizeHandler()
     // validate and set up arguments
 
 
-    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2,(void**)&pIDoc));
+    hr = THR(CONTAINING_RECORD(this, CDoc, _SyncLogger)->QueryInterface(IID_IHTMLDocument2, (void**)&pIDoc));
     if (S_OK != hr)
     {
         goto Cleanup;
@@ -2878,7 +2878,7 @@ CMkpSyncLogger::CutCopyMoveFinalizeHandler()
     // dispatch to all listeners
 
 
-    for (i = 0; i < _aryLogSinks.Size(); i ++)
+    for (i = 0; i < _aryLogSinks.Size(); i++)
     {
         pISink = _aryLogSinks.Item(i);
         IGNORE_HR(pISink->CutCopyMoveFinalize(pIDoc));
@@ -2897,14 +2897,14 @@ CMkpSyncLogger::StaticSetAttributeHandler(CBase *pbase, BSTR strPropertyName, VA
 
     // this is a very bad way, and will be redone properly soon.
 
-    IGNORE_HR(pbase->PrivateQueryInterface(CLSID_CElement,(void**)&pElement));
+    IGNORE_HR(pbase->PrivateQueryInterface(CLSID_CElement, (void**)&pElement));
 
     // if it's an element, then sync it
     if (pElement != NULL)
     {
         if (pElement->Doc()->_SyncLogger.IsLogging())
         {
-            hr = THR(pElement->Doc()->_SyncLogger.SetAttributeHandler(pElement,strPropertyName,pvarPropertyValue,lFlags));
+            hr = THR(pElement->Doc()->_SyncLogger.SetAttributeHandler(pElement, strPropertyName, pvarPropertyValue, lFlags));
         }
     }
 
@@ -2912,7 +2912,7 @@ CMkpSyncLogger::StaticSetAttributeHandler(CBase *pbase, BSTR strPropertyName, VA
 }
 
 HRESULT
-CDoc::GetCpFromPointer ( IMarkupPointer * pIPointer, long * pcp )
+CDoc::GetCpFromPointer(IMarkupPointer * pIPointer, long * pcp)
 {
     HRESULT          hr = S_OK;
     CMarkupPointer * pPointer;
@@ -2924,7 +2924,7 @@ CDoc::GetCpFromPointer ( IMarkupPointer * pIPointer, long * pcp )
         goto Cleanup;
     }
 
-    hr = THR( pIPointer->QueryInterface( CLSID_CMarkupPointer, (void **) & pPointer ) );
+    hr = THR(pIPointer->QueryInterface(CLSID_CMarkupPointer, (void **)& pPointer));
 
     if (hr)
     {
@@ -2945,11 +2945,11 @@ CDoc::GetCpFromPointer ( IMarkupPointer * pIPointer, long * pcp )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CDoc::MovePointerToCp ( IMarkupPointer * pIPointer, long cp, IMarkupContainer * pIContainer )
+CDoc::MovePointerToCp(IMarkupPointer * pIPointer, long cp, IMarkupContainer * pIContainer)
 {
     HRESULT          hr;
     CMarkupPointer * pPointer = NULL;
@@ -2961,7 +2961,7 @@ CDoc::MovePointerToCp ( IMarkupPointer * pIPointer, long cp, IMarkupContainer * 
         goto Cleanup;
     }
 
-    hr = THR( pIPointer->QueryInterface(CLSID_CMarkupPointer, (void **) & pPointer ) );
+    hr = THR(pIPointer->QueryInterface(CLSID_CMarkupPointer, (void **)& pPointer));
 
     if (hr)
     {
@@ -2975,17 +2975,17 @@ CDoc::MovePointerToCp ( IMarkupPointer * pIPointer, long cp, IMarkupContainer * 
     }
     else
     {
-        hr = THR( pIContainer->QueryInterface( CLSID_CMarkup, (void **) & pMarkup ) );
+        hr = THR(pIContainer->QueryInterface(CLSID_CMarkup, (void **)& pMarkup));
 
         if (hr)
             goto Cleanup;
     }
 
-    hr = THR( pPointer->MoveToCp( cp, pMarkup ) );
+    hr = THR(pPointer->MoveToCp(cp, pMarkup));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 // HACK: this should be rewritten to be standard OLE like IAdviseSink
@@ -3016,20 +3016,20 @@ CDoc::UnregisterLogSink(IMarkupSyncLogSink * pILogSink)
     IUnknown *          punkRequested = NULL;
     IUnknown *          punkTest = NULL;
 
-    hr = THR(pILogSink->QueryInterface(IID_IUnknown,(void**)&punkRequested));
+    hr = THR(pILogSink->QueryInterface(IID_IUnknown, (void**)&punkRequested));
     if (S_OK != hr)
     {
         goto Cleanup;
     }
 
     hr = E_FAIL;
-    for (i = 0; i < _SyncLogger._aryLogSinks.Size(); i ++)
+    for (i = 0; i < _SyncLogger._aryLogSinks.Size(); i++)
     {
         IMarkupSyncLogSink *  pISinkTest;
 
         pISinkTest = _SyncLogger._aryLogSinks.Item(i);
         ClearInterface(&punkTest);
-        if (SUCCEEDED(pISinkTest->QueryInterface(IID_IUnknown,(void**)&punkTest)))
+        if (SUCCEEDED(pISinkTest->QueryInterface(IID_IUnknown, (void**)&punkTest)))
         {
             if (punkTest == punkRequested)
             {
@@ -3062,47 +3062,47 @@ struct TagPos
 };
 
 void
-Stuff ( CDoc * pDoc, IMarkupServices * pms, IHTMLElement * pIElement )
+Stuff(CDoc * pDoc, IMarkupServices * pms, IHTMLElement * pIElement)
 {
     HRESULT            hr = S_OK;
     IHTMLDocument2 *   pDoc2;
     IMarkupServices *  pMS;
     IMarkupContainer * pMarkup;
-    IMarkupPointer *   pPtr1, * pPtr2;
-    TCHAR          *   pstrFrom = _T( "XY" );
-    TCHAR          *   pstrTo = _T( "AB" );
+    IMarkupPointer *   pPtr1, *pPtr2;
+    TCHAR          *   pstrFrom = _T("XY");
+    TCHAR          *   pstrTo = _T("AB");
 
-    pDoc->QueryInterface( IID_IHTMLDocument2, (void **) & pDoc2 );
+    pDoc->QueryInterface(IID_IHTMLDocument2, (void **)& pDoc2);
 
-    pDoc2->QueryInterface( IID_IMarkupContainer, (void **) & pMarkup );
-    pDoc2->QueryInterface( IID_IMarkupServices, (void **) & pMS );
+    pDoc2->QueryInterface(IID_IMarkupContainer, (void **)& pMarkup);
+    pDoc2->QueryInterface(IID_IMarkupServices, (void **)& pMS);
 
-    pMS->CreateMarkupPointer( & pPtr1 );
-    pMS->CreateMarkupPointer( & pPtr2 );
+    pMS->CreateMarkupPointer(&pPtr1);
+    pMS->CreateMarkupPointer(&pPtr2);
 
 
     // Set gravity of this pointer so that when the replacement text is inserted
     // it will float to be after it.
 
 
-    pPtr1->SetGravity( POINTER_GRAVITY_Right );
+    pPtr1->SetGravity(POINTER_GRAVITY_Right);
 
 
     // Start the seach at the beginning of the primary container
 
 
-    pPtr1->MoveToContainer( pMarkup, TRUE );
+    pPtr1->MoveToContainer(pMarkup, TRUE);
 
-    for ( ; ; )
+    for (; ; )
     {
-        hr = pPtr1->FindText( pstrFrom, 0, pPtr2, NULL );
+        hr = pPtr1->FindText(pstrFrom, 0, pPtr2, NULL);
 
         if (hr == S_FALSE)
             break;
 
-        pMS->Remove( pPtr1, pPtr2 );
+        pMS->Remove(pPtr1, pPtr2);
 
-        pMS->InsertText( pstrTo, -1, pPtr1 );
+        pMS->InsertText(pstrTo, -1, pPtr1);
     }
 }
 
@@ -3113,13 +3113,13 @@ TestMarkupServices(CElement *pElement)
     IHTMLElement *pIElement = NULL;
     CDoc *pDoc = pElement->Doc();
 
-    pElement->QueryInterface( IID_IHTMLElement, (void * *) & pIElement );
-    pDoc->QueryInterface( IID_IMarkupServices, (void * *) & pIMarkupServices );
+    pElement->QueryInterface(IID_IHTMLElement, (void * *)& pIElement);
+    pDoc->QueryInterface(IID_IMarkupServices, (void * *)& pIMarkupServices);
 
-    Stuff( pDoc, pIMarkupServices, pIElement );
+    Stuff(pDoc, pIMarkupServices, pIElement);
 
-    ReleaseInterface( pIMarkupServices );
-    ReleaseInterface( pIElement );
+    ReleaseInterface(pIMarkupServices);
+    ReleaseInterface(pIElement);
 }
 
 #endif // DBG==1

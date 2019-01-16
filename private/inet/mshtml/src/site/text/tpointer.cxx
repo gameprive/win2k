@@ -56,40 +56,40 @@ int CMarkupPointer::s_NextSerialNumber = 1;
 #if DBG == 1
 
 void
-SetDebugName ( IMarkupPointer * pIPointer, LPCTSTR strDbgName )
+SetDebugName(IMarkupPointer * pIPointer, LPCTSTR strDbgName)
 {
     CMarkupPointer * pPointer;
 
-    IGNORE_HR( pIPointer->QueryInterface( CLSID_CMarkupPointer, (void **) & pPointer ) );
+    IGNORE_HR(pIPointer->QueryInterface(CLSID_CMarkupPointer, (void **)& pPointer));
 
-    pPointer->SetDebugName( strDbgName );
+    pPointer->SetDebugName(strDbgName);
 }
 
 #endif
 
 
 inline BOOL
-IsValidGravity ( POINTER_GRAVITY eGravity )
+IsValidGravity(POINTER_GRAVITY eGravity)
 {
     return eGravity == POINTER_GRAVITY_Left || eGravity == POINTER_GRAVITY_Right;
 }
 
 inline BOOL
-IsValidAdjacency ( ELEMENT_ADJACENCY eAdj )
+IsValidAdjacency(ELEMENT_ADJACENCY eAdj)
 {
     return
         eAdj == ELEM_ADJ_BeforeBegin || eAdj == ELEM_ADJ_AfterBegin ||
-        eAdj == ELEM_ADJ_BeforeEnd   || eAdj == ELEM_ADJ_AfterEnd;
+        eAdj == ELEM_ADJ_BeforeEnd || eAdj == ELEM_ADJ_AfterEnd;
 }
 
 void
-EnsureLogicalOrder ( CMarkupPointer * & pStart, CMarkupPointer * & pFinish )
+EnsureLogicalOrder(CMarkupPointer * & pStart, CMarkupPointer * & pFinish)
 {
-    Assert( pStart && pFinish );
-    Assert( pStart->IsPositioned() && pFinish->IsPositioned() );
-    Assert( pStart->Markup() == pFinish->Markup() );
+    Assert(pStart && pFinish);
+    Assert(pStart->IsPositioned() && pFinish->IsPositioned());
+    Assert(pStart->Markup() == pFinish->Markup());
 
-    if (pStart->IsRightOf( pFinish ) )
+    if (pStart->IsRightOf(pFinish))
     {
         CMarkupPointer * pTemp = pStart;
         pStart = pFinish;
@@ -98,12 +98,12 @@ EnsureLogicalOrder ( CMarkupPointer * & pStart, CMarkupPointer * & pFinish )
 }
 
 void
-EnsureTotalOrder ( CTreePosGap * & ptpgStart, CTreePosGap * & ptpgFinish )
+EnsureTotalOrder(CTreePosGap * & ptpgStart, CTreePosGap * & ptpgFinish)
 {
-    CTreePos * ptpStart = ptpgStart->AdjacentTreePos( TPG_RIGHT );
-    CTreePos * ptpFinish = ptpgFinish->AdjacentTreePos( TPG_RIGHT );
+    CTreePos * ptpStart = ptpgStart->AdjacentTreePos(TPG_RIGHT);
+    CTreePos * ptpFinish = ptpgFinish->AdjacentTreePos(TPG_RIGHT);
 
-    Assert( ptpStart->GetCp() <= ptpFinish->GetCp() );
+    Assert(ptpStart->GetCp() <= ptpFinish->GetCp());
 
     if (ptpStart == ptpFinish)
         return;
@@ -113,7 +113,7 @@ EnsureTotalOrder ( CTreePosGap * & ptpgStart, CTreePosGap * & ptpgFinish )
     // looking for the start.  If we find the start, then they are not ordered properly.
 
 
-    while ( ptpFinish->IsPointer() || ptpFinish->IsText() && ptpFinish->Cch() == 0 )
+    while (ptpFinish->IsPointer() || ptpFinish->IsText() && ptpFinish->Cch() == 0)
     {
         ptpFinish = ptpFinish->NextTreePos();
 
@@ -130,20 +130,20 @@ EnsureTotalOrder ( CTreePosGap * & ptpgStart, CTreePosGap * & ptpgFinish )
 
 #if DBG == 1
 
-CMarkupPointer::CMarkupPointer ( CDoc * pDoc )
-  : _pDoc( pDoc ), _pMarkup( NULL ),
-    _pmpNext( NULL ), _pmpPrev( NULL ),
-    _fRightGravity( FALSE ), _fCling( FALSE ),
-    _fEmbedded( FALSE ),
-    _fKeepMarkupAlive( FALSE ), _fAlwaysEmbed( FALSE ),
-    _ptpRef( NULL ), _ichRef( 0 ),
-    _verCp( 0 ), _cpCache( -1 ),
-    _nSerialNumber( s_NextSerialNumber++ )
+CMarkupPointer::CMarkupPointer(CDoc * pDoc)
+    : _pDoc(pDoc), _pMarkup(NULL),
+    _pmpNext(NULL), _pmpPrev(NULL),
+    _fRightGravity(FALSE), _fCling(FALSE),
+    _fEmbedded(FALSE),
+    _fKeepMarkupAlive(FALSE), _fAlwaysEmbed(FALSE),
+    _ptpRef(NULL), _ichRef(0),
+    _verCp(0), _cpCache(-1),
+    _nSerialNumber(s_NextSerialNumber++)
 {
 }
 
 void
-CMarkupPointer::Validate ( ) const
+CMarkupPointer::Validate() const
 {
     static BOOL fValidating = FALSE;
 
@@ -152,18 +152,18 @@ CMarkupPointer::Validate ( ) const
 
     if (!IsPositioned())
     {
-        Assert( _pmpNext == NULL );
-        Assert( _pmpPrev == NULL );
-        Assert( ! _fEmbedded );
-        Assert( _cpCache == -1 );
-        Assert( _verCp == 0 );
-        Assert( _ptp == NULL );
-        Assert( _ichRef == 0 );
+        Assert(_pmpNext == NULL);
+        Assert(_pmpPrev == NULL);
+        Assert(!_fEmbedded);
+        Assert(_cpCache == -1);
+        Assert(_verCp == 0);
+        Assert(_ptp == NULL);
+        Assert(_ichRef == 0);
 
         return;
     }
 
-    Assert( ! _fAlwaysEmbed || _fEmbedded );
+    Assert(!_fAlwaysEmbed || _fEmbedded);
 
     static BOOL fValidatingAll = FALSE;
 
@@ -171,7 +171,7 @@ CMarkupPointer::Validate ( ) const
     {
         fValidatingAll = TRUE;
 
-        for ( CMarkupPointer * pmp = Markup()->_pmpFirst ; pmp ; pmp = pmp->_pmpNext )
+        for (CMarkupPointer * pmp = Markup()->_pmpFirst; pmp; pmp = pmp->_pmpNext)
         {
             if (pmp != this)
                 pmp->Validate();
@@ -181,14 +181,14 @@ CMarkupPointer::Validate ( ) const
     }
 
     AssertSz(
-        ! _fEmbedded || _ptpEmbeddedPointer->IsPointer(),
-        "Embedded pointer does not point to pointer pos" );
+        !_fEmbedded || _ptpEmbeddedPointer->IsPointer(),
+        "Embedded pointer does not point to pointer pos");
 
     if (!_fEmbedded)
     {
-        AssertSz( _ptpRef && ! _ptpRef->IsPointer(), "Bad position reference" );
+        AssertSz(_ptpRef && !_ptpRef->IsPointer(), "Bad position reference");
 
-        Assert( ! _ptpRef->IsText() || (_ichRef >= 0 && _ichRef <= _ptpRef->Cch()) );
+        Assert(!_ptpRef->IsText() || (_ichRef >= 0 && _ichRef <= _ptpRef->Cch()));
 
 
         // The only time it is ok for the ich to be 0 when on a zero length text
@@ -199,24 +199,24 @@ CMarkupPointer::Validate ( ) const
 
 
         if (_ptpRef->IsText() && _ichRef == 0 && _ptpRef->Cch() == 0)
-            AssertSz( _ptpRef->TextID() != 0, "Ambiguous unembedded pointer position" );
+            AssertSz(_ptpRef->TextID() != 0, "Ambiguous unembedded pointer position");
     }
     else
     {
-        Assert( _ptpEmbeddedPointer->IsPointer() );
+        Assert(_ptpEmbeddedPointer->IsPointer());
 
-        Assert( _ptpRef->MarkupPointer() == this );
-        Assert( _ptpRef->Gravity() == Gravity() );
-        Assert( _ptpRef->Cling() == Cling() );
+        Assert(_ptpRef->MarkupPointer() == this);
+        Assert(_ptpRef->Gravity() == Gravity());
+        Assert(_ptpRef->Cling() == Cling());
 
-        Assert( ! _pmpNext && ! _pmpNext );
+        Assert(!_pmpNext && !_pmpNext);
 
 
         // Make sure this pointer is NOT in it's markups list
 
 
-        for ( CMarkupPointer * p = Markup()->_pmpFirst ; p ; p = p->_pmpNext )
-            AssertSz( p != this, "Embedded pointer is in unembedded list" );
+        for (CMarkupPointer * p = Markup()->_pmpFirst; p; p = p->_pmpNext)
+            AssertSz(p != this, "Embedded pointer is in unembedded list");
     }
 
 
@@ -229,33 +229,33 @@ CMarkupPointer::Validate ( ) const
 
         fValidating = TRUE;
 
-        ptp = GetNormalizedReference( ich );
+        ptp = GetNormalizedReference(ich);
 
         fValidating = FALSE;
 
         if (ptp->IsNode() && !ptp->IsEdgeScope() && ptp->IsEndNode())
-            AssertSz( 0, "Pointer in the middle of an inclusion" );
+            AssertSz(0, "Pointer in the middle of an inclusion");
 
         ptp = ptp->NextTreePos();
 
         if (ptp->IsNode() && !ptp->IsEdgeScope() && ptp->IsBeginNode())
-            AssertSz( 0, "Pointer in the middle of an inclusion" );
+            AssertSz(0, "Pointer in the middle of an inclusion");
     }
 
 
     // If we are caching a cp, compute it manually and make sure it is ok
 
 
-    AssertSz( ! CpIsCached() || GetCpSlow() == _cpCache, "Cached cp is not valid" );
+    AssertSz(!CpIsCached() || GetCpSlow() == _cpCache, "Cached cp is not valid");
 }
 
 #endif
 
 inline void
-CMarkupPointer::AddMeToList ( )
+CMarkupPointer::AddMeToList()
 {
-    Assert( Markup() );
-    Assert( ! _pmpNext && ! _pmpPrev );
+    Assert(Markup());
+    Assert(!_pmpNext && !_pmpPrev);
 
     CMarkupPointer * & pmpFirst = Markup()->_pmpFirst;
 
@@ -268,19 +268,19 @@ CMarkupPointer::AddMeToList ( )
 }
 
 inline void
-CMarkupPointer::RemoveMeFromList ( )
+CMarkupPointer::RemoveMeFromList()
 {
-    Assert( Markup() );
+    Assert(Markup());
 
 #if DBG == 1
 
-    for ( CMarkupPointer * pmp = Markup()->_pmpFirst ; pmp ; pmp = pmp->_pmpNext )
+    for (CMarkupPointer * pmp = Markup()->_pmpFirst; pmp; pmp = pmp->_pmpNext)
     {
         if (pmp == this)
             break;
     }
 
-    Assert( pmp );
+    Assert(pmp);
 
 #endif
 
@@ -312,9 +312,9 @@ CMarkupPointer::RemoveMeFromList ( )
 #endif
 
 CTreePos *
-CMarkupPointer::GetNormalizedReference ( long & ichOut ) const
+CMarkupPointer::GetNormalizedReference(long & ichOut) const
 {
-    Assert( IsPositioned() );
+    Assert(IsPositioned());
 
     Validate();
 
@@ -328,7 +328,7 @@ CMarkupPointer::GetNormalizedReference ( long & ichOut ) const
         return _ptpRef;
     }
 
-    for ( CTreePos * ptp = _ptpEmbeddedPointer ; ; )
+    for (CTreePos * ptp = _ptpEmbeddedPointer; ; )
     {
         ptp = ptp->PreviousTreePos();
 
@@ -369,7 +369,7 @@ CMarkupPointer::GetNormalizedReference ( long & ichOut ) const
 }
 
 HRESULT
-CMarkupPointer::UnEmbed ( CTreePos * * pptpUpdate, long * pichUpdate )
+CMarkupPointer::UnEmbed(CTreePos * * pptpUpdate, long * pichUpdate)
 {
     HRESULT    hr = S_OK;
     CTreePos * ptpSave;
@@ -383,7 +383,7 @@ CMarkupPointer::UnEmbed ( CTreePos * * pptpUpdate, long * pichUpdate )
 
     ptpSave = _ptpEmbeddedPointer;
 
-    _ptpRef = GetNormalizedReference( _ichRef );
+    _ptpRef = GetNormalizedReference(_ichRef);
 
 
     AddMeToList();
@@ -396,16 +396,16 @@ CMarkupPointer::UnEmbed ( CTreePos * * pptpUpdate, long * pichUpdate )
     // and someone is taking it out of the tree (other than here).
 
 
-    ptpSave->SetMarkupPointer( NULL );
+    ptpSave->SetMarkupPointer(NULL);
 
-    hr = THR( Markup()->RemovePointerPos( ptpSave, pptpUpdate, pichUpdate ) );
+    hr = THR(Markup()->RemovePointerPos(ptpSave, pptpUpdate, pichUpdate));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -426,13 +426,13 @@ const CMarkupPointer::CLASSDESC CMarkupPointer::s_classdesc =
 };
 
 const CBase::CLASSDESC *
-CMarkupPointer::GetClassDesc () const
+CMarkupPointer::GetClassDesc() const
 {
     return &s_classdesc;
 }
 
 HRESULT
-CMarkupPointer::PrivateQueryInterface ( REFIID iid, void ** ppv )
+CMarkupPointer::PrivateQueryInterface(REFIID iid, void ** ppv)
 {
     if (ppv == NULL)
         return E_INVALIDARG;
@@ -442,7 +442,7 @@ CMarkupPointer::PrivateQueryInterface ( REFIID iid, void ** ppv )
     switch (iid.Data1)
     {
         QI_INHERITS(this, IUnknown)
-        QI_INHERITS(this, IMarkupPointer)
+            QI_INHERITS(this, IMarkupPointer)
 
     default:
         if (iid == CLSID_CMarkupPointer)
@@ -454,7 +454,7 @@ CMarkupPointer::PrivateQueryInterface ( REFIID iid, void ** ppv )
     }
 
     if (!*ppv)
-        RRETURN( E_NOINTERFACE );
+        RRETURN(E_NOINTERFACE);
 
     ((IUnknown *)*ppv)->AddRef();
 
@@ -464,16 +464,14 @@ CMarkupPointer::PrivateQueryInterface ( REFIID iid, void ** ppv )
 
 
 //  IMarkupPointer methods
-
-STDMETHODIMP
-CMarkupPointer::OwningDoc ( IHTMLDocument2 ** ppDoc )
+STDMETHODIMP CMarkupPointer::OwningDoc(IHTMLDocument2 ** ppDoc)
 {
-    return _pDoc->_pPrimaryMarkup->QueryInterface( IID_IHTMLDocument2, (void **) ppDoc );
+    return _pDoc->_pPrimaryMarkup->QueryInterface(IID_IHTMLDocument2, (void **)ppDoc);
 }
 
 
 STDMETHODIMP
-CMarkupPointer::Gravity ( POINTER_GRAVITY *peGravity )
+CMarkupPointer::Gravity(POINTER_GRAVITY *peGravity)
 {
     HRESULT hr = S_OK;
 
@@ -487,18 +485,18 @@ CMarkupPointer::Gravity ( POINTER_GRAVITY *peGravity )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 STDMETHODIMP
-CMarkupPointer::SetGravity ( POINTER_GRAVITY eGravity )
+CMarkupPointer::SetGravity(POINTER_GRAVITY eGravity)
 {
     HRESULT hr = S_OK;
 
-    Assert( IsValidGravity( eGravity ) );
+    Assert(IsValidGravity(eGravity));
 
-    if (!IsValidGravity( eGravity ))
+    if (!IsValidGravity(eGravity))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -511,15 +509,15 @@ CMarkupPointer::SetGravity ( POINTER_GRAVITY eGravity )
 
 
     if (_fEmbedded)
-        GetEmbeddedTreePos()->SetGravity( _fRightGravity );
+        GetEmbeddedTreePos()->SetGravity(_fRightGravity);
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 STDMETHODIMP
-CMarkupPointer::Cling ( BOOL * pfCling )
+CMarkupPointer::Cling(BOOL * pfCling)
 {
     HRESULT hr = S_OK;
 
@@ -533,12 +531,12 @@ CMarkupPointer::Cling ( BOOL * pfCling )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 STDMETHODIMP
-CMarkupPointer::SetCling ( BOOL fCling )
+CMarkupPointer::SetCling(BOOL fCling)
 {
     HRESULT hr = S_OK;
 
@@ -549,24 +547,24 @@ CMarkupPointer::SetCling ( BOOL fCling )
 
 
     if (_fEmbedded)
-        GetEmbeddedTreePos()->SetCling( _fCling );
+        GetEmbeddedTreePos()->SetCling(_fCling);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 STDMETHODIMP
-CMarkupPointer::MoveAdjacentToElement ( IHTMLElement *pIElement, ELEMENT_ADJACENCY eAdj )
+CMarkupPointer::MoveAdjacentToElement(IHTMLElement *pIElement, ELEMENT_ADJACENCY eAdj)
 {
     HRESULT hr;
     CElement * pElement;
 
-    if (!IsValidAdjacency( eAdj ) || !pIElement || !_pDoc->IsOwnerOf( pIElement ))
+    if (!IsValidAdjacency(eAdj) || !pIElement || !_pDoc->IsOwnerOf(pIElement))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pIElement->QueryInterface( CLSID_CElement, (void **) & pElement ) );
+    hr = THR(pIElement->QueryInterface(CLSID_CElement, (void **)& pElement));
 
     if (hr)
     {
@@ -580,30 +578,30 @@ CMarkupPointer::MoveAdjacentToElement ( IHTMLElement *pIElement, ELEMENT_ADJACEN
         goto Cleanup;
     }
 
-    hr = THR( MoveAdjacentToElement( pElement, eAdj ) );
+    hr = THR(MoveAdjacentToElement(pElement, eAdj));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 STDMETHODIMP
-CMarkupPointer::MoveToPointer ( IMarkupPointer * pIPointer )
+CMarkupPointer::MoveToPointer(IMarkupPointer * pIPointer)
 {
     HRESULT hr = S_OK;
     CMarkupPointer *pPointer;
 
-    if (!pIPointer || !_pDoc->IsOwnerOf( pIPointer ))
+    if (!pIPointer || !_pDoc->IsOwnerOf(pIPointer))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pIPointer->QueryInterface( CLSID_CMarkupPointer, (void**) & pPointer) );
+    hr = THR(pIPointer->QueryInterface(CLSID_CMarkupPointer, (void**)& pPointer));
 
     if (hr)
     {
@@ -617,26 +615,26 @@ CMarkupPointer::MoveToPointer ( IMarkupPointer * pIPointer )
         goto Cleanup;
     }
 
-    hr = THR( MoveToPointer( pPointer ) );
+    hr = THR(MoveToPointer(pPointer));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 STDMETHODIMP
-CMarkupPointer::MoveToContainer ( IMarkupContainer * pContainer, BOOL fAtStart )
+CMarkupPointer::MoveToContainer(IMarkupContainer * pContainer, BOOL fAtStart)
 {
     HRESULT     hr = S_OK;
     CMarkup *   pMarkup;
 
-    if (!pContainer || !_pDoc->IsOwnerOf( pContainer ))
+    if (!pContainer || !_pDoc->IsOwnerOf(pContainer))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pContainer->QueryInterface( CLSID_CMarkup, (void **) & pMarkup ) );
+    hr = THR(pContainer->QueryInterface(CLSID_CMarkup, (void **)& pMarkup));
 
     if (hr)
     {
@@ -644,16 +642,16 @@ CMarkupPointer::MoveToContainer ( IMarkupContainer * pContainer, BOOL fAtStart )
         goto Cleanup;
     }
 
-    hr = THR( MoveToContainer( pMarkup, fAtStart ) );
+    hr = THR(MoveToContainer(pMarkup, fAtStart));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 STDMETHODIMP
-CMarkupPointer::IsPositioned ( BOOL * pfPositioned )
+CMarkupPointer::IsPositioned(BOOL * pfPositioned)
 {
     HRESULT hr = S_OK;
 
@@ -667,11 +665,11 @@ CMarkupPointer::IsPositioned ( BOOL * pfPositioned )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 STDMETHODIMP
-CMarkupPointer::GetContainer ( IMarkupContainer * * ppContainer )
+CMarkupPointer::GetContainer(IMarkupContainer * * ppContainer)
 {
     HRESULT   hr = S_OK;
     CMarkup * pMarkup;
@@ -690,7 +688,7 @@ CMarkupPointer::GetContainer ( IMarkupContainer * * ppContainer )
     {
         hr = THR(
             pMarkup->QueryInterface(
-                IID_IMarkupContainer, (void **) ppContainer ) );
+                IID_IMarkupContainer, (void **)ppContainer));
 
         if (hr)
             goto Cleanup;
@@ -698,7 +696,7 @@ CMarkupPointer::GetContainer ( IMarkupContainer * * ppContainer )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -706,14 +704,14 @@ Cleanup:
 #endif
 
 STDMETHODIMP
-CMarkupPointer::Unposition ( )
+CMarkupPointer::Unposition()
 {
     HRESULT hr = S_OK;
 
     if (!IsPositioned())
         goto Cleanup;
 
-    hr = THR( UnEmbed( NULL, NULL ) );
+    hr = THR(UnEmbed(NULL, NULL));
 
     if (hr)
         goto Cleanup;
@@ -745,7 +743,7 @@ CMarkupPointer::Unposition ( )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -754,29 +752,29 @@ Cleanup:
 
 
 STDMETHODIMP
-CMarkupPointer::Left (
+CMarkupPointer::Left(
     BOOL                  fMove,
     MARKUP_CONTEXT_TYPE * pContext,
     IHTMLElement * *      ppElement,
     long *                pcch,
-    OLECHAR *             pchtext )
+    OLECHAR *             pchtext)
 {
-    return THR( There( TRUE, fMove, pContext, ppElement, pcch, pchtext, 0 ) );
+    return THR(There(TRUE, fMove, pContext, ppElement, pcch, pchtext, 0));
 }
 
 STDMETHODIMP
-CMarkupPointer::Right (
+CMarkupPointer::Right(
     BOOL                  fMove,
     MARKUP_CONTEXT_TYPE * pContext,
     IHTMLElement * *      ppElement,
     long *                pcch,
-    OLECHAR *             pchText )
+    OLECHAR *             pchText)
 {
-    return THR( There( FALSE, fMove, pContext, ppElement, pcch, pchText, 0 ) );
+    return THR(There(FALSE, fMove, pContext, ppElement, pcch, pchText, 0));
 }
 
 HRESULT
-CMarkupPointer::There (
+CMarkupPointer::There(
     BOOL                  fLeft,
     BOOL                  fMove,
     MARKUP_CONTEXT_TYPE * pContext,
@@ -793,8 +791,8 @@ CMarkupPointer::There (
     hr = THR(
         There(
             fLeft, fMove, pContext,
-            ppElement ? & pNode : NULL,
-            pcch, pchText, NULL, pdwFlags ) );
+            ppElement ? &pNode : NULL,
+            pcch, pchText, NULL, pdwFlags));
 
     if (hr)
         goto Cleanup;
@@ -805,7 +803,7 @@ CMarkupPointer::There (
 
         if (pNode)
         {
-            hr = THR( pNode->GetElementInterface( IID_IHTMLElement, (void * *) ppElement ) );
+            hr = THR(pNode->GetElementInterface(IID_IHTMLElement, (void * *)ppElement));
 
             if (hr)
                 goto Cleanup;
@@ -814,7 +812,7 @@ CMarkupPointer::There (
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -822,7 +820,7 @@ Cleanup:
 #endif
 
 HRESULT
-CMarkupPointer::There (
+CMarkupPointer::There(
     BOOL                  fLeft,
     BOOL                  fMove,
     MARKUP_CONTEXT_TYPE * pContext,
@@ -830,7 +828,7 @@ CMarkupPointer::There (
     long *                pcch,
     OLECHAR *             pchText,
     long *                plTextID,
-    DWORD *               pdwFlags )
+    DWORD *               pdwFlags)
 {
     HRESULT    hr = S_OK;
     long       cchIn = 0;
@@ -902,7 +900,7 @@ CMarkupPointer::There (
 
     if (fLeft)
     {
-        for ( ; ; )
+        for (; ; )
         {
             if (!ptp->IsPointer())
             {
@@ -912,7 +910,7 @@ CMarkupPointer::There (
                     break;
                 }
 
-                Assert( ptp->IsText() );
+                Assert(ptp->IsText());
 
                 if (ich > 0)
                     break;
@@ -922,7 +920,7 @@ CMarkupPointer::There (
                 // DOM text node.
 
 
-                Assert( ptp->Cch() == 0 );
+                Assert(ptp->Cch() == 0);
 
                 if (plTextID && ptp->TextID() != 0)
                     break;
@@ -934,7 +932,7 @@ CMarkupPointer::There (
     }
     else
     {
-        for ( ; ; )
+        for (; ; )
         {
             if (ptp->IsText() && ich < ptp->Cch())
                 break;
@@ -949,7 +947,7 @@ CMarkupPointer::There (
                     break;
                 }
 
-                Assert( ptpNext->IsText() );
+                Assert(ptpNext->IsText());
 
                 if (ptpNext->Cch())
                     break;
@@ -965,7 +963,7 @@ CMarkupPointer::There (
 
             ptp = ptpNext;
 
-            Assert( !plTextID || !ptp->IsText() || ptp->Cch() != 0 || ptp->TextID() != 0 );
+            Assert(!plTextID || !ptp->IsText() || ptp->Cch() != 0 || ptp->TextID() != 0);
 
             ich = 0;
         }
@@ -981,13 +979,13 @@ CMarkupPointer::There (
 
         ptp = fLeft ? ptp : (dcch++, ptp->NextTreePos());
 
-        Assert( ptp->IsNode() );
+        Assert(ptp->IsNode());
 
 
         // Find the kernel of the inclusion
 
 
-        for ( nIncl = 0 ; ! ptp->IsEdgeScope() ; nIncl++ )
+        for (nIncl = 0; !ptp->IsEdgeScope(); nIncl++)
         {
             if (fLeft)
             {
@@ -1029,7 +1027,7 @@ CMarkupPointer::There (
             // we never must ever get into one.
 
 
-            Assert( ! ptp->Branch()->Element()->IsNoScope() );
+            Assert(!ptp->Branch()->Element()->IsNoScope());
 
 
             // When moving out of a TXTSLAVE, behave as if we're moving off
@@ -1055,11 +1053,11 @@ CMarkupPointer::There (
                 if (pContext)
                     *pContext = CONTEXT_TYPE_NoScope;
 
-                Assert( nIncl == 0 );
+                Assert(nIncl == 0);
 
                 Assert(
                     ptp->Branch() ==
-                        ptp->Branch()->Element()->GetFirstBranch() );
+                    ptp->Branch()->Element()->GetFirstBranch());
 
                 if (fMove)
                 {
@@ -1070,12 +1068,12 @@ CMarkupPointer::There (
                     if (fLeft)
                     {
                         dcch -= 1;
-                        ptp->Branch()->Element()->GetTreeExtent( & ptp, NULL );
+                        ptp->Branch()->Element()->GetTreeExtent(&ptp, NULL);
                     }
                     else
                     {
                         dcch += 1;
-                        ptp->Branch()->Element()->GetTreeExtent( NULL, & ptp );
+                        ptp->Branch()->Element()->GetTreeExtent(NULL, &ptp);
                     }
                 }
             }
@@ -1094,10 +1092,10 @@ CMarkupPointer::There (
         {
             dcch -= nIncl;
 
-            while ( nIncl-- )
+            while (nIncl--)
                 ptp = ptp->PreviousTreePos();
 
-            Assert( ptp->IsNode() );
+            Assert(ptp->IsNode());
 
             ptp = ptp->PreviousTreePos();
             dcch--;
@@ -1108,7 +1106,7 @@ CMarkupPointer::There (
         {
             dcch += nIncl;
 
-            while ( nIncl-- )
+            while (nIncl--)
                 ptp = ptp->NextTreePos();
 
             ich = 0;
@@ -1121,9 +1119,9 @@ CMarkupPointer::There (
 
 #if DBG == 1
         if (fLeft)
-            Assert( ptp->IsText() );
+            Assert(ptp->IsText());
         else
-            Assert( ptp->IsText() && ich < ptp->Cch() || ptp->NextTreePos()->IsText() );
+            Assert(ptp->IsText() && ich < ptp->Cch() || ptp->NextTreePos()->IsText());
 #endif
 
         if (plTextID)
@@ -1149,14 +1147,14 @@ CMarkupPointer::There (
 
         if (fLeft)
         {
-            for ( ; ; )
+            for (; ; )
             {
                 if (ich > 0)
                 {
-                    if (plTextID && ptp->TextID() != * plTextID)
+                    if (plTextID && ptp->TextID() != *plTextID)
                         break;
 
-                    long dcch2 = min( cchLook, ich );
+                    long dcch2 = min(cchLook, ich);
                     cchLook -= dcch2;
                     ich -= dcch2;
                     dcch -= dcch2;
@@ -1178,13 +1176,13 @@ CMarkupPointer::There (
                         {
                             long textID = ptp->TextID();
 
-                            if (textID != 0 && textID != * plTextID)
+                            if (textID != 0 && textID != *plTextID)
                                 break;
                         }
                     }
                     else if (!ptp->IsPointer())
                     {
-                        Assert( ptp->IsNode() );
+                        Assert(ptp->IsNode());
                         break;
                     }
 
@@ -1195,16 +1193,16 @@ CMarkupPointer::There (
         }
         else
         {
-            for ( ; ; )
+            for (; ; )
             {
                 long cch;
 
                 if (ptp->IsText() && ich < (cch = ptp->Cch()))
                 {
-                    if (plTextID && ptp->TextID() != * plTextID)
+                    if (plTextID && ptp->TextID() != *plTextID)
                         break;
 
-                    long dcch2 = min( cchLook, cch - ich );
+                    long dcch2 = min(cchLook, cch - ich);
 #if 0
 
                     // Special flag to stop at CR or LF in text.  Only works
@@ -1214,13 +1212,13 @@ CMarkupPointer::There (
                     if (pdwFlags && (*pdwFlags & MPTR_STOPATCRLF))
                     {
                         long cp = GetCp() + dcch;
-                        CTxtPtr txtPtr( Markup(), cp );
+                        CTxtPtr txtPtr(Markup(), cp);
 
-                        if (txtPtr.FindCrOrLf( dcch2 ) )
+                        if (txtPtr.FindCrOrLf(dcch2))
                         {
                             *pdwFlags |= MPTR_FOUNDCRLF;
 
-                            Assert( long( txtPtr.GetCp() ) >= cp );
+                            Assert(long(txtPtr.GetCp()) >= cp);
 
                             dcch2 = txtPtr.GetCp() - cp + 1;
 
@@ -1256,7 +1254,7 @@ CMarkupPointer::There (
                     }
                     else if (!ptpNext->IsPointer())
                     {
-                        Assert( ptpNext->IsNode() );
+                        Assert(ptpNext->IsNode());
                         break;
                     }
 
@@ -1297,7 +1295,7 @@ CMarkupPointer::There (
             if (fLeft)
                 cp -= cchFound;
 
-            Verify( CTxtPtr( Markup(), cp ).GetRawText( cchFound, pchText ) );
+            Verify(CTxtPtr(Markup(), cp).GetRawText(cchFound, pchText));
         }
     }
 
@@ -1309,7 +1307,7 @@ CMarkupPointer::There (
     {
         hr = THR(
             MoveToReference(
-                ptp, ich, Markup(), CpIsCached() ? _cpCache + dcch : -1 ) );
+                ptp, ich, Markup(), CpIsCached() ? _cpCache + dcch : -1));
 
         if (hr)
             goto Cleanup;
@@ -1317,7 +1315,7 @@ CMarkupPointer::There (
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -1325,7 +1323,7 @@ Cleanup:
 #endif
 
 STDMETHODIMP
-CMarkupPointer::MoveUnit ( MOVEUNIT_ACTION muAction )
+CMarkupPointer::MoveUnit(MOVEUNIT_ACTION muAction)
 {
     HRESULT   hr = S_OK;
     long      cp;
@@ -1343,25 +1341,25 @@ CMarkupPointer::MoveUnit ( MOVEUNIT_ACTION muAction )
 
     cp = GetCp();
 
-    tp.Reinit( Markup(), cp );
+    tp.Reinit(Markup(), cp);
 
     action = 0;
 
-    switch( muAction )
+    switch (muAction)
     {
     case MOVEUNIT_PREVCHAR:
     case MOVEUNIT_NEXTCHAR:
-        tp.MoveChar( muAction == MOVEUNIT_NEXTCHAR );
+        tp.MoveChar(muAction == MOVEUNIT_NEXTCHAR);
         break;
 
     case MOVEUNIT_PREVCLUSTERBEGIN:
     case MOVEUNIT_NEXTCLUSTERBEGIN:
-        tp.MoveCluster( muAction == MOVEUNIT_NEXTCLUSTERBEGIN );
+        tp.MoveCluster(muAction == MOVEUNIT_NEXTCLUSTERBEGIN);
         break;
 
     case MOVEUNIT_PREVCLUSTEREND:
     case MOVEUNIT_NEXTCLUSTEREND:
-        tp.MoveClusterEnd( muAction == MOVEUNIT_NEXTCLUSTEREND );
+        tp.MoveClusterEnd(muAction == MOVEUNIT_NEXTCLUSTEREND);
         break;
 
     case MOVEUNIT_PREVWORDBEGIN:
@@ -1370,63 +1368,63 @@ CMarkupPointer::MoveUnit ( MOVEUNIT_ACTION muAction )
     case MOVEUNIT_NEXTWORDEND:
     case MOVEUNIT_PREVPROOFWORD:
     case MOVEUNIT_NEXTPROOFWORD:
-        switch( muAction )
+        switch (muAction)
         {
-            case MOVEUNIT_PREVWORDBEGIN:
-                action = WB_MOVEWORDLEFT;
-                break;
-            case MOVEUNIT_NEXTWORDBEGIN:
-                action = WB_MOVEWORDRIGHT;
-                break;
-            case MOVEUNIT_PREVWORDEND:
-                action = WB_LEFTBREAK;
-                break;
-            case MOVEUNIT_NEXTWORDEND:
-                action = WB_RIGHTBREAK;
-                break;
-            case MOVEUNIT_PREVPROOFWORD:
-                action = WB_LEFT;
-                break;
-            case MOVEUNIT_NEXTPROOFWORD:
-                action = WB_RIGHT;
-                break;
+        case MOVEUNIT_PREVWORDBEGIN:
+            action = WB_MOVEWORDLEFT;
+            break;
+        case MOVEUNIT_NEXTWORDBEGIN:
+            action = WB_MOVEWORDRIGHT;
+            break;
+        case MOVEUNIT_PREVWORDEND:
+            action = WB_LEFTBREAK;
+            break;
+        case MOVEUNIT_NEXTWORDEND:
+            action = WB_RIGHTBREAK;
+            break;
+        case MOVEUNIT_PREVPROOFWORD:
+            action = WB_LEFT;
+            break;
+        case MOVEUNIT_NEXTPROOFWORD:
+            action = WB_RIGHT;
+            break;
         }
-        tp.FindWordBreak( action );
+        tp.FindWordBreak(action);
         break;
 
     case MOVEUNIT_PREVURLBEGIN:
-        if( !tp.FindUrl( FALSE, TRUE ) )
-            tp.SetCp( cp );
+        if (!tp.FindUrl(FALSE, TRUE))
+            tp.SetCp(cp);
         break;
 
     case MOVEUNIT_NEXTURLBEGIN:
-        if( !tp.FindUrl( TRUE, TRUE ) )
-            tp.SetCp( cp );
+        if (!tp.FindUrl(TRUE, TRUE))
+            tp.SetCp(cp);
         break;
 
     case MOVEUNIT_PREVURLEND:
-        if( !tp.FindUrl( FALSE, FALSE ) )
-            tp.SetCp( cp );
+        if (!tp.FindUrl(FALSE, FALSE))
+            tp.SetCp(cp);
         break;
 
     case MOVEUNIT_NEXTURLEND:
-        if( !tp.FindUrl( TRUE, FALSE ) )
-            tp.SetCp( cp );
+        if (!tp.FindUrl(TRUE, FALSE))
+            tp.SetCp(cp);
         break;
 
     case MOVEUNIT_PREVSENTENCE:
     case MOVEUNIT_NEXTSENTENCE:
-        tp.FindBOSentence( muAction == MOVEUNIT_NEXTSENTENCE );
+        tp.FindBOSentence(muAction == MOVEUNIT_NEXTSENTENCE);
         break;
 
     case MOVEUNIT_PREVBLOCK:
     case MOVEUNIT_NEXTBLOCK:
-        tp.FindBlockBreak( muAction == MOVEUNIT_NEXTBLOCK );
+        tp.FindBlockBreak(muAction == MOVEUNIT_NEXTBLOCK);
         break;
 
 #if DBG==1
     default:
-        AssertSz( FALSE, "Invalid action" );
+        AssertSz(FALSE, "Invalid action");
 #endif
     }
 
@@ -1438,25 +1436,25 @@ CMarkupPointer::MoveUnit ( MOVEUNIT_ACTION muAction )
     // instead of asserting for now. This is raided bug assigned to TomFakes.
     // When it is fixed, this should be removed
 
-    if( newcp < 1 )
+    if (newcp < 1)
         newcp = 1;
 
-    if( newcp >= Markup()->Cch() )
-        newcp = Markup()->Cch() -1;
+    if (newcp >= Markup()->Cch())
+        newcp = Markup()->Cch() - 1;
 
-    if( newcp != cp )
-        hr = THR( MoveToCp( newcp, Markup() ) );
+    if (newcp != cp)
+        hr = THR(MoveToCp(newcp, Markup()));
     else
         hr = S_FALSE;
 
 Cleanup:
 
-    RRETURN1( hr, S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 
 STDMETHODIMP
-CMarkupPointer::CurrentScope ( IHTMLElement ** ppElemCurrent )
+CMarkupPointer::CurrentScope(IHTMLElement ** ppElemCurrent)
 {
     HRESULT hr = S_OK;
     CTreeNode * pNode;
@@ -1475,7 +1473,7 @@ CMarkupPointer::CurrentScope ( IHTMLElement ** ppElemCurrent )
     {
         hr = THR(
             pNode->GetElementInterface(
-                IID_IHTMLElement, (void **) ppElemCurrent ) );
+                IID_IHTMLElement, (void **)ppElemCurrent));
 
         if (hr)
             goto Cleanup;
@@ -1483,18 +1481,18 @@ CMarkupPointer::CurrentScope ( IHTMLElement ** ppElemCurrent )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 STDMETHODIMP
-CMarkupPointer::FindText (
+CMarkupPointer::FindText(
     OLECHAR *        pchFindText,
     DWORD            dwFlags,
     IMarkupPointer * pIEndMatch, /* =NULL */
     IMarkupPointer * pIEndSearch /* =NULL */)
 {
     HRESULT hr;
-    CMarkupPointer *pEndMatch  = NULL;
+    CMarkupPointer *pEndMatch = NULL;
     CMarkupPointer *pEndSearch = NULL;
 
     if (!IsPositioned())
@@ -1511,10 +1509,10 @@ CMarkupPointer::FindText (
 
     if (pIEndMatch)
     {
-        Assert( _pDoc->IsOwnerOf( pIEndMatch ) );
+        Assert(_pDoc->IsOwnerOf(pIEndMatch));
 
-        hr = THR( pIEndMatch->QueryInterface( CLSID_CMarkupPointer, (void **) & pEndMatch) );
-        if( hr )
+        hr = THR(pIEndMatch->QueryInterface(CLSID_CMarkupPointer, (void **)& pEndMatch));
+        if (hr)
         {
             hr = E_INVALIDARG;
             goto Cleanup;
@@ -1525,7 +1523,7 @@ CMarkupPointer::FindText (
 
     if (pIEndSearch)
     {
-        hr = THR( pIEndSearch->QueryInterface( CLSID_CMarkupPointer, (void **) & pEndSearch ) );
+        hr = THR(pIEndSearch->QueryInterface(CLSID_CMarkupPointer, (void **)& pEndSearch));
 
         if (hr)
         {
@@ -1534,15 +1532,15 @@ CMarkupPointer::FindText (
         }
     }
 
-    hr = FindText( pchFindText, dwFlags, pEndMatch, pEndSearch ) ? S_OK : S_FALSE;
+    hr = FindText(pchFindText, dwFlags, pEndMatch, pEndSearch) ? S_OK : S_FALSE;
 
 Cleanup:
 
-    RRETURN1( hr, S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 HRESULT
-CMarkupPointer::SetTextIdentity ( CMarkupPointer * pPointerFinish, long * plTextID )
+CMarkupPointer::SetTextIdentity(CMarkupPointer * pPointerFinish, long * plTextID)
 {
     HRESULT          hr = S_OK;
     CMarkupPointer * pPointerStart = this;
@@ -1550,7 +1548,7 @@ CMarkupPointer::SetTextIdentity ( CMarkupPointer * pPointerFinish, long * plText
 
     Assert(
         IsPositioned() && pPointerFinish->IsPositioned() &&
-        Markup() == pPointerFinish->Markup() );
+        Markup() == pPointerFinish->Markup());
 
 #if DBG == 1
     Validate();
@@ -1558,32 +1556,32 @@ CMarkupPointer::SetTextIdentity ( CMarkupPointer * pPointerFinish, long * plText
         pPointerFinish->Validate();
 #endif
 
-    hr = THR( Markup()->EmbedPointers() );
+    hr = THR(Markup()->EmbedPointers());
 
     if (hr)
         goto Cleanup;
 
-    EnsureLogicalOrder( pPointerStart, pPointerFinish );
+    EnsureLogicalOrder(pPointerStart, pPointerFinish);
 
-    Verify( ! tpgBegin.MoveTo( pPointerStart->GetEmbeddedTreePos(), TPG_LEFT ) );
-    Verify( ! tpgEnd.MoveTo( pPointerFinish->GetEmbeddedTreePos(), TPG_LEFT ) );
+    Verify(!tpgBegin.MoveTo(pPointerStart->GetEmbeddedTreePos(), TPG_LEFT));
+    Verify(!tpgEnd.MoveTo(pPointerFinish->GetEmbeddedTreePos(), TPG_LEFT));
 
-    hr = THR( Markup()->SetTextID( & tpgBegin, & tpgEnd, plTextID ) );
+    hr = THR(Markup()->SetTextID(&tpgBegin, &tpgEnd, plTextID));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkupPointer::FindTextIdentity ( long textID, CMarkupPointer * pPointerOtherEnd )
+CMarkupPointer::FindTextIdentity(long textID, CMarkupPointer * pPointerOtherEnd)
 {
     HRESULT     hr = S_OK;
-    CTreePosGap tpgBegin ( TPG_RIGHT );
-    CTreePosGap tpgEnd ( TPG_LEFT );
+    CTreePosGap tpgBegin(TPG_RIGHT);
+    CTreePosGap tpgEnd(TPG_LEFT);
 
 #if DBG == 1
     Validate();
@@ -1603,14 +1601,14 @@ CMarkupPointer::FindTextIdentity ( long textID, CMarkupPointer * pPointerOtherEn
     // BUGBUG
 
 
-    hr = THR( Markup()->EmbedPointers() );
+    hr = THR(Markup()->EmbedPointers());
 
     if (hr)
         goto Cleanup;
 
-    Verify( ! tpgBegin.MoveTo( GetEmbeddedTreePos(), TPG_LEFT ) );
+    Verify(!tpgBegin.MoveTo(GetEmbeddedTreePos(), TPG_LEFT));
 
-    hr = THR( Markup()->FindTextID( textID, & tpgBegin, & tpgEnd ) );
+    hr = THR(Markup()->FindTextID(textID, &tpgBegin, &tpgEnd));
 
     if (hr == S_FALSE)
         goto Cleanup;
@@ -1618,14 +1616,14 @@ CMarkupPointer::FindTextIdentity ( long textID, CMarkupPointer * pPointerOtherEn
     if (hr)
         goto Cleanup;
 
-    hr = THR( MoveToGap( & tpgBegin, Markup() ) );
+    hr = THR(MoveToGap(&tpgBegin, Markup()));
 
     if (hr)
         goto Cleanup;
 
     if (pPointerOtherEnd)
     {
-        hr = THR( pPointerOtherEnd->MoveToGap( & tpgEnd, Markup() ) );
+        hr = THR(pPointerOtherEnd->MoveToGap(&tpgEnd, Markup()));
 
         if (hr)
             goto Cleanup;
@@ -1633,35 +1631,35 @@ CMarkupPointer::FindTextIdentity ( long textID, CMarkupPointer * pPointerOtherEn
 
 Cleanup:
 
-    RRETURN1( hr, S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 
 HRESULT
-CMarkupPointer::IsInsideURL( IMarkupPointer * pIRight, BOOL * pfResult )
+CMarkupPointer::IsInsideURL(IMarkupPointer * pIRight, BOOL * pfResult)
 {
     HRESULT          hr = S_OK;
     CTxtPtr          tpThis, tpRight;
-    BOOL             fFound  = FALSE;
+    BOOL             fFound = FALSE;
     long             cpStart;
     long             cpEnd;
 
-    if (!IsPositioned() || !pfResult || !pIRight || !_pDoc->IsOwnerOf( pIRight ))
+    if (!IsPositioned() || !pfResult || !pIRight || !_pDoc->IsOwnerOf(pIRight))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    tpThis.Reinit( Markup(), GetCp() );
-    tpRight.Reinit( Markup(), GetCp() );
+    tpThis.Reinit(Markup(), GetCp());
+    tpRight.Reinit(Markup(), GetCp());
 
-    if (tpThis.IsInsideUrl( & cpStart, & cpEnd ))
+    if (tpThis.IsInsideUrl(&cpStart, &cpEnd))
     {
         long cchOffset;
         CMarkupPointer * pRight;
         CTreePos * ptp;
 
-        hr = THR( pIRight->QueryInterface( CLSID_CMarkupPointer, (void **) & pRight ) );
+        hr = THR(pIRight->QueryInterface(CLSID_CMarkupPointer, (void **)& pRight));
 
         if (hr)
         {
@@ -1673,24 +1671,24 @@ CMarkupPointer::IsInsideURL( IMarkupPointer * pIRight, BOOL * pfResult )
         SetDebugName(_T("Start Url"));
         pRight->SetDebugName(_T("End Url"));
 #endif
-        ptp = Markup()->TreePosAtCp( cpEnd, & cchOffset );
+        ptp = Markup()->TreePosAtCp(cpEnd, &cchOffset);
 
-        hr = THR( MoveToCp( cpStart, Markup() ) );
+        hr = THR(MoveToCp(cpStart, Markup()));
 
         if (hr)
             goto Cleanup;
 
         if (ptp->IsNode())
         {
-            CTreePosGap tpg ( ptp, TPG_LEFT );
+            CTreePosGap tpg(ptp, TPG_LEFT);
 
-            tpg.Move( TPG_LEFT, TPG_VALIDGAP | TPG_OKNOTTOMOVE );
+            tpg.Move(TPG_LEFT, TPG_VALIDGAP | TPG_OKNOTTOMOVE);
 
-            pRight->MoveToGap( & tpg, Markup() );
+            pRight->MoveToGap(&tpg, Markup());
         }
         else
         {
-            pRight->MoveToCp( cpEnd, Markup() );
+            pRight->MoveToCp(cpEnd, Markup());
         }
 
         fFound = TRUE;
@@ -1700,11 +1698,11 @@ Cleanup:
 
     *pfResult = fFound;
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 long
-CMarkupPointer::GetCpSlow ( ) const
+CMarkupPointer::GetCpSlow() const
 {
     if (!IsPositioned())
         return -1;
@@ -1714,11 +1712,11 @@ CMarkupPointer::GetCpSlow ( ) const
 
     if (_ptpRef->IsText())
     {
-        Assert( _ichRef >= 0 && _ichRef <= _ptpRef->Cch() );
+        Assert(_ichRef >= 0 && _ichRef <= _ptpRef->Cch());
         return _ptpRef->GetCp() + _ichRef;
     }
 
-    Assert( _ichRef == 0 );
+    Assert(_ichRef == 0);
 
     return _ptpRef->GetCp() + _ptpRef->GetCch();
 }
@@ -1763,10 +1761,10 @@ Cleanup:                                                                        
     RRETURN( hr );                                                                         \
 }
 
-COMPARE( IsLeftOf )
-COMPARE( IsLeftOfOrEqualTo )
-COMPARE( IsRightOf )
-COMPARE( IsRightOfOrEqualTo )
+COMPARE(IsLeftOf)
+COMPARE(IsLeftOfOrEqualTo)
+COMPARE(IsRightOf)
+COMPARE(IsRightOfOrEqualTo)
 
 #undef COMPARE
 
@@ -1776,7 +1774,7 @@ COMPARE( IsRightOfOrEqualTo )
 
 
 HRESULT
-CMarkupPointer::IsEqualTo ( IMarkupPointer * pIPointerThat, BOOL * pfResult )
+CMarkupPointer::IsEqualTo(IMarkupPointer * pIPointerThat, BOOL * pfResult)
 {
     HRESULT          hr;
     CMarkupPointer * pPointerThat;
@@ -1787,7 +1785,7 @@ CMarkupPointer::IsEqualTo ( IMarkupPointer * pIPointerThat, BOOL * pfResult )
         goto Cleanup;
     }
 
-    hr = pIPointerThat->QueryInterface( CLSID_CMarkupPointer, (void * *) & pPointerThat );
+    hr = pIPointerThat->QueryInterface(CLSID_CMarkupPointer, (void * *)& pPointerThat);
 
     if (hr)
     {
@@ -1801,22 +1799,22 @@ CMarkupPointer::IsEqualTo ( IMarkupPointer * pIPointerThat, BOOL * pfResult )
         goto Cleanup;
     }
 
-    *pfResult = IsEqualTo( pPointerThat );
+    *pfResult = IsEqualTo(pPointerThat);
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-OldCompare ( IMarkupPointer * p1, IMarkupPointer * p2, int * piResult )
+OldCompare(IMarkupPointer * p1, IMarkupPointer * p2, int * piResult)
 {
     HRESULT hr = S_OK;
     BOOL    fResult;
 
-    Assert( piResult );
+    Assert(piResult);
 
-    hr = THR( p1->IsEqualTo( p2, & fResult ) );
+    hr = THR(p1->IsEqualTo(p2, &fResult));
 
     if (hr)
         goto Cleanup;
@@ -1827,7 +1825,7 @@ OldCompare ( IMarkupPointer * p1, IMarkupPointer * p2, int * piResult )
         goto Cleanup;
     }
 
-    hr = THR( p1->IsLeftOf( p2, & fResult ) );
+    hr = THR(p1->IsLeftOf(p2, &fResult));
 
     if (hr)
         goto Cleanup;
@@ -1836,20 +1834,20 @@ OldCompare ( IMarkupPointer * p1, IMarkupPointer * p2, int * piResult )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 int
-OldCompare ( CMarkupPointer * p1, CMarkupPointer * p2 )
+OldCompare(CMarkupPointer * p1, CMarkupPointer * p2)
 {
-    if (p1->IsEqualTo( p2))
+    if (p1->IsEqualTo(p2))
         return 0;
 
-    return p1->IsLeftOf( p2 ) ? -1 : 1;
+    return p1->IsLeftOf(p2) ? -1 : 1;
 }
 
 void
-CMarkupPointer::SetKeepMarkupAlive ( BOOL fKeepAlive )
+CMarkupPointer::SetKeepMarkupAlive(BOOL fKeepAlive)
 {
     if (!!fKeepAlive == !!_fKeepMarkupAlive)
         return;
@@ -1866,7 +1864,7 @@ CMarkupPointer::SetKeepMarkupAlive ( BOOL fKeepAlive )
 }
 
 void
-CMarkupPointer::SetAlwaysEmbed ( BOOL fAlwaysEmbed )
+CMarkupPointer::SetAlwaysEmbed(BOOL fAlwaysEmbed)
 {
     if (!!fAlwaysEmbed == !!_fAlwaysEmbed)
         return;
@@ -1874,21 +1872,21 @@ CMarkupPointer::SetAlwaysEmbed ( BOOL fAlwaysEmbed )
     _fAlwaysEmbed = !!fAlwaysEmbed;
 
     if (IsPositioned() && !_fEmbedded && _fAlwaysEmbed)
-        IGNORE_HR( Embed( Markup(), _ptpRef, _ichRef, CpIsCached() ? _cpCache : -1 ) );
+        IGNORE_HR(Embed(Markup(), _ptpRef, _ichRef, CpIsCached() ? _cpCache : -1));
 }
 
 HRESULT
-CMarkupPointer::MoveAdjacentToElement ( CElement * pElement, ELEMENT_ADJACENCY adj )
+CMarkupPointer::MoveAdjacentToElement(CElement * pElement, ELEMENT_ADJACENCY adj)
 {
     HRESULT hr = S_OK;
     CTreePos * ptp = NULL;
     BOOL fBefore = adj == ELEM_ADJ_BeforeBegin || adj == ELEM_ADJ_BeforeEnd;
-    BOOL fBegin  = adj == ELEM_ADJ_BeforeBegin || adj == ELEM_ADJ_AfterBegin;
+    BOOL fBegin = adj == ELEM_ADJ_BeforeBegin || adj == ELEM_ADJ_AfterBegin;
     TPG_DIRECTION eDir = fBefore ? TPG_LEFT : TPG_RIGHT;
     CTreePosGap tpg;
 
-    Assert( pElement && IsValidAdjacency( adj ) );
-    Assert( pElement->IsInMarkup() );
+    Assert(pElement && IsValidAdjacency(adj));
+    Assert(pElement->IsInMarkup());
 
     if (pElement->IsNoScope() &&
         (adj == ELEM_ADJ_AfterBegin || adj == ELEM_ADJ_BeforeEnd))
@@ -1900,33 +1898,33 @@ CMarkupPointer::MoveAdjacentToElement ( CElement * pElement, ELEMENT_ADJACENCY a
     // find the TreePos where we're supposed to start looking
 
     pElement->GetTreeExtent(
-        fBegin ? & ptp : NULL, fBegin ? NULL : & ptp );
+        fBegin ? &ptp : NULL, fBegin ? NULL : &ptp);
 
-    Assert( ptp );
+    Assert(ptp);
 
     // move to the nearest legal position
 
-    tpg.SetMoveDirection( eDir );
+    tpg.SetMoveDirection(eDir);
 
-    hr = THR( tpg.MoveTo( ptp, eDir ) );
-
-    if (hr)
-        goto Cleanup;
-
-    hr = THR( tpg.Move( TPG_VALIDGAP | TPG_OKNOTTOMOVE ) );
+    hr = THR(tpg.MoveTo(ptp, eDir));
 
     if (hr)
         goto Cleanup;
 
-    hr = THR( MoveToGap( & tpg, pElement->GetMarkup() ) );
+    hr = THR(tpg.Move(TPG_VALIDGAP | TPG_OKNOTTOMOVE));
+
+    if (hr)
+        goto Cleanup;
+
+    hr = THR(MoveToGap(&tpg, pElement->GetMarkup()));
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkupPointer::MoveToContainer ( CMarkup * pMarkup, BOOL fBegin, DWORD dwFlags )
+CMarkupPointer::MoveToContainer(CMarkup * pMarkup, BOOL fBegin, DWORD dwFlags)
 {
     HRESULT     hr;
     CTreePos *  ptp = NULL;
@@ -1934,19 +1932,19 @@ CMarkupPointer::MoveToContainer ( CMarkup * pMarkup, BOOL fBegin, DWORD dwFlags 
     CTreeNode * pNode;
     MARKUP_CONTEXT_TYPE context;
 
-    Assert( pMarkup );
-    Assert( pMarkup->Root() && pMarkup->Root()->Tag() == ETAG_ROOT );
+    Assert(pMarkup);
+    Assert(pMarkup->Root() && pMarkup->Root()->Tag() == ETAG_ROOT);
 
-    pMarkup->Root()->GetTreeExtent( fBegin ? & ptp : NULL, fBegin ? NULL : & ptp );
+    pMarkup->Root()->GetTreeExtent(fBegin ? &ptp : NULL, fBegin ? NULL : &ptp);
 
-    Assert( ptp );
+    Assert(ptp);
 
-    hr = THR( tpg.MoveTo( ptp, fBegin ? TPG_RIGHT : TPG_LEFT ) );
+    hr = THR(tpg.MoveTo(ptp, fBegin ? TPG_RIGHT : TPG_LEFT));
 
     if (hr)
         goto Cleanup;
 
-    hr = THR( MoveToGap( & tpg, pMarkup ) );
+    hr = THR(MoveToGap(&tpg, pMarkup));
 
     if (!(dwFlags & MPTR_SHOWSLAVE) && pMarkup->Master())
     {
@@ -1954,14 +1952,14 @@ CMarkupPointer::MoveToContainer ( CMarkup * pMarkup, BOOL fBegin, DWORD dwFlags 
         // move inside TEXTSLAVE if present (as if the TEXTSLAVE element were not present - dbau)
 
 
-        hr = THR( There( ! fBegin, FALSE, &context, &pNode, NULL, NULL, NULL, 0 ) );
+        hr = THR(There(!fBegin, FALSE, &context, &pNode, NULL, NULL, NULL, 0));
 
         if (hr)
             goto Cleanup;
 
         if (context == CONTEXT_TYPE_EnterScope && pNode && pNode->Tag() == ETAG_TXTSLAVE)
         {
-            hr = THR( There( ! fBegin, TRUE, NULL, NULL, NULL, NULL, NULL, 0 ) );
+            hr = THR(There(!fBegin, TRUE, NULL, NULL, NULL, NULL, NULL, 0));
 
             if (hr)
                 goto Cleanup;
@@ -1970,12 +1968,12 @@ CMarkupPointer::MoveToContainer ( CMarkup * pMarkup, BOOL fBegin, DWORD dwFlags 
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CMarkupPointer::MoveToPointer ( CMarkupPointer * pPointerThat )
+CMarkupPointer::MoveToPointer(CMarkupPointer * pPointerThat)
 {
     HRESULT    hr;
     CTreePos * ptp;
@@ -1983,43 +1981,43 @@ CMarkupPointer::MoveToPointer ( CMarkupPointer * pPointerThat )
 
     Validate();
 
-    Assert( pPointerThat );
-    Assert( pPointerThat->IsPositioned() );
+    Assert(pPointerThat);
+    Assert(pPointerThat->IsPositioned());
 
-    ptp = pPointerThat->GetNormalizedReference( ich );
+    ptp = pPointerThat->GetNormalizedReference(ich);
 
     hr = THR(
         MoveToReference(
             ptp, ich, pPointerThat->Markup(),
-            pPointerThat->CpIsCached() ? pPointerThat->_cpCache : -1 ) );
+            pPointerThat->CpIsCached() ? pPointerThat->_cpCache : -1));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 void
-CMarkupPointer::OnPositionReleased ( )
+CMarkupPointer::OnPositionReleased()
 {
-    Assert( _fEmbedded );
-    Assert( ! _pmpNext && ! _pmpPrev );
-    Assert( Markup() );
-    Assert( _ptpEmbeddedPointer );
-    Assert( _ichRef == 0 );
+    Assert(_fEmbedded);
+    Assert(!_pmpNext && !_pmpPrev);
+    Assert(Markup());
+    Assert(_ptpEmbeddedPointer);
+    Assert(_ichRef == 0);
 
     _ptpEmbeddedPointer = NULL;
     _ichRef = 0;
     _fEmbedded = FALSE;
     SetMarkup(NULL);
-    WHEN_DBG( _verCp = 0; )
-    WHEN_DBG( _cpCache = -1; )
+    WHEN_DBG(_verCp = 0; )
+        WHEN_DBG(_cpCache = -1; )
 }
 
 void
-CMarkupPointer::SetMarkup( CMarkup * pMarkup )
+CMarkupPointer::SetMarkup(CMarkup * pMarkup)
 {
     if (_fKeepMarkupAlive)
     {
@@ -2040,7 +2038,7 @@ CMarkupPointer::SetMarkup( CMarkup * pMarkup )
 }
 
 CTreeNode *
-CMarkupPointer::CurrentScope ( DWORD dwFlags )
+CMarkupPointer::CurrentScope(DWORD dwFlags)
 {
     CTreeNode * pNode;
 
@@ -2069,7 +2067,7 @@ CMarkupPointer::FindText(
     TCHAR *          pchFindText,
     DWORD            dwFlags,
     CMarkupPointer * pEndMatch,
-    CMarkupPointer * pEndSearch )
+    CMarkupPointer * pEndSearch)
 {
     long       cp;
     long       cpLimit = -1;
@@ -2078,22 +2076,22 @@ CMarkupPointer::FindText(
 
     Validate();
 
-    Assert( IsPositioned() );
+    Assert(IsPositioned());
 
     cp = GetCp();
 
-    tp.Reinit( Markup(), cp );
+    tp.Reinit(Markup(), cp);
 
     if (pEndSearch)
     {
-        Assert( pEndSearch->Markup() == Markup() );
+        Assert(pEndSearch->Markup() == Markup());
 
         cpLimit = pEndSearch->GetCp();
 
         // Set direction based on the pointer, overriding flags
         // passed in, if necessary.
 
-        if(cpLimit < cp)
+        if (cpLimit < cp)
             dwFlags |= FINDTEXT_BACKWARDS;
         else
             dwFlags &= ~FINDTEXT_BACKWARDS;
@@ -2101,7 +2099,7 @@ CMarkupPointer::FindText(
 
     // ask the TP to find the text
 
-    cp = tp.FindText( cpLimit, dwFlags, pchFindText, _tcslen( pchFindText ) );
+    cp = tp.FindText(cpLimit, dwFlags, pchFindText, _tcslen(pchFindText));
 
     // if it succeeded, move myself accordingly
 
@@ -2111,7 +2109,7 @@ CMarkupPointer::FindText(
         goto Cleanup;
     }
 
-    hr = THR( MoveToCp( tp._cp, Markup() ) );
+    hr = THR(MoveToCp(tp._cp, Markup()));
 
     if (hr)
         goto Cleanup;
@@ -2120,7 +2118,7 @@ CMarkupPointer::FindText(
 
     if (pEndMatch)
     {
-        hr = THR( pEndMatch->MoveToCp( cp, Markup() ) );
+        hr = THR(pEndMatch->MoveToCp(cp, Markup()));
 
         if (hr)
             goto Cleanup;
@@ -2132,7 +2130,7 @@ Cleanup:
 }
 
 HRESULT
-CMarkupPointer::QueryBreaks ( DWORD * pdwBreaks )
+CMarkupPointer::QueryBreaks(DWORD * pdwBreaks)
 {
     HRESULT          hr = S_OK;
     CTreePos *       ptp;
@@ -2142,14 +2140,14 @@ CMarkupPointer::QueryBreaks ( DWORD * pdwBreaks )
 
     Validate();
 
-    Assert( pdwBreaks );
+    Assert(pdwBreaks);
 
     *pdwBreaks = BREAK_NONE;
 
     if (!IsPositioned())
         goto Cleanup;
 
-    ptp = GetNormalizedReference( ich );
+    ptp = GetNormalizedReference(ich);
 
 
     // No breaks inside a text pos.  Also, we can't
@@ -2163,32 +2161,32 @@ CMarkupPointer::QueryBreaks ( DWORD * pdwBreaks )
         tpg.MoveTo(
             ptp,
             ptp->IsText()
-                ? (ich == 0 ? TPG_LEFT : TPG_RIGHT)
-                : TPG_RIGHT ) );
+            ? (ich == 0 ? TPG_LEFT : TPG_RIGHT)
+            : TPG_RIGHT));
 
     if (hr)
         goto Cleanup;
 
-    hr = THR( breaker.QueryBreaks( & tpg, pdwBreaks ) );
+    hr = THR(breaker.QueryBreaks(&tpg, pdwBreaks));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkupPointer::MoveToOrphan ( CTreePos * ptp )
+CMarkupPointer::MoveToOrphan(CTreePos * ptp)
 {
     HRESULT hr;
 
-    Assert( ptp && ptp->IsPointer() && !ptp->MarkupPointer() );
+    Assert(ptp && ptp->IsPointer() && !ptp->MarkupPointer());
 
     // if the pointer was already active, delete its old position
 
-    hr = THR( Unposition() );
+    hr = THR(Unposition());
 
     if (hr)
         goto Cleanup;
@@ -2197,9 +2195,9 @@ CMarkupPointer::MoveToOrphan ( CTreePos * ptp )
     // remember the new position
 
 
-    ptp->SetMarkupPointer( this );
+    ptp->SetMarkupPointer(this);
 
-    SetMarkup( ptp->GetMarkup() );
+    SetMarkup(ptp->GetMarkup());
     _ptpEmbeddedPointer = ptp;
     _fEmbedded = TRUE;
 
@@ -2211,7 +2209,7 @@ CMarkupPointer::MoveToOrphan ( CTreePos * ptp )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -2219,41 +2217,41 @@ Cleanup:
 #endif
 
 HRESULT
-CMarkupPointer::MoveToReference (
-    CTreePos * ptp, long ich, CMarkup * pMarkup, long cpNew )
+CMarkupPointer::MoveToReference(
+    CTreePos * ptp, long ich, CMarkup * pMarkup, long cpNew)
 {
     HRESULT hr;
 
-    Assert( ptp && (ich == 0 || ich <= ptp->Cch()) );
-    Assert( pMarkup && pMarkup == ptp->GetMarkup() );
+    Assert(ptp && (ich == 0 || ich <= ptp->Cch()));
+    Assert(pMarkup && pMarkup == ptp->GetMarkup());
 
 
     // Make sure the ptp/ich are properly adjusted
 
 
-    while ( ptp->IsPointer() || (ich == 0 && ptp->IsText() && ptp->TextID() == 0) )
+    while (ptp->IsPointer() || (ich == 0 && ptp->IsText() && ptp->TextID() == 0))
     {
         ptp = ptp->PreviousTreePos();
         ich = ptp->IsText() ? ptp->Cch() : 0;
     }
 
-    Assert( !ptp->IsText() || ich != 0 || ptp->Cch() == 0 );
+    Assert(!ptp->IsText() || ich != 0 || ptp->Cch() == 0);
 
-    hr = THR( UnEmbed( & ptp, & ich ) );
+    hr = THR(UnEmbed(&ptp, &ich));
 
     if (hr)
         goto Cleanup;
 
-    Assert( ! _fEmbedded );
+    Assert(!_fEmbedded);
 
     if (Markup() && Markup() != pMarkup)
     {
         RemoveMeFromList();
-        SetMarkup( NULL );
+        SetMarkup(NULL);
     }
 
 #if DBG == 1
-    if (_fAlwaysEmbed || IsTagEnabled( tagMarkupPointerAlwaysEmbed ))
+    if (_fAlwaysEmbed || IsTagEnabled(tagMarkupPointerAlwaysEmbed))
 #else
     if (_fAlwaysEmbed)
 #endif
@@ -2261,10 +2259,10 @@ CMarkupPointer::MoveToReference (
         if (Markup())
         {
             RemoveMeFromList();
-            SetMarkup( NULL );
+            SetMarkup(NULL);
         }
 
-        hr = THR( Embed( pMarkup, ptp, ich, cpNew ) );
+        hr = THR(Embed(pMarkup, ptp, ich, cpNew));
 
         if (hr)
             goto Cleanup;
@@ -2273,7 +2271,7 @@ CMarkupPointer::MoveToReference (
     {
         if (!Markup())
         {
-            SetMarkup( pMarkup );
+            SetMarkup(pMarkup);
             AddMeToList();
         }
 
@@ -2289,23 +2287,23 @@ CMarkupPointer::MoveToReference (
         {
             _cpCache = cpNew;
             _verCp = Markup()->GetMarkupContentsVersion();
-            Assert( _cpCache == GetCpSlow() );
+            Assert(_cpCache == GetCpSlow());
         }
 
-        Assert( !_fEmbedded );
+        Assert(!_fEmbedded);
     }
 
     Validate();
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CMarkupPointer::MoveToGap (
-    CTreePosGap * ptpg, CMarkup * pMarkup, BOOL fForceEmbedding )
+CMarkupPointer::MoveToGap(
+    CTreePosGap * ptpg, CMarkup * pMarkup, BOOL fForceEmbedding)
 {
     HRESULT    hr = S_OK;
     CTreePos * ptp;
@@ -2313,9 +2311,9 @@ CMarkupPointer::MoveToGap (
 
     Validate();
 
-    Assert( ptpg && pMarkup );
-    Assert( ptpg->GetAttachedMarkup() );
-    Assert( ptpg->GetAttachedMarkup() == pMarkup );
+    Assert(ptpg && pMarkup);
+    Assert(ptpg->GetAttachedMarkup());
+    Assert(ptpg->GetAttachedMarkup() == pMarkup);
 
 
     // Suck the position out of the gap, then unposition the gap
@@ -2324,7 +2322,7 @@ CMarkupPointer::MoveToGap (
     // upon return.
 
 
-    ptp = ptpg->AdjacentTreePos( TPG_LEFT );
+    ptp = ptpg->AdjacentTreePos(TPG_LEFT);
     ich = ptp->IsText() ? ptp->Cch() : 0;
 
     ptpg->UnPosition();
@@ -2337,15 +2335,15 @@ CMarkupPointer::MoveToGap (
 
     if (!fForceEmbedding && !_fAlwaysEmbed)
     {
-        while ( ptp->IsPointer() || (ich == 0 && ptp->IsText() && ptp->TextID() == 0) )
+        while (ptp->IsPointer() || (ich == 0 && ptp->IsText() && ptp->TextID() == 0))
         {
             ptp = ptp->PreviousTreePos();
             ich = ptp->IsText() ? ptp->Cch() : 0;
         }
 
-        Assert( ! ptp->IsText() || ich != 0 || 0 == ptp->Cch() );
+        Assert(!ptp->IsText() || ich != 0 || 0 == ptp->Cch());
 
-        hr = THR( MoveToReference( ptp, ich, pMarkup, -1 ) );
+        hr = THR(MoveToReference(ptp, ich, pMarkup, -1));
 
         if (hr)
             goto Cleanup;
@@ -2370,7 +2368,7 @@ CMarkupPointer::MoveToGap (
             // target ptp/ich.
 
 
-            hr = THR( UnEmbed( & ptp, & ich ) );
+            hr = THR(UnEmbed(&ptp, &ich));
 
             if (hr)
                 goto Cleanup;
@@ -2380,7 +2378,7 @@ CMarkupPointer::MoveToGap (
         SetMarkup(NULL);
     }
 
-    hr = THR( Embed( pMarkup, ptp, ich, -1 ) );
+    hr = THR(Embed(pMarkup, ptp, ich, -1));
 
     if (hr)
         goto Cleanup;
@@ -2389,19 +2387,19 @@ Cleanup:
 
     Validate();
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkupPointer::Embed ( CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew )
+CMarkupPointer::Embed(CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew)
 {
     HRESULT hr = S_OK;
     CTreePos * ptpNew;
 
-    Assert( ! IsPositioned() );
-    Assert( ! _fEmbedded );
+    Assert(!IsPositioned());
+    Assert(!_fEmbedded);
 
-    Assert( pMarkup && ptp->GetMarkup() == pMarkup );
+    Assert(pMarkup && ptp->GetMarkup() == pMarkup);
 
 
     // See if we need to split a text pos
@@ -2411,7 +2409,7 @@ CMarkupPointer::Embed ( CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew 
     {
         CMarkupPointer * pmp;
 
-        hr = THR( pMarkup->Split( ptp, ich ) );
+        hr = THR(pMarkup->Split(ptp, ich));
 
         if (hr)
             goto Cleanup;
@@ -2421,7 +2419,7 @@ CMarkupPointer::Embed ( CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew 
         // after where we split it.  Update those where were.
 
 
-        for ( pmp = pMarkup->_pmpFirst ; pmp ; pmp = pmp->_pmpNext )
+        for (pmp = pMarkup->_pmpFirst; pmp; pmp = pmp->_pmpNext)
         {
             if (pmp->_ptpRef == ptp && pmp->_ichRef > ich)
             {
@@ -2431,7 +2429,7 @@ CMarkupPointer::Embed ( CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew 
         }
 
 #if DBG == 1
-        for ( pmp = pMarkup->_pmpFirst ; pmp ; pmp = pmp->_pmpNext )
+        for (pmp = pMarkup->_pmpFirst; pmp; pmp = pmp->_pmpNext)
             pmp->Validate();
 #endif
     }
@@ -2440,7 +2438,7 @@ CMarkupPointer::Embed ( CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew 
     // Make a pointer pos and put it in the right place
 
 
-    ptpNew = pMarkup->NewPointerPos( this, Gravity(), Cling() );
+    ptpNew = pMarkup->NewPointerPos(this, Gravity(), Cling());
 
     if (!ptpNew)
     {
@@ -2448,12 +2446,12 @@ CMarkupPointer::Embed ( CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew 
         goto Cleanup;
     }
 
-    hr = THR( pMarkup->Insert( ptpNew, ptp, FALSE ) );
+    hr = THR(pMarkup->Insert(ptpNew, ptp, FALSE));
 
     if (hr)
         goto Cleanup;
 
-    SetMarkup( pMarkup );
+    SetMarkup(pMarkup);
     _ptpEmbeddedPointer = ptpNew;
     _ichRef = 0;
     _fEmbedded = TRUE;
@@ -2465,7 +2463,7 @@ CMarkupPointer::Embed ( CMarkup * pMarkup, CTreePos * ptp, long ich, long cpNew 
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -2474,7 +2472,7 @@ Cleanup:
 
 
 HRESULT
-CMarkupPointer::MoveToCp ( long cp, CMarkup * pMarkup )
+CMarkupPointer::MoveToCp(long cp, CMarkup * pMarkup)
 {
     HRESULT    hr = S_OK;
     CTreePos * ptp;
@@ -2482,7 +2480,7 @@ CMarkupPointer::MoveToCp ( long cp, CMarkup * pMarkup )
 
     Validate();
 
-    ptp = pMarkup->TreePosAtCp( cp, & ich );
+    ptp = pMarkup->TreePosAtCp(cp, &ich);
 
 
     // TreePosAtCp gives a ptp before the given cp.  Markup pointers refer to
@@ -2493,7 +2491,7 @@ CMarkupPointer::MoveToCp ( long cp, CMarkup * pMarkup )
     {
         ptp = ptp->PreviousTreePos();
 
-        while ( ptp->IsPointer() )
+        while (ptp->IsPointer())
             ptp = ptp->PreviousTreePos();
 
         ich = ptp->IsText() ? ptp->Cch() : 0;
@@ -2531,7 +2529,7 @@ CMarkupPointer::MoveToCp ( long cp, CMarkup * pMarkup )
 
     if (ptp->IsPointer())
     {
-        while ( ptp->IsPointer() )
+        while (ptp->IsPointer())
             ptp = ptp->PreviousTreePos();
 
         ich = ptp->IsText() ? ptp->Cch() : 0;
@@ -2551,18 +2549,18 @@ CMarkupPointer::MoveToCp ( long cp, CMarkup * pMarkup )
 
 
 
-    Assert( ptp->IsNode() || ptp->IsText() );
-    Assert( ich >= 0 && ich <= ptp->GetCch() );
-    Assert( pMarkup == ptp->GetMarkup() );
+    Assert(ptp->IsNode() || ptp->IsText());
+    Assert(ich >= 0 && ich <= ptp->GetCch());
+    Assert(pMarkup == ptp->GetMarkup());
 
-    hr = THR( MoveToReference( ptp, ich, pMarkup, -1 ) );
+    hr = THR(MoveToReference(ptp, ich, pMarkup, -1));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -2571,33 +2569,33 @@ Cleanup:
 
 
 HRESULT
-CMarkupPointer::MoveToBookmark ( BSTR bstrBookmark, CMarkupPointer * pEnd )
+CMarkupPointer::MoveToBookmark(BSTR bstrBookmark, CMarkupPointer * pEnd)
 {
     HRESULT   hr = S_OK;
     CMarkup * pMarkup;
 
     Validate();
 
-    Assert( pEnd );
-    Assert( IsPositioned() );
+    Assert(pEnd);
+    Assert(IsPositioned());
 
     pMarkup = Markup();
 
     {
-        CTxtPtr tpLeft ( pMarkup );
-        CTxtPtr tpRight ( tpLeft );
+        CTxtPtr tpLeft(pMarkup);
+        CTxtPtr tpRight(tpLeft);
 
-        hr = THR( tpLeft.MoveToBookmark( bstrBookmark, & tpRight ) );
-
-        if (hr)
-            goto Cleanup;
-
-        hr = THR( MoveToCp( tpLeft._cp, pMarkup ) );
+        hr = THR(tpLeft.MoveToBookmark(bstrBookmark, &tpRight));
 
         if (hr)
             goto Cleanup;
 
-        hr = THR( pEnd->MoveToCp( tpRight._cp, pMarkup ) );
+        hr = THR(MoveToCp(tpLeft._cp, pMarkup));
+
+        if (hr)
+            goto Cleanup;
+
+        hr = THR(pEnd->MoveToCp(tpRight._cp, pMarkup));
 
         if (hr)
             goto Cleanup;
@@ -2605,31 +2603,31 @@ CMarkupPointer::MoveToBookmark ( BSTR bstrBookmark, CMarkupPointer * pEnd )
 
 Cleanup:
 
-    RRETURN1( hr, S_FALSE );
+    RRETURN1(hr, S_FALSE);
 }
 
 
 HRESULT
-CMarkupPointer::GetBookmark ( BSTR * pbstrBookmark, CMarkupPointer * pEnd )
+CMarkupPointer::GetBookmark(BSTR * pbstrBookmark, CMarkupPointer * pEnd)
 {
-    HRESULT   hr      = S_OK;
+    HRESULT   hr = S_OK;
     CMarkup * pMarkup = Markup();
-    long      cp      = GetCp();
+    long      cp = GetCp();
 
     Validate();
 
-    Assert( pEnd );
-    Assert( IsPositioned() && pEnd->IsPositioned() );
-    Assert( Markup() == pEnd->Markup() );
-    Assert( pbstrBookmark );
+    Assert(pEnd);
+    Assert(IsPositioned() && pEnd->IsPositioned());
+    Assert(Markup() == pEnd->Markup());
+    Assert(pbstrBookmark);
 
     {
-        CTxtPtr tpThis ( pMarkup, cp );
-        CTxtPtr tpEnd ( tpThis );
+        CTxtPtr tpThis(pMarkup, cp);
+        CTxtPtr tpEnd(tpThis);
 
-        tpEnd.SetCp( pEnd->GetCp() );
+        tpEnd.SetCp(pEnd->GetCp());
 
-        hr = THR( tpThis.GetBookmark( pbstrBookmark, & tpEnd ) );
+        hr = THR(tpThis.GetBookmark(pbstrBookmark, &tpEnd));
 
         if (hr)
             goto Cleanup;
@@ -2637,6 +2635,6 @@ CMarkupPointer::GetBookmark ( BSTR * pbstrBookmark, CMarkupPointer * pEnd )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 

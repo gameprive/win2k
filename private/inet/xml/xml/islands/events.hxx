@@ -37,10 +37,7 @@ public:
     CEventReceiverBase(REFIID iid);
     virtual ~CEventReceiverBase();
 
-    STDMETHODIMP QueryInterface(
-        REFIID riid,
-        void **ppv);
-
+    STDMETHODIMP QueryInterface(REFIID riid, void **ppv);
     STDMETHODIMP_(ULONG) AddRef();
     STDMETHODIMP_(ULONG) Release();
 
@@ -50,14 +47,10 @@ public:
         return E_NOTIMPL;
     }
 
-
-    STDMETHODIMP GetTypeInfo( UINT iTInfo,
-        LCID lcid,
-        ITypeInfo** ppTInfo)
+    STDMETHODIMP GetTypeInfo( UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo)
     {
         return E_NOTIMPL;
     }
-
 
     STDMETHODIMP GetIDsOfNames(
         REFIID riid,
@@ -68,8 +61,8 @@ public:
     {
         return E_NOTIMPL;
     }
-
 };
+
 
 template <class EventSink>
 class NOVTABLE CEventReceiver :public CEventReceiverBase
@@ -129,18 +122,7 @@ public:
         UINT *puArgErr);
 };
 
-HRESULT
-AttachEventHelper(
-    IHTMLElement *pElement,
-    IDispatch *pdispHandler,
-    LPWSTR pwszEventName,
-    BOOL fAttach);
-
-
-HRESULT
-RegisterForElementEvents(
-    IHTMLElement *pElem,
-    CPropChangeReceiver **ppEventDispObj,
-    CElementEventSink *pEventSink);
+HRESULT AttachEventHelper(IHTMLElement *pElement, IDispatch *pdispHandler, LPWSTR pwszEventName, BOOL fAttach);
+HRESULT RegisterForElementEvents(IHTMLElement *pElem, CPropChangeReceiver **ppEventDispObj, CElementEventSink *pEventSink);
 
 #endif // __EVENTS_HXX__

@@ -12,13 +12,8 @@ EXTERN_C const GUID SID_VariantConversion = { 0x1f101481, 0xbccd, 0x11d0, { 0x93
 
 
 //  Function:   GetHTMLDocument
-
 //  Synopsis:   Gets the IHTMLDocument2 interface from the client site.
-
-
-
-STDMETHODIMP
-GetHTMLDocument(IElementBehaviorSite * pSite, IHTMLDocument2 **ppDoc)
+STDMETHODIMP GetHTMLDocument(IElementBehaviorSite * pSite, IHTMLDocument2 **ppDoc)
 {
     HRESULT hr = E_FAIL;
 

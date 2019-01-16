@@ -101,8 +101,8 @@ MtDefine(CMarkupDirtyRangeContext, CMarkup, "CMarkupDirtyRangeContext")
 MtDefine(CMarkupDirtyRangeContext_aryMarkupDirtyRange_pv, CMarkupDirtyRangeContext, "CMarkupDirtyRangeContext::aryMarkupDirtyRange::pv")
 
 MtDefine(CMarkupTextFragContext, CMarkup, "CMarkupTextFragContext")
-MtDefine(CMarkupTextFragContext_aryMarkupTextFrag_pv, CMarkupTextFragContext,  "CMarkupTextFragContext::aryMarkupTextFrag::pv")
-MtDefine(MarkupTextFrag_pchTextFrag, CMarkupTextFragContext,  "MarkupTextFrag::_pchTextFrag")
+MtDefine(CMarkupTextFragContext_aryMarkupTextFrag_pv, CMarkupTextFragContext, "CMarkupTextFragContext::aryMarkupTextFrag::pv")
+MtDefine(MarkupTextFrag_pchTextFrag, CMarkupTextFragContext, "MarkupTextFrag::_pchTextFrag")
 
 MtDefine(CDocFrag, CMarkup, "CDocFrag")
 
@@ -113,28 +113,28 @@ MtDefine(CMarkup_aryScriptEnqueued, CDoc, "CDoc::_aryScriptEnqueued")
 #include "markup.hdl"
 
 BEGIN_TEAROFF_TABLE(CMarkup, IMarkupContainer)
-    TEAROFF_METHOD(CMarkup, OwningDoc, owningdoc, ( IHTMLDocument2 ** ppDoc ))
+TEAROFF_METHOD(CMarkup, OwningDoc, owningdoc, (IHTMLDocument2 ** ppDoc))
 END_TEAROFF_TABLE()
 
 BEGIN_TEAROFF_TABLE(CMarkup, IMarkupTextFrags)
-    TEAROFF_METHOD(CMarkup, GetTextFragCount, gettextfragcount, (long *pcFrags) )
-    TEAROFF_METHOD(CMarkup, GetTextFrag, gettextfrag, (long iFrag, BSTR* pbstrFrag, IMarkupPointer* pPointerFrag ) )
-    TEAROFF_METHOD(CMarkup, RemoveTextFrag, removetextfrag, (long iFrag) )
-    TEAROFF_METHOD(CMarkup, InsertTextFrag, inserttextfrag, (long iFrag, BSTR bstrInsert, IMarkupPointer* pPointerInsert ) )
-    TEAROFF_METHOD(CMarkup, FindTextFragFromMarkupPointer, findtextfragfrommarkuppointer, (IMarkupPointer* pPointerFind, long* piFrag, BOOL* pfFragFound ) )
+TEAROFF_METHOD(CMarkup, GetTextFragCount, gettextfragcount, (long *pcFrags))
+TEAROFF_METHOD(CMarkup, GetTextFrag, gettextfrag, (long iFrag, BSTR* pbstrFrag, IMarkupPointer* pPointerFrag))
+TEAROFF_METHOD(CMarkup, RemoveTextFrag, removetextfrag, (long iFrag))
+TEAROFF_METHOD(CMarkup, InsertTextFrag, inserttextfrag, (long iFrag, BSTR bstrInsert, IMarkupPointer* pPointerInsert))
+TEAROFF_METHOD(CMarkup, FindTextFragFromMarkupPointer, findtextfragfrommarkuppointer, (IMarkupPointer* pPointerFind, long* piFrag, BOOL* pfFragFound))
 END_TEAROFF_TABLE()
 
 BEGIN_TEAROFF_TABLE(CMarkup, ISelectionRenderingServices)
-    TEAROFF_METHOD(CMarkup, MovePointersToSegment, movepointerstosegment, (    int iSegmentIndex, IMarkupPointer* pStart, IMarkupPointer* pEnd ))
-    TEAROFF_METHOD(CMarkup, GetSegmentCount, getsegmentcount, ( int* piSegmentCount, SELECTION_TYPE * peType  ))
-    TEAROFF_METHOD(CMarkup, AddSegment, addsegment, ( IMarkupPointer* pStart, IMarkupPointer* pEnd, HIGHLIGHT_TYPE HighlightType, int * iSegmentIndex ))
-    TEAROFF_METHOD(CMarkup, AddElementSegment, addelementsegment, ( IHTMLElement* pElement , int * iSegmentIndex ))
-    TEAROFF_METHOD(CMarkup, MoveSegmentToPointers, movesegmenttopointers, ( int iSegmentIndex, IMarkupPointer* pStart, IMarkupPointer* pEnd, HIGHLIGHT_TYPE HighlightType ))
-    TEAROFF_METHOD(CMarkup, GetElementSegment, getelementsegment, ( int iSegmentIndex, IHTMLElement** ppElement ))
-    TEAROFF_METHOD(CMarkup, SetElementSegment, setelementsegment, ( int iSegmentIndex,    IHTMLElement* pElement ))
-    TEAROFF_METHOD(CMarkup, ClearSegment, clearsegment, ( int iSegmentIndex, BOOL fInvalidate ))
-    TEAROFF_METHOD(CMarkup, ClearSegments, clearsegments, ( BOOL fInvalidate ))
-    TEAROFF_METHOD(CMarkup, ClearElementSegments, clearelementsegments, ())
+TEAROFF_METHOD(CMarkup, MovePointersToSegment, movepointerstosegment, (int iSegmentIndex, IMarkupPointer* pStart, IMarkupPointer* pEnd))
+TEAROFF_METHOD(CMarkup, GetSegmentCount, getsegmentcount, (int* piSegmentCount, SELECTION_TYPE * peType))
+TEAROFF_METHOD(CMarkup, AddSegment, addsegment, (IMarkupPointer* pStart, IMarkupPointer* pEnd, HIGHLIGHT_TYPE HighlightType, int * iSegmentIndex))
+TEAROFF_METHOD(CMarkup, AddElementSegment, addelementsegment, (IHTMLElement* pElement, int * iSegmentIndex))
+TEAROFF_METHOD(CMarkup, MoveSegmentToPointers, movesegmenttopointers, (int iSegmentIndex, IMarkupPointer* pStart, IMarkupPointer* pEnd, HIGHLIGHT_TYPE HighlightType))
+TEAROFF_METHOD(CMarkup, GetElementSegment, getelementsegment, (int iSegmentIndex, IHTMLElement** ppElement))
+TEAROFF_METHOD(CMarkup, SetElementSegment, setelementsegment, (int iSegmentIndex, IHTMLElement* pElement))
+TEAROFF_METHOD(CMarkup, ClearSegment, clearsegment, (int iSegmentIndex, BOOL fInvalidate))
+TEAROFF_METHOD(CMarkup, ClearSegments, clearsegments, (BOOL fInvalidate))
+TEAROFF_METHOD(CMarkup, ClearElementSegments, clearelementsegments, ())
 END_TEAROFF_TABLE()
 
 const CBase::CLASSDESC CMarkup::s_classdesc =
@@ -154,13 +154,13 @@ const CBase::CLASSDESC CMarkup::s_classdesc =
 // this is a big HACK, to temporarily get markup-sync working for netdocs.  it
 // will totally change in the future.  don't want to expose this in iedev, so
 // leaving it hacked in like this for now.
-extern const IID IID_ITreeSyncServices = {0x8860B601,0x178E,0x11d2,0x96,0xAE,0x00,0x80,0x5F,0x85,0x2B,0x4D};
+extern const IID IID_ITreeSyncServices = { 0x8860B601,0x178E,0x11d2,0x96,0xAE,0x00,0x80,0x5F,0x85,0x2B,0x4D };
 #endif // TREE_SYNC
 
 extern "C" const GUID SID_SXmlNamespaceMapping;
 
 #if DBG==1
-    CMarkup *    g_pDebugMarkup = NULL;        // Used in tree dump overwrite cases to see real-time tree changes
+CMarkup *    g_pDebugMarkup = NULL;        // Used in tree dump overwrite cases to see real-time tree changes
 #endif
 
 DWORD CMarkup::s_dwDirtyRangeServiceCookiePool = 0x0;
@@ -173,9 +173,9 @@ DWORD CMarkup::s_dwDirtyRangeServiceCookiePool = 0x0;
 
 CMarkupScriptContext::CMarkupScriptContext()
 {
-    _dwScriptCookie             = NO_SOURCE_CONTEXT;
-    _dwScriptDownloadingCookie  = 1;
-    _idxDefaultScriptHolder     = -1;
+    _dwScriptCookie = NO_SOURCE_CONTEXT;
+    _dwScriptDownloadingCookie = 1;
+    _idxDefaultScriptHolder = -1;
 }
 
 
@@ -198,9 +198,9 @@ CMarkupScriptContext::~CMarkupScriptContext()
 
 
 
-CMarkup::CMarkup ( CDoc *pDoc, CElement * pElementMaster )
+CMarkup::CMarkup(CDoc *pDoc, CElement * pElementMaster)
 #if DBG == 1 || defined(DUMPTREE)
-    : _nSerialNumber( CTreeNode::s_NextSerialNumber++ )
+    : _nSerialNumber(CTreeNode::s_NextSerialNumber++)
 #endif
 {
     __lMarkupTreeVersion = 1;
@@ -210,7 +210,7 @@ CMarkup::CMarkup ( CDoc *pDoc, CElement * pElementMaster )
 
     _pDoc = pDoc;
 
-    Assert( _pDoc && _pDoc->AreLookasidesClear( this, LOOKASIDE_MARKUP_NUMBER ) );
+    Assert(_pDoc && _pDoc->AreLookasidesClear(this, LOOKASIDE_MARKUP_NUMBER));
 
     _pElementMaster = pElementMaster;
 
@@ -223,7 +223,7 @@ CMarkup::CMarkup ( CDoc *pDoc, CElement * pElementMaster )
         _fXML = DYNCAST(CPrintDoc, pDoc->GetRootDoc())->_fXML;
     //_fEnableDownload = TRUE;
 
-    WHEN_DBG( ZeroMemory(_apLookAside, sizeof(_apLookAside)); )
+    WHEN_DBG(ZeroMemory(_apLookAside, sizeof(_apLookAside)); )
 }
 
 
@@ -269,7 +269,7 @@ CMarkup::~CMarkup()
 #if DBG == 1
 
 void
-CMarkup::UpdateMarkupTreeVersion ( )
+CMarkup::UpdateMarkupTreeVersion()
 {
     AssertSz(!__fDbgLockTree, "Tree was modified when it should not have been (e.g., inside ENTERTREE notification)");
     __lMarkupTreeVersion++;
@@ -278,7 +278,7 @@ CMarkup::UpdateMarkupTreeVersion ( )
 }
 
 void
-CMarkup::UpdateMarkupContentsVersion ( )
+CMarkup::UpdateMarkupContentsVersion()
 {
     AssertSz(!__fDbgLockTree, "Tree was modified when it should not have been (e.g., inside ENTERTREE notification)");
     __lMarkupContentsVersion++;
@@ -294,14 +294,14 @@ CMarkup::UpdateMarkupContentsVersion ( )
 
 
 void
-CMarkup::ClearLookasidePtrs ( )
+CMarkup::ClearLookasidePtrs()
 {
     delete DelCollectionCache();
-    Assert(_pDoc->GetLookasidePtr((DWORD *) this + LOOKASIDE_COLLECTIONCACHE) == NULL);
+    Assert(_pDoc->GetLookasidePtr((DWORD *)this + LOOKASIDE_COLLECTIONCACHE) == NULL);
 
 #if MARKUP_DIRTYRANGE
-    Assert( !HasDirtyRangeContext() );
-    Assert( !_fOnDirtyRangeChangePosted );
+    Assert(!HasDirtyRangeContext());
+    Assert(!_fOnDirtyRangeChangePosted);
 #endif
 
     CMarkup *pParentMarkup = (CMarkup *)DelParentMarkup();
@@ -309,11 +309,11 @@ CMarkup::ClearLookasidePtrs ( )
     if (pParentMarkup)
         pParentMarkup->Release();
 
-    Assert(_pDoc->GetLookasidePtr((DWORD *) this + LOOKASIDE_PARENTMARKUP) == NULL);
+    Assert(_pDoc->GetLookasidePtr((DWORD *)this + LOOKASIDE_PARENTMARKUP) == NULL);
 
-    Assert (!HasBehaviorContext());
-    Assert (!HasScriptContext());
-    Assert (!HasTextRangeListPtr());
+    Assert(!HasBehaviorContext());
+    Assert(!HasScriptContext());
+    Assert(!HasTextRangeListPtr());
 }
 
 
@@ -323,21 +323,21 @@ CMarkup::ClearLookasidePtrs ( )
 
 
 HRESULT
-CMarkup::Init( CRootElement * pElementRoot )
+CMarkup::Init(CRootElement * pElementRoot)
 {
     HRESULT     hr;
 
-    Assert( pElementRoot );
+    Assert(pElementRoot);
 
     _pElementRoot = pElementRoot;
 
     _tpRoot.MarkLast();
     _tpRoot.MarkRight();
 
-    WHEN_DBG( _cchTotalDbg = 0 );
-    WHEN_DBG( _cElementsTotalDbg = 0 );
+    WHEN_DBG(_cchTotalDbg = 0);
+    WHEN_DBG(_cElementsTotalDbg = 0);
 
-    hr = CreateInitialMarkup( _pElementRoot );
+    hr = CreateInitialMarkup(_pElementRoot);
     if (hr)
         goto Cleanup;
 
@@ -356,10 +356,10 @@ Cleanup:
 
 
 HRESULT
-CMarkup::UnloadContents( BOOL fForPassivate /*= FALSE*/)
+CMarkup::UnloadContents(BOOL fForPassivate /*= FALSE*/)
 {
     HRESULT hr = S_OK;
-    CElement::CLock lock( _pElementRoot );
+    CElement::CLock lock(_pElementRoot);
 
 
     // text and tree
@@ -370,7 +370,7 @@ CMarkup::UnloadContents( BOOL fForPassivate /*= FALSE*/)
 
     _TxtArray.RemoveAll();
 
-    hr = DestroySplayTree( !fForPassivate );
+    hr = DestroySplayTree(!fForPassivate);
     if (hr)
         goto Cleanup;
 
@@ -378,7 +378,7 @@ CMarkup::UnloadContents( BOOL fForPassivate /*= FALSE*/)
     // Restore initial state
 
 
-    _fIncrementalAlloc = ! ! _pElementMaster;
+    _fIncrementalAlloc = !!_pElementMaster;
 
     _fNoUndoInfo = FALSE;
     _fLoaded = FALSE;
@@ -395,8 +395,8 @@ CMarkup::UnloadContents( BOOL fForPassivate /*= FALSE*/)
     // script
 
 
-    Assert( !ScriptContext() ||
-           ( ScriptContext() && 0 == ScriptContext()->_aryScriptEnqueued.Size()));
+    Assert(!ScriptContext() ||
+        (ScriptContext() && 0 == ScriptContext()->_aryScriptEnqueued.Size()));
 
     if (HasScriptContext())
     {
@@ -449,7 +449,7 @@ CMarkup::UnloadContents( BOOL fForPassivate /*= FALSE*/)
     if (HasStyleSheetArray())
     {
         CStyleSheetArray * pStyleSheets = GetStyleSheetArray();
-        pStyleSheets->Free( );  // Force our stylesheets collection to release its
+        pStyleSheets->Free();  // Force our stylesheets collection to release its
                                     // refs on stylesheets/rules.  We will rel in passivate,
                                     // delete in destructor.
     }
@@ -460,7 +460,7 @@ Cleanup:
     // in a really strange stress case.  Revisit later.
     // Assert(!_aryANotification.Size());
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -476,10 +476,10 @@ CMarkup::Passivate()
     // Release everything
 
 
-    IGNORE_HR( UnloadContents( TRUE ) );
+    IGNORE_HR(UnloadContents(TRUE));
 
     // Release stylesheets subobj, which will subrel us
-    if ( HasStyleSheetArray() )
+    if (HasStyleSheetArray())
     {
         CStyleSheetArray * pStyleSheets = GetStyleSheetArray();
         pStyleSheets->Release();
@@ -506,7 +506,7 @@ CMarkup::Passivate()
 #endif
 
 HRESULT
-CMarkup::DoEmbedPointers ( )
+CMarkup::DoEmbedPointers()
 {
     HRESULT hr = S_OK;
 
@@ -522,23 +522,23 @@ CMarkup::DoEmbedPointers ( )
 
 
     {
-        for ( CMarkupPointer * pmp = _pmpFirst ; pmp ; pmp = pmp->_pmpNext )
+        for (CMarkupPointer * pmp = _pmpFirst; pmp; pmp = pmp->_pmpNext)
         {
-            Assert( pmp->Markup() == this );
-            Assert( ! pmp->_fEmbedded );
-            Assert( pmp->_ptpRef );
-            Assert( pmp->_ptpRef->GetMarkup() == this );
-            Assert( ! pmp->_ptpRef->IsPointer() );
+            Assert(pmp->Markup() == this);
+            Assert(!pmp->_fEmbedded);
+            Assert(pmp->_ptpRef);
+            Assert(pmp->_ptpRef->GetMarkup() == this);
+            Assert(!pmp->_ptpRef->IsPointer());
 
             if (pmp->_ptpRef->IsText())
-                Assert( pmp->_ichRef <= pmp->_ptpRef->Cch() );
+                Assert(pmp->_ichRef <= pmp->_ptpRef->Cch());
             else
-                Assert( pmp->_ichRef == 0 );
+                Assert(pmp->_ichRef == 0);
         }
     }
 #endif
 
-    while ( _pmpFirst )
+    while (_pmpFirst)
     {
         CMarkupPointer * pmp;
         CTreePos *       ptpNew;
@@ -556,7 +556,7 @@ CMarkup::DoEmbedPointers ( )
 
         pmp->_pmpNext = pmp->_pmpPrev = NULL;
 
-        Assert( pmp->_ichRef == 0 || pmp->_ptpRef->IsText() );
+        Assert(pmp->_ichRef == 0 || pmp->_ptpRef->IsText());
 
 
         // Consider the case where two markup pointers point in to the the
@@ -578,17 +578,18 @@ CMarkup::DoEmbedPointers ( )
             // next which did it.
 
 
-            Assert( pmp->_ptpRef->NextTreePos()->IsPointer() );
+            Assert(pmp->_ptpRef->NextTreePos()->IsPointer());
 
-            while ( pmp->_ichRef > pmp->_ptpRef->Cch() )
+            while (pmp->_ichRef > pmp->_ptpRef->Cch())
             {
-                Assert( pmp->_ptpRef->IsText() && pmp->_ptpRef->Cch() > 0 );
+                Assert(pmp->_ptpRef->IsText() && pmp->_ptpRef->Cch() > 0);
 
                 pmp->_ichRef -= pmp->_ptpRef->Cch();
 
                 do
-                    { pmp->_ptpRef = pmp->_ptpRef->NextTreePos(); }
-                while ( ! pmp->_ptpRef->IsText() );
+                {
+                    pmp->_ptpRef = pmp->_ptpRef->NextTreePos();
+                } while (!pmp->_ptpRef->IsText());
             }
         }
 
@@ -598,15 +599,15 @@ CMarkup::DoEmbedPointers ( )
 
         if (pmp->_ptpRef->IsText() && pmp->_ichRef < pmp->_ptpRef->Cch())
         {
-            Assert( pmp->_ichRef != 0 );
+            Assert(pmp->_ichRef != 0);
 
-            hr = THR( Split( pmp->_ptpRef, pmp->_ichRef ) );
+            hr = THR(Split(pmp->_ptpRef, pmp->_ichRef));
 
             if (hr)
                 goto Cleanup;
         }
 
-        ptpNew = NewPointerPos( pmp, pmp->Gravity(), pmp->Cling() );
+        ptpNew = NewPointerPos(pmp, pmp->Gravity(), pmp->Cling());
 
         if (!ptpNew)
         {
@@ -618,9 +619,9 @@ CMarkup::DoEmbedPointers ( )
         // We should always be at the end of a text pos.
 
 
-        Assert( ! pmp->_ptpRef->IsText() || pmp->_ichRef == pmp->_ptpRef->Cch() );
+        Assert(!pmp->_ptpRef->IsText() || pmp->_ichRef == pmp->_ptpRef->Cch());
 
-        hr = THR( Insert( ptpNew, pmp->_ptpRef, FALSE ) );
+        hr = THR(Insert(ptpNew, pmp->_ptpRef, FALSE));
 
         if (hr)
             goto Cleanup;
@@ -632,7 +633,7 @@ CMarkup::DoEmbedPointers ( )
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #if DBG!=1
@@ -653,8 +654,8 @@ CMarkup::GetDD()
 {
     CMarkupBehaviorContext *    pBehaviorContext = BehaviorContext();
     return (pBehaviorContext && pBehaviorContext->_pHtmlComponent) ?
-                  (CBase*)&pBehaviorContext->_pHtmlComponent->_DD :
-                  (CBase*)&_OmDoc;
+        (CBase*)&pBehaviorContext->_pHtmlComponent->_DD :
+        (CBase*)&_OmDoc;
 }
 
 
@@ -707,7 +708,7 @@ CMarkup::EnsureScriptContext(CMarkupScriptContext ** ppScriptContext, LPTSTR pch
             // we should not even create script context for auxillary markups
             if (_pDoc->_pScriptCollection && !_pDoc->_fMarkupServicesParsing)
                 IGNORE_HR(_pDoc->_pScriptCollection->AddNamedItem(
-                      pScriptContext->_cstrNamespace, (IUnknown*)(IPrivateUnknown*)GetDD()));
+                    pScriptContext->_cstrNamespace, (IUnknown*)(IPrivateUnknown*)GetDD()));
         }
 
 
@@ -745,7 +746,7 @@ CMarkup::EnsureScriptContext(CMarkupScriptContext ** ppScriptContext, LPTSTR pch
     }
 
 Cleanup:
-    RRETURN (hr);
+    RRETURN(hr);
 }
 
 
@@ -764,10 +765,10 @@ HRESULT CMarkup::PrivateQueryInterface(REFIID iid, void ** ppv)
     switch (iid.Data1)
     {
         QI_INHERITS((IPrivateUnknown *)this, IUnknown)
-        QI_TEAROFF(this, IMarkupContainer, NULL)
-        QI_TEAROFF(this, ISelectionRenderingServices, NULL)
-        QI_TEAROFF2(this, ISegmentList, ISelectionRenderingServices, NULL)
-        QI_TEAROFF(this, IMarkupTextFrags, NULL)
+            QI_TEAROFF(this, IMarkupContainer, NULL)
+            QI_TEAROFF(this, ISelectionRenderingServices, NULL)
+            QI_TEAROFF2(this, ISegmentList, ISelectionRenderingServices, NULL)
+            QI_TEAROFF(this, IMarkupTextFrags, NULL)
 
     default:
         if (IsEqualIID(iid, CLSID_CMarkup))
@@ -848,7 +849,7 @@ HRESULT CMarkup::PrivateQueryInterface(REFIID iid, void ** ppv)
             apfn = CDoc::s_apfnIEditDebugServices;
         }
 #endif
-        else if (iid == IID_IServiceProvider )
+        else if (iid == IID_IServiceProvider)
         {
             pv = Doc();
             apfn = CDoc::s_apfnIServiceProvider;
@@ -882,15 +883,15 @@ HRESULT CMarkup::PrivateQueryInterface(REFIID iid, void ** ppv)
         {
             Assert(apfn);
             hr = THR(CreateTearOffThunk(
-                    pv,
-                    apfn,
-                    NULL,
-                    ppv,
-                    (IUnknown *)(IPrivateUnknown *)this,
-                    *(void **)(IUnknown *)(IPrivateUnknown *)this,
-                    QI_MASK | ADDREF_MASK | RELEASE_MASK,
-                    apIID,
-                    appropdescsInVtblOrder));
+                pv,
+                apfn,
+                NULL,
+                ppv,
+                (IUnknown *)(IPrivateUnknown *)this,
+                *(void **)(IUnknown *)(IPrivateUnknown *)this,
+                QI_MASK | ADDREF_MASK | RELEASE_MASK,
+                apIID,
+                appropdescsInVtblOrder));
             if (hr)
                 RRETURN(hr);
         }
@@ -934,7 +935,7 @@ CMarkup::QueryService(REFGUID rguidService, REFIID riid, void ** ppvObject)
     hr = THR_NOTRACE(_pDoc->QueryService(rguidService, riid, ppvObject));
 
 Cleanup:
-    RRETURN (hr);
+    RRETURN(hr);
 }
 
 
@@ -944,24 +945,24 @@ Cleanup:
 
 
 HRESULT
-CMarkup::Load (IStream * pStream, HTMPASTEINFO * phtmpasteinfo)
+CMarkup::Load(IStream * pStream, HTMPASTEINFO * phtmpasteinfo)
 {
     HRESULT         hr;
     HTMLOADINFO     htmloadinfo;
 
-    htmloadinfo.pDoc            = _pDoc;
-    htmloadinfo.pMarkup         = this;
-    htmloadinfo.pDwnDoc         = _pDoc->_pDwnDoc;
-    htmloadinfo.pVersions       = _pDoc->_pVersions;
-    htmloadinfo.pchUrl          = _pDoc->_cstrUrl;
-    htmloadinfo.fParseSync      = TRUE;
+    htmloadinfo.pDoc = _pDoc;
+    htmloadinfo.pMarkup = this;
+    htmloadinfo.pDwnDoc = _pDoc->_pDwnDoc;
+    htmloadinfo.pVersions = _pDoc->_pVersions;
+    htmloadinfo.pchUrl = _pDoc->_cstrUrl;
+    htmloadinfo.fParseSync = TRUE;
 
-    htmloadinfo.phpi            = phtmpasteinfo;
-    htmloadinfo.pstm            = pStream;
+    htmloadinfo.phpi = phtmpasteinfo;
+    htmloadinfo.pstm = pStream;
 
     hr = THR(Load(&htmloadinfo));
 
-    RRETURN (hr);
+    RRETURN(hr);
 }
 
 
@@ -971,7 +972,7 @@ CMarkup::Load (IStream * pStream, HTMPASTEINFO * phtmpasteinfo)
 
 
 HRESULT
-CMarkup::Load (IMoniker * pMoniker, IBindCtx * pBindCtx)
+CMarkup::Load(IMoniker * pMoniker, IBindCtx * pBindCtx)
 {
     HRESULT         hr;
     HTMLOADINFO     htmloadinfo;
@@ -981,20 +982,20 @@ CMarkup::Load (IMoniker * pMoniker, IBindCtx * pBindCtx)
     if (hr)
         goto Cleanup;
 
-    htmloadinfo.pDoc            = _pDoc;
-    htmloadinfo.pMarkup         = this;
-    htmloadinfo.pDwnDoc         = _pDoc->_pDwnDoc;
-    htmloadinfo.pInetSess       = TlsGetInternetSession();
-    htmloadinfo.pmk             = pMoniker;
-    htmloadinfo.pbc             = pBindCtx;
-    htmloadinfo.pchUrl          = pchUrl;
+    htmloadinfo.pDoc = _pDoc;
+    htmloadinfo.pMarkup = this;
+    htmloadinfo.pDwnDoc = _pDoc->_pDwnDoc;
+    htmloadinfo.pInetSess = TlsGetInternetSession();
+    htmloadinfo.pmk = pMoniker;
+    htmloadinfo.pbc = pBindCtx;
+    htmloadinfo.pchUrl = pchUrl;
 
     hr = THR(Load(&htmloadinfo));
 
 Cleanup:
     CoTaskMemFree(pchUrl);
 
-    RRETURN (hr);
+    RRETURN(hr);
 }
 
 
@@ -1004,7 +1005,7 @@ Cleanup:
 
 
 HRESULT
-CMarkup::Load (HTMLOADINFO * phtmloadinfo)
+CMarkup::Load(HTMLOADINFO * phtmloadinfo)
 {
     HRESULT         hr;
 
@@ -1068,7 +1069,7 @@ Cleanup:
     }
 
 
-    RRETURN (hr);
+    RRETURN(hr);
 }
 
 
@@ -1086,7 +1087,7 @@ CMarkup::StopDownload()
         _pHtmCtx->Release();
         _pHtmCtx = NULL;
     }
-    RRETURN (S_OK);
+    RRETURN(S_OK);
 }
 
 
@@ -1140,7 +1141,7 @@ CMarkup::OnLoadStatus(LOADSTATUS LoadStatus)
 
         if (IsPrimaryMarkup())
         {
-            _pDoc->OnLoadStatus (_LoadStatus);
+            _pDoc->OnLoadStatus(_LoadStatus);
             if (!IsPrimaryMarkup())
                 goto Cleanup;       // abort if the doc has been unloaded
         }
@@ -1202,7 +1203,7 @@ Cleanup:
 
 
 HRESULT
-CMarkup::EnsureTitle ( )
+CMarkup::EnsureTitle()
 {
     HRESULT hr = S_OK;
     CElement *  pElementTitle = NULL;
@@ -1215,13 +1216,13 @@ CMarkup::EnsureTitle ( )
             goto Cleanup;
         }
 
-        hr = THR( CreateElement( ETAG_TITLE_ELEMENT, & pElementTitle ) );
+        hr = THR(CreateElement(ETAG_TITLE_ELEMENT, &pElementTitle));
 
         if (hr)
             goto Cleanup;
 
         // BUGBUG: watch how this might interfere with the parser!
-        hr = THR( AddHeadElement( pElementTitle ) );
+        hr = THR(AddHeadElement(pElementTitle));
 
         if (hr)
             goto Cleanup;
@@ -1229,9 +1230,9 @@ CMarkup::EnsureTitle ( )
 
 Cleanup:
 
-    CElement::ClearPtr( & pElementTitle );
+    CElement::ClearPtr(&pElementTitle);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -1244,24 +1245,24 @@ Cleanup:
 
 
 HRESULT
-CMarkup::AddHeadElement ( CElement * pElement, long lIndex )
+CMarkup::AddHeadElement(CElement * pElement, long lIndex)
 {
     HRESULT hr = S_OK;
 
-    Assert( GetHeadElement() );
+    Assert(GetHeadElement());
 
     if (lIndex >= 0)
     {
         CTreeNode * pNodeIter;
-        CChildIterator ci ( GetHeadElement(), NULL, CHILDITERATOR_DEEP );
+        CChildIterator ci(GetHeadElement(), NULL, CHILDITERATOR_DEEP);
 
-        while ( (pNodeIter = ci.NextChild()) != NULL )
+        while ((pNodeIter = ci.NextChild()) != NULL)
         {
             if (lIndex-- == 0)
             {
                 hr = THR(
                     pNodeIter->Element()->InsertAdjacent(
-                        CElement::BeforeBegin, pElement ) );
+                        CElement::BeforeBegin, pElement));
 
                 if (hr)
                     goto Cleanup;
@@ -1279,17 +1280,17 @@ CMarkup::AddHeadElement ( CElement * pElement, long lIndex )
     {
         CTreePosGap tpgFrontier;
 
-        if (_pRootParseCtx->SetGapToFrontier( & tpgFrontier )
-            && tpgFrontier.Branch()->SearchBranchToRootForScope( GetHeadElement() ))
+        if (_pRootParseCtx->SetGapToFrontier(&tpgFrontier)
+            && tpgFrontier.Branch()->SearchBranchToRootForScope(GetHeadElement()))
         {
-            CMarkupPointer mp ( Doc() );
+            CMarkupPointer mp(Doc());
 
-            hr = THR( mp.MoveToGap( & tpgFrontier, this ) );
+            hr = THR(mp.MoveToGap(&tpgFrontier, this));
 
             if (hr)
                 goto Cleanup;
 
-            hr = THR( Doc()->InsertElement( pElement, & mp, NULL ) );
+            hr = THR(Doc()->InsertElement(pElement, &mp, NULL));
 
             if (hr)
                 goto Cleanup;
@@ -1300,14 +1301,14 @@ CMarkup::AddHeadElement ( CElement * pElement, long lIndex )
 
     hr = THR(
         GetHeadElement()->InsertAdjacent(
-            CElement::BeforeEnd, pElement ) );
+            CElement::BeforeEnd, pElement));
 
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 #ifdef XMV_PARSE
@@ -1341,7 +1342,7 @@ HRESULT
 CMarkup::PasteClipboard()
 {
     HRESULT          hr;
-    IDataObject    * pDataObj   = NULL;
+    IDataObject    * pDataObj = NULL;
     CCurs            curs(IDC_WAIT);
     CLock            Lock(this);
 
@@ -1355,7 +1356,7 @@ CMarkup::PasteClipboard()
 
 
 Cleanup:
-    ReleaseInterface( pDataObj );
+    ReleaseInterface(pDataObj);
 
     if (hr)
     {
@@ -1381,12 +1382,12 @@ HRESULT
 CMarkup::PasteUnixQuickTextToRange(
     CTxtRange *prg,
     VARIANTARG *pvarTextHandle
-    )
+)
 {
     HRESULT      hr;
 
     {
-        CLightDTEngine ldte( this );
+        CLightDTEngine ldte(this);
 
         hr = THR(ldte.PasteUnixQuickTextToRange(prg, pvarTextHandle));
         if (hr)
@@ -1399,7 +1400,7 @@ Cleanup:
 #endif // UNIX
 
 void
-CMarkup::SetModified ( void )
+CMarkup::SetModified(void)
 {
     _fModified = TRUE;
     // Tell the form
@@ -1415,7 +1416,7 @@ CMarkup::SetModified ( void )
 
 
 HRESULT
-CMarkup::createTextRange( IHTMLTxtRange * * ppDisp, CElement * pElemContainer )
+CMarkup::createTextRange(IHTMLTxtRange * * ppDisp, CElement * pElemContainer)
 {
     HRESULT hr = S_OK;
 
@@ -1449,7 +1450,7 @@ CMarkup::createTextRange(
         goto Cleanup;
     }
 
-    pAutoRange = new CAutoRange( this, pElemContainer );
+    pAutoRange = new CAutoRange(this, pElemContainer);
 
     if (!pAutoRange)
     {
@@ -1458,25 +1459,25 @@ CMarkup::createTextRange(
     }
 
     // Set the lookaside entry for this range
-    pAutoRange->SetNext( DelTextRangeListPtr() );
-    hr = THR( SetTextRangeListPtr( pAutoRange ) );
+    pAutoRange->SetNext(DelTextRangeListPtr());
+    hr = THR(SetTextRangeListPtr(pAutoRange));
     if (hr)
         goto Cleanup;
 
-    hr = THR( pAutoRange->Init() );
+    hr = THR(pAutoRange->Init());
     if (hr)
         goto Cleanup;
 
     if (pLeft && pRight)
     {
-        hr = THR_NOTRACE( pAutoRange->SetLeftAndRight(pLeft, pRight, fAdjustPointers) );
+        hr = THR_NOTRACE(pAutoRange->SetLeftAndRight(pLeft, pRight, fAdjustPointers));
     }
     else
     {
-        hr = THR_NOTRACE( pAutoRange->SetTextRangeToElement( pElemContainer ) );
+        hr = THR_NOTRACE(pAutoRange->SetTextRangeToElement(pElemContainer));
     }
 
-    Assert( hr != S_FALSE );
+    Assert(hr != S_FALSE);
 
     if (hr)
         goto Cleanup;
@@ -1489,7 +1490,7 @@ Cleanup:
     {
         pAutoRange->Release();
     }
-    RRETURN( SetErrorInfo( hr ) );
+    RRETURN(SetErrorInfo(hr));
 }
 
 
@@ -1507,19 +1508,15 @@ BOOL
 CMarkup::AcceptingUndo()
 {
     return      !_fNoUndoInfo;
-//            &&  IsEditable()
+    //            &&  IsEditable()
 }
 
 
 
 // IMarkupContainer Method Implementations
-
-
-
-HRESULT
-CMarkup::OwningDoc( IHTMLDocument2 * * ppDoc )
+HRESULT CMarkup::OwningDoc(IHTMLDocument2 * * ppDoc)
 {
-    return _pDoc->_pPrimaryMarkup->QueryInterface( IID_IHTMLDocument2, (void **) ppDoc );
+    return _pDoc->_pPrimaryMarkup->QueryInterface(IID_IHTMLDocument2, (void **)ppDoc);
 }
 
 HRESULT
@@ -1527,44 +1524,44 @@ CMarkup::AddSegment(
     IMarkupPointer* pIStart,
     IMarkupPointer* pIEnd,
     HIGHLIGHT_TYPE HighlightType,
-    int * piSegmentIndex )
+    int * piSegmentIndex)
 {
-    HRESULT hr  = EnsureSelRenSvc();
+    HRESULT hr = EnsureSelRenSvc();
 
     if (OK(hr))
     {
-        hr = THR( _pSelRenSvcProvider->AddSegment( pIStart, pIEnd, HighlightType, piSegmentIndex ) );
+        hr = THR(_pSelRenSvcProvider->AddSegment(pIStart, pIEnd, HighlightType, piSegmentIndex));
     }
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
 CMarkup::AddElementSegment(
-    IHTMLElement* pIElement ,
-    int * piSegmentIndex )
+    IHTMLElement* pIElement,
+    int * piSegmentIndex)
 {
     HRESULT hr = EnsureSelRenSvc();
 
-    if ( !hr)
-        hr =_pSelRenSvcProvider->AddElementSegment( pIElement, piSegmentIndex);
+    if (!hr)
+        hr = _pSelRenSvcProvider->AddElementSegment(pIElement, piSegmentIndex);
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 HRESULT
 CMarkup::MovePointersToSegment(
     int iSegmentIndex,
     IMarkupPointer* pIStart,
-    IMarkupPointer* pIEnd )
+    IMarkupPointer* pIEnd)
 {
     HRESULT hr = EnsureSelRenSvc();
 
-    if ( !hr)
-        hr = _pSelRenSvcProvider->MovePointersToSegment( iSegmentIndex, pIStart, pIEnd );
+    if (!hr)
+        hr = _pSelRenSvcProvider->MovePointersToSegment(iSegmentIndex, pIStart, pIEnd);
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 HRESULT
@@ -1574,10 +1571,10 @@ CMarkup::GetElementSegment(
 {
     HRESULT hr = EnsureSelRenSvc();
 
-    if ( !hr )
-        hr =  _pSelRenSvcProvider->GetElementSegment( iSegmentIndex, ppIElement );
+    if (!hr)
+        hr = _pSelRenSvcProvider->GetElementSegment(iSegmentIndex, ppIElement);
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 HRESULT
@@ -1585,14 +1582,14 @@ CMarkup::MoveSegmentToPointers(
     int iSegmentIndex,
     IMarkupPointer* pIStart,
     IMarkupPointer* pIEnd,
-    HIGHLIGHT_TYPE HighlightType )
+    HIGHLIGHT_TYPE HighlightType)
 {
     HRESULT hr = EnsureSelRenSvc();
 
-    if ( !hr )
-        hr = _pSelRenSvcProvider->MoveSegmentToPointers(iSegmentIndex, pIStart, pIEnd, HighlightType ) ;
+    if (!hr)
+        hr = _pSelRenSvcProvider->MoveSegmentToPointers(iSegmentIndex, pIStart, pIEnd, HighlightType);
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 HRESULT
@@ -1602,17 +1599,17 @@ CMarkup::SetElementSegment(
 {
     HRESULT hr = EnsureSelRenSvc();
 
-    if ( ! hr )
-        hr =  _pSelRenSvcProvider->SetElementSegment( iSegmentIndex, pIElement );
+    if (!hr)
+        hr = _pSelRenSvcProvider->SetElementSegment(iSegmentIndex, pIElement);
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkup::ClearSegment( int iSegmentIndex, BOOL fInvalidate )
+CMarkup::ClearSegment(int iSegmentIndex, BOOL fInvalidate)
 {
-    if ( _pSelRenSvcProvider)
-        RRETURN ( _pSelRenSvcProvider->ClearSegment(iSegmentIndex, fInvalidate));
+    if (_pSelRenSvcProvider)
+        RRETURN(_pSelRenSvcProvider->ClearSegment(iSegmentIndex, fInvalidate));
     else
         return S_OK;
 }
@@ -1620,8 +1617,8 @@ CMarkup::ClearSegment( int iSegmentIndex, BOOL fInvalidate )
 HRESULT
 CMarkup::ClearSegments(BOOL fInvalidate)
 {
-    if ( _pSelRenSvcProvider)
-        RRETURN ( _pSelRenSvcProvider->ClearSegments(fInvalidate));
+    if (_pSelRenSvcProvider)
+        RRETURN(_pSelRenSvcProvider->ClearSegments(fInvalidate));
     else
         return S_OK;
 }
@@ -1629,10 +1626,10 @@ CMarkup::ClearSegments(BOOL fInvalidate)
 HRESULT
 CMarkup::ClearElementSegments()
 {
-    if ( _pSelRenSvcProvider )
-        RRETURN ( _pSelRenSvcProvider->ClearElementSegments());
+    if (_pSelRenSvcProvider)
+        RRETURN(_pSelRenSvcProvider->ClearElementSegments());
 #ifdef NOT_YET
-        RRETURN ( _pSelRenSvcProvider->ClearElementSegments(TRUE));
+    RRETURN(_pSelRenSvcProvider->ClearElementSegments(TRUE));
 #endif
     else
         return S_OK;
@@ -1642,25 +1639,25 @@ CMarkup::ClearElementSegments()
 HRESULT
 CMarkup::GetSegmentCount(
     int* piSegmentCount,
-    SELECTION_TYPE * peSegmentType )
+    SELECTION_TYPE * peSegmentType)
 {
     HRESULT hr = EnsureSelRenSvc();
-    if ( ! hr )
-        hr = _pSelRenSvcProvider->GetSegmentCount( piSegmentCount, peSegmentType ) ;
+    if (!hr)
+        hr = _pSelRenSvcProvider->GetSegmentCount(piSegmentCount, peSegmentType);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
 CMarkup::EnsureSelRenSvc()
 {
-    if ( ! _pSelRenSvcProvider )
+    if (!_pSelRenSvcProvider)
 #if DBG == 1
-        _pSelRenSvcProvider = new CSelectionRenderingServiceProvider( Doc() , this   );
+        _pSelRenSvcProvider = new CSelectionRenderingServiceProvider(Doc(), this);
 #else
-        _pSelRenSvcProvider = new CSelectionRenderingServiceProvider( Doc() );
+        _pSelRenSvcProvider = new CSelectionRenderingServiceProvider(Doc());
 #endif
-    if ( ! _pSelRenSvcProvider )
+    if (!_pSelRenSvcProvider)
         return E_OUTOFMEMORY;
     return S_OK;
 }
@@ -1679,15 +1676,15 @@ VOID
 CMarkup::GetSelectionChunksForLayout(
     CFlowLayout* pFlowLayout, CPtrAry<HighlightSegment*> *paryHighlight,
     int* piCpMin,
-    int * piCpMax )
+    int * piCpMax)
 {
-    if ( _pSelRenSvcProvider )
+    if (_pSelRenSvcProvider)
     {
-           _pSelRenSvcProvider->GetSelectionChunksForLayout( pFlowLayout, paryHighlight, piCpMin, piCpMax );
+        _pSelRenSvcProvider->GetSelectionChunksForLayout(pFlowLayout, paryHighlight, piCpMin, piCpMax);
     }
     else
     {
-        Assert( piCpMax );
+        Assert(piCpMax);
         *piCpMax = -1;
     }
 }
@@ -1703,14 +1700,14 @@ CMarkup::GetSelectionChunksForLayout(
 
 HRESULT
 CMarkup::GetFlattenedSelection(
-                                int iSegmentIndex,
-                                int & cpStart,
-                                int & cpEnd,
-                                SELECTION_TYPE&  eType )
+    int iSegmentIndex,
+    int & cpStart,
+    int & cpEnd,
+    SELECTION_TYPE&  eType)
 {
-    Assert ( _pSelRenSvcProvider );
-    if ( _pSelRenSvcProvider )
-        RRETURN( _pSelRenSvcProvider->GetFlattenedSelection( iSegmentIndex, cpStart, cpEnd, eType));
+    Assert(_pSelRenSvcProvider);
+    if (_pSelRenSvcProvider)
+        RRETURN(_pSelRenSvcProvider->GetFlattenedSelection(iSegmentIndex, cpStart, cpEnd, eType));
     else
     {
         cpStart = -1;
@@ -1723,7 +1720,7 @@ CMarkup::GetFlattenedSelection(
 VOID
 CMarkup::HideSelection()
 {
-    if ( _pSelRenSvcProvider )
+    if (_pSelRenSvcProvider)
     {
         _pSelRenSvcProvider->HideSelection();
     }
@@ -1732,7 +1729,7 @@ CMarkup::HideSelection()
 VOID
 CMarkup::ShowSelection()
 {
-    if ( _pSelRenSvcProvider )
+    if (_pSelRenSvcProvider)
     {
         _pSelRenSvcProvider->ShowSelection();
     }
@@ -1740,21 +1737,21 @@ CMarkup::ShowSelection()
 
 
 VOID
-CMarkup::InvalidateSelection(BOOL fFireOM )
+CMarkup::InvalidateSelection(BOOL fFireOM)
 {
-    if ( _pSelRenSvcProvider )
+    if (_pSelRenSvcProvider)
     {
-        _pSelRenSvcProvider->InvalidateSelection( TRUE, fFireOM );
+        _pSelRenSvcProvider->InvalidateSelection(TRUE, fFireOM);
     }
 }
 
 BOOL
 CMarkup::IsElementSelected(
-    CElement* pElement )
+    CElement* pElement)
 {
-    if ( _pSelRenSvcProvider )
+    if (_pSelRenSvcProvider)
     {
-          return  _pSelRenSvcProvider->IsElementSelected( pElement );
+        return  _pSelRenSvcProvider->IsElementSelected(pElement);
     }
     else
     {
@@ -1764,11 +1761,11 @@ CMarkup::IsElementSelected(
 
 CElement*
 CMarkup::GetSelectedElement(
-    int iElement  )
+    int iElement)
 {
-    if ( _pSelRenSvcProvider )
+    if (_pSelRenSvcProvider)
     {
-          return  _pSelRenSvcProvider->GetSelectedElement( iElement );
+        return  _pSelRenSvcProvider->GetSelectedElement(iElement);
     }
     else
     {
@@ -1786,7 +1783,7 @@ CMarkup::GetElementTop()
 
 
 void
-CMarkup::EnsureTopElems ( )
+CMarkup::EnsureTopElems()
 {
     CHtmlElement  * pHtmlElementCached;
     CHeadElement  * pHeadElementCached;
@@ -1814,54 +1811,54 @@ CMarkup::EnsureTopElems ( )
     pTitleElementCached = NULL;
     pElementClientCached = NULL;
 
-    while ( nFound < 4 && (pNode = ci.NextChild()) != NULL )
+    while (nFound < 4 && (pNode = ci.NextChild()) != NULL)
     {
         CElement * pElement = pNode->Element();
 
-        switch ( pElement->Tag() )
+        switch (pElement->Tag())
         {
-            case ETAG_HEAD  :
+        case ETAG_HEAD:
+        {
+            if (!pHeadElementCached)
             {
-                if (!pHeadElementCached)
-                {
-                    pHeadElementCached = DYNCAST( CHeadElement, pElement );
-                    nFound++;
-                }
-
-                break;
+                pHeadElementCached = DYNCAST(CHeadElement, pElement);
+                nFound++;
             }
-            case ETAG_HTML  :
+
+            break;
+        }
+        case ETAG_HTML:
+        {
+            if (!pHtmlElementCached)
             {
-                if (!pHtmlElementCached)
-                {
-                    pHtmlElementCached = DYNCAST( CHtmlElement, pElement );
-                    nFound++;
-                }
-
-                break;
+                pHtmlElementCached = DYNCAST(CHtmlElement, pElement);
+                nFound++;
             }
-            case ETAG_TITLE_ELEMENT :
+
+            break;
+        }
+        case ETAG_TITLE_ELEMENT:
+        {
+            if (!pTitleElementCached)
             {
-                if (!pTitleElementCached)
-                {
-                    pTitleElementCached = DYNCAST( CTitleElement, pElement );
-                    nFound++;
-                }
-
-                break;
+                pTitleElementCached = DYNCAST(CTitleElement, pElement);
+                nFound++;
             }
-            case ETAG_BODY :
-            case ETAG_FRAMESET :
-            case ETAG_TXTSLAVE :
+
+            break;
+        }
+        case ETAG_BODY:
+        case ETAG_FRAMESET:
+        case ETAG_TXTSLAVE:
+        {
+            if (!pElementClientCached)
             {
-                if (!pElementClientCached)
-                {
-                    pElementClientCached = pElement;
-                    nFound++;
-                }
-
-                break;
+                pElementClientCached = pElement;
+                nFound++;
             }
+
+            break;
+        }
         }
     }
 
@@ -1905,13 +1902,13 @@ CMarkup::MetaPersistEnabled(long eState)
     if (!eState || !GetHeadElement())
         return FALSE;
 
-    CChildIterator ci ( GetHeadElement() );
+    CChildIterator ci(GetHeadElement());
 
-    while ( (pNode = ci.NextChild()) != NULL )
+    while ((pNode = ci.NextChild()) != NULL)
     {
-        if (pNode->Tag() == ETAG_META )
+        if (pNode->Tag() == ETAG_META)
         {
-            if (DYNCAST( CMetaElement, pNode->Element() )->IsPersistMeta( eState ))
+            if (DYNCAST(CMetaElement, pNode->Element())->IsPersistMeta(eState))
                 return TRUE;
         }
     }
@@ -1928,13 +1925,13 @@ CMarkup::MetaPersistEnabled(long eState)
 
 
 HRESULT
-CMarkup::LocateHeadMeta (
-    BOOL ( * pfnCompare ) ( CMetaElement * ), CMetaElement * * ppMeta )
+CMarkup::LocateHeadMeta(
+    BOOL(*pfnCompare) (CMetaElement *), CMetaElement * * ppMeta)
 {
     HRESULT hr = S_OK;
     CTreeNode * pNode;
 
-    Assert( ppMeta );
+    Assert(ppMeta);
 
     *ppMeta = NULL;
 
@@ -1945,15 +1942,15 @@ CMarkup::LocateHeadMeta (
         // head (we will not look for meta tags in the rest of the doc).
 
 
-        CChildIterator ci ( GetHeadElement() );
+        CChildIterator ci(GetHeadElement());
 
-        while ( (pNode = ci.NextChild()) != NULL )
+        while ((pNode = ci.NextChild()) != NULL)
         {
             if (pNode->Tag() == ETAG_META)
             {
-                *ppMeta = DYNCAST( CMetaElement, pNode->Element() );
+                *ppMeta = DYNCAST(CMetaElement, pNode->Element());
 
-                if (pfnCompare( *ppMeta ))
+                if (pfnCompare(*ppMeta))
                     break;
 
                 *ppMeta = NULL;
@@ -1961,7 +1958,7 @@ CMarkup::LocateHeadMeta (
         }
     }
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -1973,15 +1970,15 @@ CMarkup::LocateHeadMeta (
 
 
 HRESULT
-CMarkup::LocateOrCreateHeadMeta (
-    BOOL ( * pfnCompare ) ( CMetaElement * ),
+CMarkup::LocateOrCreateHeadMeta(
+    BOOL(*pfnCompare) (CMetaElement *),
     CMetaElement * * ppMeta,
-    BOOL fInsertAtEnd )
+    BOOL fInsertAtEnd)
 {
     HRESULT hr;
     CElement *pTempElement = NULL;
 
-    Assert( ppMeta );
+    Assert(ppMeta);
 
 
     // First try to find one
@@ -2012,14 +2009,14 @@ CMarkup::LocateOrCreateHeadMeta (
             goto Cleanup;
         }
 
-        hr = THR( CreateElement( ETAG_META, & pTempElement ) );
+        hr = THR(CreateElement(ETAG_META, &pTempElement));
 
         if (hr)
             goto Cleanup;
 
-        * ppMeta = DYNCAST( CMetaElement, pTempElement );
+        *ppMeta = DYNCAST(CMetaElement, pTempElement);
 
-        Assert( * ppMeta );
+        Assert(*ppMeta);
 
         if (!fInsertAtEnd)
         {
@@ -2037,7 +2034,7 @@ CMarkup::LocateOrCreateHeadMeta (
             }
         }
 
-        hr = THR( AddHeadElement( pTempElement, lIndex ) );
+        hr = THR(AddHeadElement(pTempElement, lIndex));
 
         if (hr)
             goto Cleanup;
@@ -2045,9 +2042,9 @@ CMarkup::LocateOrCreateHeadMeta (
 
 Cleanup:
 
-    CElement::ClearPtr( & pTempElement );
+    CElement::ClearPtr(&pTempElement);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 CElement *
@@ -2055,12 +2052,12 @@ CMarkup::FirstElement()
 {
     // BUGBUG: when we get rid of the root elem, we want
     // to take these number down by one
-    if(NumElems() >= 2 )
+    if (NumElems() >= 2)
     {
         CTreePos * ptp;
 
-        ptp = TreePosAtSourceIndex( 1 );
-        Assert( ptp );
+        ptp = TreePosAtSourceIndex(1);
+        Assert(ptp);
         return ptp->Branch()->Element();
     }
 
@@ -2084,18 +2081,18 @@ CMarkup::GetContentTreeExtent(CTreePos ** pptpStart, CTreePos ** pptpEnd)
     Assert(Master());
     ptpStart = FirstTreePos()->NextTreePos();
 
-    Assert( ptpStart );
+    Assert(ptpStart);
 
     // Find first element (besides the root) in the markup.
-    while( !ptpStart->IsBeginNode() )
+    while (!ptpStart->IsBeginNode())
     {
-        Assert( ptpStart );
+        Assert(ptpStart);
         ptpStart = ptpStart->NextTreePos();
     }
 
-    Assert( ptpStart );
+    Assert(ptpStart);
 
-    if( pptpStart )
+    if (pptpStart)
         *pptpStart = ptpStart;
 
     if (pptpEnd)
@@ -2124,7 +2121,7 @@ CMarkup::GetProgSinkC()
 IProgSink *
 CMarkup::GetProgSink()
 {
-    return (IProgSink*) _pProgSink;
+    return (IProgSink*)_pProgSink;
 }
 
 
@@ -2175,12 +2172,12 @@ CMarkup::InvokeEx(DISPID dispid,
             goto Cleanup;
 
         hr = THR(_pDoc->_pOmWindow->InvokeEx(dispid,
-                                      lcid,
-                                      wFlags,
-                                      pdispparams,
-                                      pvarResult,
-                                      pexcepinfo,
-                                      pSrvProvider));
+                                             lcid,
+                                             wFlags,
+                                             pdispparams,
+                                             pvarResult,
+                                             pexcepinfo,
+                                             pSrvProvider));
     }
     else
     {
@@ -2286,7 +2283,7 @@ CMarkup::GetNameSpaceParent(IUnknown **ppunk)
 {
     HRESULT hr;
 
-    if ( ppunk )
+    if (ppunk)
         *ppunk = NULL;
     hr = THR(_pDoc->GetNameSpaceParent(ppunk));
     RRETURN(hr);
@@ -2295,7 +2292,7 @@ CMarkup::GetNameSpaceParent(IUnknown **ppunk)
 HRESULT
 CMarkup::get_designMode(BSTR * pbstrMode)
 {
-    if ( pbstrMode )
+    if (pbstrMode)
         *pbstrMode = NULL;
     RRETURN(SetErrorInfo(E_NOTIMPL));
 }
@@ -2308,7 +2305,7 @@ CMarkup::put_designMode(BSTR bstrMode)
 
 HRESULT
 CMarkup::open(BSTR mimeType, VARIANT varName, VARIANT varFeatures, VARIANT varReplace,
-                    /* retval */ IDispatch **ppDisp)
+              /* retval */ IDispatch **ppDisp)
 {
     if (ppDisp)
         *ppDisp = NULL;
@@ -2346,7 +2343,7 @@ CMarkup::clear(void)
 HRESULT
 CMarkup::get_bgColor(VARIANT * p)
 {
-    if ( p )
+    if (p)
     {
         p->vt = VT_NULL;
     }
@@ -2363,7 +2360,7 @@ CMarkup::put_bgColor(VARIANT p)
 HRESULT
 CMarkup::get_fgColor(VARIANT * p)
 {
-    if ( p )
+    if (p)
     {
         p->vt = VT_NULL;
     }
@@ -2379,7 +2376,7 @@ CMarkup::put_fgColor(VARIANT p)
 HRESULT
 CMarkup::get_linkColor(VARIANT * p)
 {
-    if ( p )
+    if (p)
     {
         p->vt = VT_NULL;
     }
@@ -2396,7 +2393,7 @@ CMarkup::put_linkColor(VARIANT p)
 HRESULT
 CMarkup::get_alinkColor(VARIANT * p)
 {
-    if ( p )
+    if (p)
     {
         p->vt = VT_NULL;
     }
@@ -2413,7 +2410,7 @@ CMarkup::put_alinkColor(VARIANT p)
 HRESULT
 CMarkup::get_vlinkColor(VARIANT * p)
 {
-    if ( p )
+    if (p)
     {
         p->vt = VT_NULL;
     }
@@ -2430,7 +2427,7 @@ CMarkup::put_vlinkColor(VARIANT p)
 HRESULT
 CMarkup::get_parentWindow(IHTMLWindow2 **ppWindow)
 {
-    if ( ppWindow )
+    if (ppWindow)
         *ppWindow = NULL;
     return _pDoc->get_parentWindow(ppWindow);
 }
@@ -2448,7 +2445,7 @@ CMarkup::get_activeElement(IHTMLElement ** ppElement)
 HRESULT
 CMarkup::get_URL(BSTR * p)
 {
-    if ( p )
+    if (p)
         *p = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2463,7 +2460,7 @@ CMarkup::put_URL(BSTR b)
 HRESULT
 CMarkup::get_location(IHTMLLocation** ppLocation)
 {
-    if ( ppLocation )
+    if (ppLocation)
         *ppLocation = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2472,7 +2469,7 @@ CMarkup::get_location(IHTMLLocation** ppLocation)
 HRESULT
 CMarkup::get_lastModified(BSTR * p)
 {
-    if ( p )
+    if (p)
         *p = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2481,7 +2478,7 @@ CMarkup::get_lastModified(BSTR * p)
 HRESULT
 CMarkup::get_referrer(BSTR * p)
 {
-    if ( p )
+    if (p)
         *p = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2490,14 +2487,14 @@ CMarkup::get_referrer(BSTR * p)
 HRESULT
 CMarkup::get_domain(BSTR * p)
 {
-    if ( p )
+    if (p)
         *p = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
 }
 
 HRESULT
-CMarkup::put_domain (BSTR p)
+CMarkup::put_domain(BSTR p)
 {
     RRETURN(SetErrorInfo(E_NOTIMPL));
 }
@@ -2527,7 +2524,7 @@ CMarkup::releaseCapture()
 }
 
 HRESULT
-CMarkup::get_frames( IHTMLFramesCollection2 ** ppDisp )
+CMarkup::get_frames(IHTMLFramesCollection2 ** ppDisp)
 {
     if (ppDisp)
         *ppDisp = NULL;
@@ -2554,7 +2551,7 @@ Cleanup:
 }
 
 HRESULT
-CMarkup::get_selection( IHTMLSelectionObject ** ppDisp )
+CMarkup::get_selection(IHTMLSelectionObject ** ppDisp)
 {
     if (ppDisp)
         *ppDisp = NULL;
@@ -2565,7 +2562,7 @@ CMarkup::get_selection( IHTMLSelectionObject ** ppDisp )
 HRESULT
 CMarkup::get_cookie(BSTR* retval)
 {
-    if ( retval )
+    if (retval)
         *retval = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2588,7 +2585,7 @@ HRESULT CMarkup::put_expando(VARIANT_BOOL fExpando)
 
 HRESULT CMarkup::get_charset(BSTR* retval)
 {
-    if ( retval )
+    if (retval)
         *retval = NULL;
     RRETURN(SetErrorInfo(E_NOTIMPL));
 }
@@ -2602,7 +2599,7 @@ CMarkup::put_charset(BSTR mlangIdStr)
 HRESULT
 CMarkup::get_defaultCharset(BSTR* retval)
 {
-    if ( retval )
+    if (retval)
         *retval = NULL;
     RRETURN(SetErrorInfo(E_NOTIMPL));
 }
@@ -2616,7 +2613,7 @@ CMarkup::put_defaultCharset(BSTR mlangIdStr)
 HRESULT
 CMarkup::get_dir(BSTR * p)
 {
-    if ( p )
+    if (p)
         *p = NULL;
     RRETURN(SetErrorInfo(E_NOTIMPL));
 }
@@ -2636,7 +2633,7 @@ CMarkup::get_mimeType(BSTR * pMimeType)
 HRESULT
 CMarkup::get_fileSize(BSTR * pFileSize)
 {
-    if ( pFileSize )
+    if (pFileSize)
         *pFileSize = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2645,7 +2642,7 @@ CMarkup::get_fileSize(BSTR * pFileSize)
 HRESULT
 CMarkup::get_fileCreatedDate(BSTR * pFileCreatedDate)
 {
-    if ( pFileCreatedDate )
+    if (pFileCreatedDate)
         *pFileCreatedDate = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2654,7 +2651,7 @@ CMarkup::get_fileCreatedDate(BSTR * pFileCreatedDate)
 HRESULT
 CMarkup::get_fileModifiedDate(BSTR * pFileModifiedDate)
 {
-    if (pFileModifiedDate )
+    if (pFileModifiedDate)
         *pFileModifiedDate = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2672,7 +2669,7 @@ CMarkup::get_fileUpdatedDate(BSTR * pFileUpdatedDate)
 HRESULT
 CMarkup::get_security(BSTR * pSecurity)
 {
-    if ( pSecurity )
+    if (pSecurity)
         pSecurity = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2690,7 +2687,7 @@ CMarkup::get_protocol(BSTR * pProtocol)
 HRESULT
 CMarkup::get_nameProp(BSTR * pName)
 {
-    if ( pName )
+    if (pName)
         *pName = NULL;
     return get_title(pName);
 }
@@ -2722,7 +2719,7 @@ CMarkup::recalc(VARIANT_BOOL fForce)
 
 HRESULT CMarkup::createTextNode(BSTR text, IHTMLDOMNode **ppTextNode)
 {
-    if ( ppTextNode )
+    if (ppTextNode)
         *ppTextNode = NULL;
     return _pDoc->createTextNode(text, ppTextNode);
 }
@@ -2730,13 +2727,13 @@ HRESULT CMarkup::createTextNode(BSTR text, IHTMLDOMNode **ppTextNode)
 HRESULT
 CMarkup::get_uniqueID(BSTR *pID)
 {
-    if ( pID )
+    if (pID)
         *pID = NULL;
     return _pDoc->get_uniqueID(pID);
 }
 
 HRESULT
-CMarkup::createElement ( BSTR bstrTag, IHTMLElement ** pIElementNew )
+CMarkup::createElement(BSTR bstrTag, IHTMLElement ** pIElementNew)
 {
     HRESULT hr = S_OK;
     CElement * pElement = NULL;
@@ -2747,11 +2744,11 @@ CMarkup::createElement ( BSTR bstrTag, IHTMLElement ** pIElementNew )
         goto Cleanup;
     }
 
-    hr = THR( CreateElement( ETAG_NULL, & pElement, bstrTag, SysStringLen( bstrTag ) ) );
+    hr = THR(CreateElement(ETAG_NULL, &pElement, bstrTag, SysStringLen(bstrTag)));
     if (hr)
         goto Cleanup;
 
-    hr = THR( pElement->QueryInterface( IID_IHTMLElement, (void **) pIElementNew ) );
+    hr = THR(pElement->QueryInterface(IID_IHTMLElement, (void **)pIElementNew));
     if (hr)
         goto Cleanup;
 
@@ -2760,11 +2757,11 @@ Cleanup:
     if (pElement)
         pElement->Release();
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkup::createStyleSheet ( BSTR bstrHref /*=""*/, long lIndex/*=-1*/, IHTMLStyleSheet ** ppnewStyleSheet )
+CMarkup::createStyleSheet(BSTR bstrHref /*=""*/, long lIndex/*=-1*/, IHTMLStyleSheet ** ppnewStyleSheet)
 {
     HRESULT         hr = S_OK;
     CElement      * pElementNew = NULL;
@@ -2772,13 +2769,13 @@ CMarkup::createStyleSheet ( BSTR bstrHref /*=""*/, long lIndex/*=-1*/, IHTMLStyl
     BOOL            fIsLinkElement;
     CStyleSheetArray * pStyleSheets;
 
-    if ( !ppnewStyleSheet )
+    if (!ppnewStyleSheet)
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    if ( !GetHeadElement() )
+    if (!GetHeadElement())
     {
         hr = E_FAIL;
         goto Cleanup;
@@ -2790,7 +2787,7 @@ CMarkup::createStyleSheet ( BSTR bstrHref /*=""*/, long lIndex/*=-1*/, IHTMLStyl
 
     fIsLinkElement = (bstrHref && *bstrHref);
 
-    hr = THR(CreateElement((fIsLinkElement) ? ETAG_LINK : ETAG_STYLE, & pElementNew ) );
+    hr = THR(CreateElement((fIsLinkElement) ? ETAG_LINK : ETAG_STYLE, &pElementNew));
 
     if (hr)
         goto Cleanup;
@@ -2802,15 +2799,15 @@ CMarkup::createStyleSheet ( BSTR bstrHref /*=""*/, long lIndex/*=-1*/, IHTMLStyl
     Assert(HasStyleSheetArray());
     pStyleSheets = GetStyleSheetArray();
 
-    if ( lIndex < -1 || lIndex >= pStyleSheets->Size() )
+    if (lIndex < -1 || lIndex >= pStyleSheets->Size())
         lIndex = -1;    // Just append to the end if input is outside the bounds
 
-    Assert( "Must have a root site!" && Root() );
+    Assert("Must have a root site!" && Root());
 
     // Fix up the index - incoming index is index in stylesheets list, but param to
     // AddHeadElement is index in ALL head elements.  There may be META or TITLE, etc.
     // tags mixed in.
-    if ( lIndex > 0 )
+    if (lIndex > 0)
     {
         long nHeadNodes;
         long i;
@@ -2819,36 +2816,36 @@ CMarkup::createStyleSheet ( BSTR bstrHref /*=""*/, long lIndex/*=-1*/, IHTMLStyl
         CLinkElement *pLink;
         CStyleElement *pStyle;
 
-        CChildIterator ci ( GetHeadElement(), NULL, CHILDITERATOR_DEEP );
+        CChildIterator ci(GetHeadElement(), NULL, CHILDITERATOR_DEEP);
 
-        for ( nHeadNodes = 0 ; ci.NextChild() ; )
+        for (nHeadNodes = 0; ci.NextChild(); )
             nHeadNodes++;
 
         ci.SetBeforeBegin();
 
         nSSInHead = 0;
 
-        for ( i = 0 ; (pNode = ci.NextChild()) != NULL ; i++ )
+        for (i = 0; (pNode = ci.NextChild()) != NULL; i++)
         {
-            if ( pNode->Tag() == ETAG_LINK )
+            if (pNode->Tag() == ETAG_LINK)
             {
-                pLink = DYNCAST( CLinkElement, pNode->Element() );
-                if ( pLink->_pStyleSheet ) // faster than IsLinkedStyleSheet() and adequate here
+                pLink = DYNCAST(CLinkElement, pNode->Element());
+                if (pLink->_pStyleSheet) // faster than IsLinkedStyleSheet() and adequate here
                     ++nSSInHead;
             }
-            else if ( pNode->Tag() == ETAG_STYLE )
+            else if (pNode->Tag() == ETAG_STYLE)
             {
-                pStyle = DYNCAST( CStyleElement, pNode->Element() );
-                if ( pStyle->_pStyleSheet ) // Not all STYLE elements create a SS.
+                pStyle = DYNCAST(CStyleElement, pNode->Element());
+                if (pStyle->_pStyleSheet) // Not all STYLE elements create a SS.
                     ++nSSInHead;
             }
-            if ( nSSInHead == lIndex )
+            if (nSSInHead == lIndex)
             {           // We've found the stylesheet that should immediately precede us - we'll
                 i++;    // add our new ss at the next head index.
                 break;
             }
         }
-        if ( i == nHeadNodes )   // We'll be at the end anyway.
+        if (i == nHeadNodes)   // We'll be at the end anyway.
             lIndex = -1;
         else
             lIndex = i;         // Here's the new index, adjusted for other HEAD elements.
@@ -2861,38 +2858,38 @@ CMarkup::createStyleSheet ( BSTR bstrHref /*=""*/, long lIndex/*=-1*/, IHTMLStyl
     // We will create and insert the styleSheet into the proper position of the collection later.
     //   When the element is inserted through DOM we want to have a stylesheet so we set
     // _fParseFinished to TRUE (we are not going to parse anything in that case)
-    if(!fIsLinkElement)
+    if (!fIsLinkElement)
     {
-        DYNCAST( CStyleElement, pElementNew)->_fParseFinished = FALSE;
+        DYNCAST(CStyleElement, pElementNew)->_fParseFinished = FALSE;
     }
 
-    hr = THR(AddHeadElement( pElementNew, lIndex ));
+    hr = THR(AddHeadElement(pElementNew, lIndex));
     if (hr)
         goto Cleanup;
 
     // We MUST put the element in the HEAD (the AddHeadElement() above) before we do the element-specific
     // stuff below, because the element will try to find itself in the head in CLinkElement::OnPropertyChange()
     // or CStyleElement::EnsureStyleSheet().
-    if ( fIsLinkElement )
+    if (fIsLinkElement)
     {   // It's a LINK element - DYNCAST it and grab the CStyleSheet.
-        CLinkElement *pLink = DYNCAST( CLinkElement, pElementNew );
-        pLink->put_StringHelper( _T("stylesheet"), (PROPERTYDESC *)&s_propdescCLinkElementrel );
-        pLink->put_UrlHelper( bstrHref, (PROPERTYDESC *)&s_propdescCLinkElementhref );
+        CLinkElement *pLink = DYNCAST(CLinkElement, pElementNew);
+        pLink->put_StringHelper(_T("stylesheet"), (PROPERTYDESC *)&s_propdescCLinkElementrel);
+        pLink->put_UrlHelper(bstrHref, (PROPERTYDESC *)&s_propdescCLinkElementhref);
         pStyleSheet = pLink->_pStyleSheet;
     }
     else
     {   // It's a STYLE element - this will make sure we create a stylesheet attached to the CStyleElement.
-        CStyleElement *pStyle = DYNCAST( CStyleElement, pElementNew );
-        hr = THR( pStyle->EnsureStyleSheet() );
+        CStyleElement *pStyle = DYNCAST(CStyleElement, pElementNew);
+        hr = THR(pStyle->EnsureStyleSheet());
         if (hr)
             goto Cleanup;
         pStyleSheet = pStyle->_pStyleSheet;
     }
 
-    if ( !pStyleSheet )
+    if (!pStyleSheet)
         hr = E_OUTOFMEMORY;
     else
-        hr = THR( pStyleSheet->QueryInterface ( IID_IHTMLStyleSheet, (void **)ppnewStyleSheet ) );
+        hr = THR(pStyleSheet->QueryInterface(IID_IHTMLStyleSheet, (void **)ppnewStyleSheet));
 
 Cleanup:
     CElement::ClearPtr(&pElementNew);
@@ -2903,7 +2900,7 @@ Cleanup:
 HRESULT
 CMarkup::elementFromPoint(long x, long y, IHTMLElement **ppElement)
 {
-    if ( ppElement )
+    if (ppElement)
         *ppElement = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -2978,38 +2975,38 @@ CMarkup::queryCommandValue(BSTR bstrCmdId, VARIANT *pvarRet)
 HRESULT
 CMarkup::createDocumentFragment(IHTMLDocument2 **ppNewDoc)
 {
-/*
-    // BUGBUG: Revisit in IE6
-    HRESULT hr;
-    CMarkup *pMarkup;
+    /*
+        // BUGBUG: Revisit in IE6
+        HRESULT hr;
+        CMarkup *pMarkup;
 
-    if ( !ppNewDoc )
-    {
-        hr = E_INVALIDARG;
-        goto Cleanup;
-    }
+        if ( !ppNewDoc )
+        {
+            hr = E_INVALIDARG;
+            goto Cleanup;
+        }
 
-    *ppNewDoc = NULL;
+        *ppNewDoc = NULL;
 
-    hr = THR(_pDoc->CreateMarkup(&pMarkup));
-    if (hr)
-        goto Cleanup;
+        hr = THR(_pDoc->CreateMarkup(&pMarkup));
+        if (hr)
+            goto Cleanup;
 
-    hr = THR(pMarkup->QueryInterface(IID_IHTMLDocument2, (void **)ppNewDoc));
-    if (hr)
-        goto Cleanup;
+        hr = THR(pMarkup->QueryInterface(IID_IHTMLDocument2, (void **)ppNewDoc));
+        if (hr)
+            goto Cleanup;
 
-    pMarkup->Release();
-    hr = THR(pMarkup->SetParentMarkup(this));
-    if (hr)
-        goto Cleanup;
+        pMarkup->Release();
+        hr = THR(pMarkup->SetParentMarkup(this));
+        if (hr)
+            goto Cleanup;
 
-    AddRef(); // parent has to stick around.
-    pMarkup->_fEnableDownload = _fEnableDownload;
+        AddRef(); // parent has to stick around.
+        pMarkup->_fEnableDownload = _fEnableDownload;
 
-Cleanup:
-    RRETURN(SetErrorInfo(hr));
-*/
+    Cleanup:
+        RRETURN(SetErrorInfo(hr));
+    */
     if (ppNewDoc)
         *ppNewDoc = NULL;
 
@@ -3028,11 +3025,11 @@ CMarkup::get_parentDocument(IHTMLDocument2 **ppParentDoc)
 HRESULT
 CMarkup::get_enableDownload(VARIANT_BOOL *pfDownload)
 {
-/*
-    // BUGBUG: Revisit in IE6
-    if (pfDownload)
-        *pfDownload = _fEnableDownload ? VARIANT_TRUE : VARIANT_FALSE;
-*/
+    /*
+        // BUGBUG: Revisit in IE6
+        if (pfDownload)
+            *pfDownload = _fEnableDownload ? VARIANT_TRUE : VARIANT_FALSE;
+    */
     if (pfDownload)
         *pfDownload = VARIANT_FALSE;
 
@@ -3042,17 +3039,17 @@ CMarkup::get_enableDownload(VARIANT_BOOL *pfDownload)
 HRESULT
 CMarkup::put_enableDownload(VARIANT_BOOL fDownload)
 {
-/*
-    // BUGBUG: Revisit in IE6
-    _fEnableDownload = !!fDownload;
-*/
+    /*
+        // BUGBUG: Revisit in IE6
+        _fEnableDownload = !!fDownload;
+    */
     RRETURN(SetErrorInfo(E_NOTIMPL));
 }
 
 HRESULT
 CMarkup::get_baseUrl(BSTR *p)
 {
-    if ( p )
+    if (p)
         *p = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -3073,7 +3070,7 @@ CMarkup::get_childNodes(IDispatch **ppChildCollection)
 HRESULT
 CMarkup::get_inheritStyleSheets(VARIANT_BOOL *pfInherit)
 {
-    if ( pfInherit )
+    if (pfInherit)
         *pfInherit = NULL;
 
     RRETURN(SetErrorInfo(E_NOTIMPL));
@@ -3193,9 +3190,9 @@ void *
 CMarkup::GetLookasidePtr(int iPtr)
 {
 #if DBG == 1
-    if(HasLookasidePtr(iPtr))
+    if (HasLookasidePtr(iPtr))
     {
-        void * pLookasidePtr =  Doc()->GetLookasidePtr((DWORD *)this + iPtr);
+        void * pLookasidePtr = Doc()->GetLookasidePtr((DWORD *)this + iPtr);
 
         Assert(pLookasidePtr == _apLookAside[iPtr]);
 
@@ -3211,7 +3208,7 @@ CMarkup::GetLookasidePtr(int iPtr)
 HRESULT
 CMarkup::SetLookasidePtr(int iPtr, void * pvVal)
 {
-    Assert (!HasLookasidePtr(iPtr) && "Can't set lookaside ptr when the previous ptr is not cleared");
+    Assert(!HasLookasidePtr(iPtr) && "Can't set lookaside ptr when the previous ptr is not cleared");
 
     HRESULT hr = THR(Doc()->SetLookasidePtr((DWORD *)this + iPtr, pvVal));
 
@@ -3248,7 +3245,7 @@ CMarkup::DelLookasidePtr(int iPtr)
 
 
 void
-CMarkup::ReplacePtr ( CMarkup * * pplhs, CMarkup * prhs )
+CMarkup::ReplacePtr(CMarkup * * pplhs, CMarkup * prhs)
 {
     if (pplhs)
     {
@@ -3265,7 +3262,7 @@ CMarkup::ReplacePtr ( CMarkup * * pplhs, CMarkup * prhs )
 }
 
 void
-CMarkup::SetPtr ( CMarkup ** pplhs, CMarkup * prhs )
+CMarkup::SetPtr(CMarkup ** pplhs, CMarkup * prhs)
 {
     if (pplhs)
     {
@@ -3278,25 +3275,25 @@ CMarkup::SetPtr ( CMarkup ** pplhs, CMarkup * prhs )
 }
 
 void
-CMarkup::StealPtrSet ( CMarkup ** pplhs, CMarkup * prhs )
+CMarkup::StealPtrSet(CMarkup ** pplhs, CMarkup * prhs)
 {
-    SetPtr( pplhs, prhs );
+    SetPtr(pplhs, prhs);
 
     if (pplhs && *pplhs)
         (*pplhs)->Release();
 }
 
 void
-CMarkup::StealPtrReplace ( CMarkup ** pplhs, CMarkup * prhs )
+CMarkup::StealPtrReplace(CMarkup ** pplhs, CMarkup * prhs)
 {
-    ReplacePtr( pplhs, prhs );
+    ReplacePtr(pplhs, prhs);
 
     if (pplhs && *pplhs)
         (*pplhs)->Release();
 }
 
 void
-CMarkup::ClearPtr ( CMarkup * * pplhs )
+CMarkup::ClearPtr(CMarkup * * pplhs)
 {
     if (pplhs && * pplhs)
     {
@@ -3307,7 +3304,7 @@ CMarkup::ClearPtr ( CMarkup * * pplhs )
 }
 
 void
-CMarkup::ReleasePtr ( CMarkup * pMarkup )
+CMarkup::ReleasePtr(CMarkup * pMarkup)
 {
     if (pMarkup)
     {
@@ -3347,8 +3344,8 @@ CDocFrag::PrivateQueryInterface(REFIID iid, void **ppv)
 
     switch (iid.Data1)
     {
-    QI_TEAROFF_DISPEX(this, NULL)
-    QI_TEAROFF(this, IHTMLDocumentFragment, NULL)
+        QI_TEAROFF_DISPEX(this, NULL)
+            QI_TEAROFF(this, IHTMLDocumentFragment, NULL)
     }
 
     if (*ppv)
@@ -3358,16 +3355,15 @@ CDocFrag::PrivateQueryInterface(REFIID iid, void **ppv)
     }
     else
     {
-        RRETURN (super::PrivateQueryInterface(iid, ppv));
+        RRETURN(super::PrivateQueryInterface(iid, ppv));
     }
 }
 
-HRESULT
-CDocFrag::get_document(IDispatch ** ppIHtmlDoc)
+HRESULT CDocFrag::get_document(IDispatch ** ppIHtmlDoc)
 {
     HRESULT hr;
 
-    if ( !ppIHtmlDoc )
+    if (!ppIHtmlDoc)
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -3384,7 +3380,7 @@ CDocFrag::GetNameSpaceParent(IUnknown **ppunk)
 {
     HRESULT hr;
 
-    hr = THR(Markup()->PrivateQueryInterface(IID_IDispatchEx, (void**) ppunk));
+    hr = THR(Markup()->PrivateQueryInterface(IID_IDispatchEx, (void**)ppunk));
 
     RRETURN(hr);
 }
@@ -3396,7 +3392,7 @@ CDocFrag::GetNameSpaceParent(IUnknown **ppunk)
 
 
 HRESULT
-CMarkup::RegisterForDirtyRange( DWORD * pdwCookie )
+CMarkup::RegisterForDirtyRange(DWORD * pdwCookie)
 {
     HRESULT                     hr = S_OK;
     MarkupDirtyRange *          pdr;
@@ -3409,21 +3405,21 @@ CMarkup::RegisterForDirtyRange( DWORD * pdwCookie )
         goto Cleanup;
     }
 
-    hr = THR( pdrc->_aryMarkupDirtyRange.AppendIndirect( NULL, &pdr ) );
+    hr = THR(pdrc->_aryMarkupDirtyRange.AppendIndirect(NULL, &pdr));
     if (hr)
         goto Cleanup;
 
-    Assert( pdr );
+    Assert(pdr);
 
-    pdr->_dwCookie  =
-    *pdwCookie      = InterlockedIncrement( (long *) &s_dwDirtyRangeServiceCookiePool );
+    pdr->_dwCookie =
+        *pdwCookie = InterlockedIncrement((long *)&s_dwDirtyRangeServiceCookiePool);
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkup::UnRegisterForDirtyRange( DWORD dwCookie )
+CMarkup::UnRegisterForDirtyRange(DWORD dwCookie)
 {
     HRESULT                     hr = S_OK;
     CMarkupDirtyRangeContext *  pdrc;
@@ -3437,15 +3433,15 @@ CMarkup::UnRegisterForDirtyRange( DWORD dwCookie )
     }
 
     pdrc = GetDirtyRangeContext();
-    Assert( pdrc );
+    Assert(pdrc);
 
-    for( idr = 0, cdr = pdrc->_aryMarkupDirtyRange.Size(), pdr = pdrc->_aryMarkupDirtyRange;
+    for (idr = 0, cdr = pdrc->_aryMarkupDirtyRange.Size(), pdr = pdrc->_aryMarkupDirtyRange;
          idr < cdr;
-         idr++, pdr++ )
+         idr++, pdr++)
     {
-        if( pdr->_dwCookie == dwCookie )
+        if (pdr->_dwCookie == dwCookie)
         {
-            pdrc->_aryMarkupDirtyRange.Delete( idr );
+            pdrc->_aryMarkupDirtyRange.Delete(idr);
             goto Cleanup;
         }
     }
@@ -3453,11 +3449,11 @@ CMarkup::UnRegisterForDirtyRange( DWORD dwCookie )
     hr = E_FAIL;
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkup::GetAndClearDirtyRange( DWORD dwCookie, CMarkupPointer * pmpBegin, CMarkupPointer * pmpEnd )
+CMarkup::GetAndClearDirtyRange(DWORD dwCookie, CMarkupPointer * pmpBegin, CMarkupPointer * pmpEnd)
 {
     HRESULT                     hr = S_OK;
     CMarkupDirtyRangeContext *  pdrc;
@@ -3471,24 +3467,24 @@ CMarkup::GetAndClearDirtyRange( DWORD dwCookie, CMarkupPointer * pmpBegin, CMark
     }
 
     pdrc = GetDirtyRangeContext();
-    Assert( pdrc );
+    Assert(pdrc);
 
-    for( idr = 0, cdr = pdrc->_aryMarkupDirtyRange.Size(), pdr = pdrc->_aryMarkupDirtyRange;
+    for (idr = 0, cdr = pdrc->_aryMarkupDirtyRange.Size(), pdr = pdrc->_aryMarkupDirtyRange;
          idr < cdr;
-         idr++, pdr++ )
+         idr++, pdr++)
     {
         if (pdr->_dwCookie == dwCookie)
         {
             if (pmpBegin)
             {
-                hr = THR( pmpBegin->MoveToCp( pdr->_dtr._cp, this ) );
+                hr = THR(pmpBegin->MoveToCp(pdr->_dtr._cp, this));
                 if (hr)
                     goto Cleanup;
             }
 
             if (pmpEnd)
             {
-                hr = THR( pmpEnd->MoveToCp( pdr->_dtr._cp + pdr->_dtr._cchNew, this ) );
+                hr = THR(pmpEnd->MoveToCp(pdr->_dtr._cp + pdr->_dtr._cchNew, this));
                 if (hr)
                     goto Cleanup;
             }
@@ -3502,24 +3498,24 @@ CMarkup::GetAndClearDirtyRange( DWORD dwCookie, CMarkupPointer * pmpBegin, CMark
     hr = E_FAIL;
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkup::GetAndClearDirtyRange( DWORD dwCookie, IMarkupPointer * pIPointerBegin, IMarkupPointer * pIPointerEnd )
+CMarkup::GetAndClearDirtyRange(DWORD dwCookie, IMarkupPointer * pIPointerBegin, IMarkupPointer * pIPointerEnd)
 {
     HRESULT hr;
     CDoc *  pDoc = Doc();
-    CMarkupPointer * pmpBegin, * pmpEnd;
+    CMarkupPointer * pmpBegin, *pmpEnd;
 
-    if (    (pIPointerBegin && !pDoc->IsOwnerOf( pIPointerBegin ))
-        ||  (pIPointerEnd && !pDoc->IsOwnerOf( pIPointerEnd )))
+    if ((pIPointerBegin && !pDoc->IsOwnerOf(pIPointerBegin))
+        || (pIPointerEnd && !pDoc->IsOwnerOf(pIPointerEnd)))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
-    hr = THR( pIPointerBegin->QueryInterface( CLSID_CMarkupPointer, (void **) & pmpBegin ) );
+    hr = THR(pIPointerBegin->QueryInterface(CLSID_CMarkupPointer, (void **)& pmpBegin));
 
     if (hr)
     {
@@ -3527,7 +3523,7 @@ CMarkup::GetAndClearDirtyRange( DWORD dwCookie, IMarkupPointer * pIPointerBegin,
         goto Cleanup;
     }
 
-    hr = THR( pIPointerEnd->QueryInterface( CLSID_CMarkupPointer, (void **) & pmpEnd ) );
+    hr = THR(pIPointerEnd->QueryInterface(CLSID_CMarkupPointer, (void **)& pmpEnd));
 
     if (hr)
     {
@@ -3535,10 +3531,10 @@ CMarkup::GetAndClearDirtyRange( DWORD dwCookie, IMarkupPointer * pIPointerBegin,
         goto Cleanup;
     }
 
-    hr = GetAndClearDirtyRange( dwCookie, pmpBegin, pmpEnd );
+    hr = GetAndClearDirtyRange(dwCookie, pmpBegin, pmpEnd);
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 void
@@ -3560,7 +3556,7 @@ CMarkup::EnsureDirtyRangeContext()
     if (!pdrc)
         return NULL;
 
-    if (SetDirtyRangeContext( pdrc ))
+    if (SetDirtyRangeContext(pdrc))
     {
         delete pdrc;
         return NULL;
@@ -3588,7 +3584,7 @@ CMarkup::EnsureTopElemCache()
     if (!ptec)
         return NULL;
 
-    if (SetTopElemCache( ptec ))
+    if (SetTopElemCache(ptec))
     {
         delete ptec;
         return NULL;
@@ -3615,7 +3611,7 @@ CMarkup::EnsureTextFragContext()
     if (!ptfc)
         return NULL;
 
-    if (SetTextFragContext( ptfc ))
+    if (SetTextFragContext(ptfc))
     {
         delete ptfc;
         return NULL;
@@ -3629,74 +3625,74 @@ CMarkupTextFragContext::~CMarkupTextFragContext()
     int cFrag;
     MarkupTextFrag * ptf;
 
-    for( cFrag = _aryMarkupTextFrag.Size(), ptf = _aryMarkupTextFrag; cFrag > 0; cFrag--, ptf++ )
+    for (cFrag = _aryMarkupTextFrag.Size(), ptf = _aryMarkupTextFrag; cFrag > 0; cFrag--, ptf++)
     {
-        MemFreeString( ptf->_pchTextFrag );
+        MemFreeString(ptf->_pchTextFrag);
     }
 }
 
 HRESULT
-CMarkupTextFragContext::AddTextFrag( CTreePos * ptpTextFrag, TCHAR* pchTextFrag, ULONG cchTextFrag, long iTextFrag )
+CMarkupTextFragContext::AddTextFrag(CTreePos * ptpTextFrag, TCHAR* pchTextFrag, ULONG cchTextFrag, long iTextFrag)
 {
     HRESULT             hr = S_OK;
     TCHAR *             pchCopy = NULL;
     MarkupTextFrag *    ptf = NULL;
 
-    Assert( iTextFrag >= 0 && iTextFrag <= _aryMarkupTextFrag.Size() );
+    Assert(iTextFrag >= 0 && iTextFrag <= _aryMarkupTextFrag.Size());
 
     // Allocate and copy the string
-    hr = THR( MemAllocStringBuffer( Mt(MarkupTextFrag_pchTextFrag), cchTextFrag, pchTextFrag, &pchCopy ) );
+    hr = THR(MemAllocStringBuffer(Mt(MarkupTextFrag_pchTextFrag), cchTextFrag, pchTextFrag, &pchCopy));
     if (hr)
         goto Cleanup;
 
     // Allocate the TextFrag object in the array
-    hr = THR( _aryMarkupTextFrag.InsertIndirect( iTextFrag, NULL ) );
+    hr = THR(_aryMarkupTextFrag.InsertIndirect(iTextFrag, NULL));
     if (hr)
     {
-        MemFreeString( pchCopy );
+        MemFreeString(pchCopy);
         goto Cleanup;
     }
 
     // Fill in the text frag
 
     ptf = &_aryMarkupTextFrag[iTextFrag];
-    Assert( ptf );
+    Assert(ptf);
 
     ptf->_ptpTextFrag = ptpTextFrag;
     ptf->_pchTextFrag = pchCopy;
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkupTextFragContext::RemoveTextFrag( long iTextFrag, CMarkup * pMarkup )
+CMarkupTextFragContext::RemoveTextFrag(long iTextFrag, CMarkup * pMarkup)
 {
     HRESULT             hr = S_OK;
     MarkupTextFrag *    ptf;
 
-    Assert( iTextFrag >= 0 && iTextFrag <= _aryMarkupTextFrag.Size() );
+    Assert(iTextFrag >= 0 && iTextFrag <= _aryMarkupTextFrag.Size());
 
     // Get the text frag
     ptf = &_aryMarkupTextFrag[iTextFrag];
 
     // Free the string
-    MemFreeString( ptf->_pchTextFrag );
+    MemFreeString(ptf->_pchTextFrag);
 
-    hr = THR( pMarkup->RemovePointerPos( ptf->_ptpTextFrag, NULL, NULL ) );
+    hr = THR(pMarkup->RemovePointerPos(ptf->_ptpTextFrag, NULL, NULL));
     if (hr)
         goto Cleanup;
 
 Cleanup:
 
     // Remove the entry from the array
-    _aryMarkupTextFrag.Delete( iTextFrag );
+    _aryMarkupTextFrag.Delete(iTextFrag);
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 long
-CMarkupTextFragContext::FindTextFragAtCp( long cpFind, BOOL * pfFragFound )
+CMarkupTextFragContext::FindTextFragAtCp(long cpFind, BOOL * pfFragFound)
 {
     // Do a binary search through the array to find the spot in the array
     // where cpFind lies
@@ -3707,16 +3703,16 @@ CMarkupTextFragContext::FindTextFragAtCp( long cpFind, BOOL * pfFragFound )
     BOOL            fResult;
     long            cpMid;
 
-    iFragLow  = 0;
-    fResult   = FALSE;
+    iFragLow = 0;
+    fResult = FALSE;
     iFragHigh = _aryMarkupTextFrag.Size() - 1;
 
     while (iFragLow <= iFragHigh)
     {
         iFragMid = (iFragLow + iFragHigh) >> 1;
 
-        pmtfMid  = pmtfAry + iFragMid;
-        cpMid    = pmtfMid->_ptpTextFrag->GetCp();
+        pmtfMid = pmtfAry + iFragMid;
+        cpMid = pmtfMid->_ptpTextFrag->GetCp();
 
         if (cpMid == cpFind)
         {
@@ -3730,14 +3726,14 @@ CMarkupTextFragContext::FindTextFragAtCp( long cpFind, BOOL * pfFragFound )
             iFragHigh = iFragMid - 1;
     }
 
-    if( fResult )
+    if (fResult)
     {
         // Search backward through all of the entries
         // at the same cp so we return the first one
         iFragLow--;
         while (iFragLow)
         {
-            if( pmtfAry[iFragLow]._ptpTextFrag->GetCp() != cpFind )
+            if (pmtfAry[iFragLow]._ptpTextFrag->GetCp() != cpFind)
             {
                 iFragLow++;
                 break;
@@ -3749,11 +3745,11 @@ CMarkupTextFragContext::FindTextFragAtCp( long cpFind, BOOL * pfFragFound )
     if (pfFragFound)
         *pfFragFound = fResult;
 
-    Assert( iFragLow == 0 || pmtfAry[iFragLow-1]._ptpTextFrag->GetCp() < cpFind );
-    Assert(     iFragLow == _aryMarkupTextFrag.Size() - 1
-            ||  _aryMarkupTextFrag.Size() == 0
-            ||  cpFind <= pmtfAry[iFragLow]._ptpTextFrag->GetCp() );
-    Assert( !fResult || pmtfAry[iFragLow]._ptpTextFrag->GetCp() == cpFind );
+    Assert(iFragLow == 0 || pmtfAry[iFragLow - 1]._ptpTextFrag->GetCp() < cpFind);
+    Assert(iFragLow == _aryMarkupTextFrag.Size() - 1
+           || _aryMarkupTextFrag.Size() == 0
+           || cpFind <= pmtfAry[iFragLow]._ptpTextFrag->GetCp());
+    Assert(!fResult || pmtfAry[iFragLow]._ptpTextFrag->GetCp() == cpFind);
 
     return iFragLow;
 }
@@ -3767,11 +3763,11 @@ CMarkupTextFragContext::TextFragAssertOrder()
     int cFrag;
     MarkupTextFrag * ptf, *ptfLast = NULL;
 
-    for( cFrag = _aryMarkupTextFrag.Size(), ptf = _aryMarkupTextFrag; cFrag > 0; cFrag--, ptf++ )
+    for (cFrag = _aryMarkupTextFrag.Size(), ptf = _aryMarkupTextFrag; cFrag > 0; cFrag--, ptf++)
     {
         if (ptfLast)
         {
-            Assert( ptfLast->_ptpTextFrag->InternalCompare( ptf->_ptpTextFrag ) == -1 );
+            Assert(ptfLast->_ptpTextFrag->InternalCompare(ptf->_ptpTextFrag) == -1);
         }
 
         ptfLast = ptf;
@@ -3796,13 +3792,13 @@ CMarkup::GetTextFragCount(long* pcFrags)
         goto Cleanup;
     }
 
-    if( !HasTextFragContext() )
+    if (!HasTextFragContext())
         *pcFrags = 0;
     else
         *pcFrags = GetTextFragContext()->_aryMarkupTextFrag.Size();
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
@@ -3815,12 +3811,12 @@ CMarkup::GetTextFrag(long iFrag, BSTR* pbstrFrag, IMarkupPointer* pIPointerFrag)
     CMarkupPointer *            pPointerFrag;
 
     // Check args
-    if (    !pbstrFrag
-        ||  !pIPointerFrag
-        ||  !pDoc->IsOwnerOf( pIPointerFrag )
-        ||  !ptfc
-        ||  iFrag < 0
-        ||  iFrag >= ptfc->_aryMarkupTextFrag.Size())
+    if (!pbstrFrag
+        || !pIPointerFrag
+        || !pDoc->IsOwnerOf(pIPointerFrag)
+        || !ptfc
+        || iFrag < 0
+        || iFrag >= ptfc->_aryMarkupTextFrag.Size())
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -3838,26 +3834,26 @@ CMarkup::GetTextFrag(long iFrag, BSTR* pbstrFrag, IMarkupPointer* pIPointerFrag)
 
     // copy the string
     ptf = &(ptfc->_aryMarkupTextFrag[iFrag]);
-    Assert( ptf );
+    Assert(ptf);
 
-    hr = THR( FormsAllocString( ptf->_pchTextFrag, pbstrFrag ) );
+    hr = THR(FormsAllocString(ptf->_pchTextFrag, pbstrFrag));
     if (hr)
         goto Cleanup;
 
     // position the pointer
     {
-        CTreePosGap tpgPointer( ptf->_ptpTextFrag, TPG_RIGHT );
-        hr = THR( pPointerFrag->MoveToGap( &tpgPointer, this ) );
+        CTreePosGap tpgPointer(ptf->_ptpTextFrag, TPG_RIGHT);
+        hr = THR(pPointerFrag->MoveToGap(&tpgPointer, this));
         if (hr)
         {
-            FormsFreeString( *pbstrFrag );
+            FormsFreeString(*pbstrFrag);
             *pbstrFrag = NULL;
             goto Cleanup;
         }
     }
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
@@ -3867,21 +3863,21 @@ CMarkup::RemoveTextFrag(long iFrag)
     CMarkupTextFragContext *    ptfc = GetTextFragContext();
 
     // Check args
-    if (    !ptfc
-        ||  iFrag < 0
-        ||  iFrag >= ptfc->_aryMarkupTextFrag.Size())
+    if (!ptfc
+        || iFrag < 0
+        || iFrag >= ptfc->_aryMarkupTextFrag.Size())
     {
         hr = E_INVALIDARG;
         goto Cleanup;
     }
 
     // Remove the text frag
-    hr = THR( ptfc->RemoveTextFrag( iFrag, this ) );
+    hr = THR(ptfc->RemoveTextFrag(iFrag, this));
     if (hr)
         goto Cleanup;
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
@@ -3894,9 +3890,9 @@ CMarkup::InsertTextFrag(long iFragInsert, BSTR bstrInsert, IMarkupPointer* pIPoi
     CTreePosGap                 tpgInsert;
 
     // Check for really bad args
-    if (    !pIPointerInsert
-        ||  !pDoc->IsOwnerOf( pIPointerInsert )
-        ||  !bstrInsert)
+    if (!pIPointerInsert
+        || !pDoc->IsOwnerOf(pIPointerInsert)
+        || !bstrInsert)
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -3929,7 +3925,7 @@ CMarkup::InsertTextFrag(long iFragInsert, BSTR bstrInsert, IMarkupPointer* pIPoi
 
         if (iFragInsert < 0)
         {
-            iFragInsert = ptfc->FindTextFragAtCp( cpInsert, &fFragFound );
+            iFragInsert = ptfc->FindTextFragAtCp(cpInsert, &fFragFound);
             fPosSpecified = FALSE;
         }
 
@@ -3938,7 +3934,7 @@ CMarkup::InsertTextFrag(long iFragInsert, BSTR bstrInsert, IMarkupPointer* pIPoi
         {
             if (iFragInsert > 0)
             {
-                cpBefore = ptfc->_aryMarkupTextFrag[iFragInsert-1]._ptpTextFrag->GetCp();
+                cpBefore = ptfc->_aryMarkupTextFrag[iFragInsert - 1]._ptpTextFrag->GetCp();
             }
 
             if (iFragInsert <= cFrags - 1)
@@ -3956,13 +3952,13 @@ CMarkup::InsertTextFrag(long iFragInsert, BSTR bstrInsert, IMarkupPointer* pIPoi
         // Position it carefully if a neighbor is at the same cp
         if (fPosSpecified && cpBefore == cpInsert)
         {
-            hr = THR( tpgInsert.MoveTo( ptfc->_aryMarkupTextFrag[iFragInsert-1]._ptpTextFrag, TPG_RIGHT ) );
+            hr = THR(tpgInsert.MoveTo(ptfc->_aryMarkupTextFrag[iFragInsert - 1]._ptpTextFrag, TPG_RIGHT));
             if (hr)
                 goto Cleanup;
         }
         else if (fPosSpecified && cpAfter == cpInsert || !fPosSpecified && fFragFound)
         {
-            hr = THR( tpgInsert.MoveTo( ptfc->_aryMarkupTextFrag[iFragInsert]._ptpTextFrag, TPG_LEFT ) );
+            hr = THR(tpgInsert.MoveTo(ptfc->_aryMarkupTextFrag[iFragInsert]._ptpTextFrag, TPG_LEFT));
             if (hr)
                 goto Cleanup;
         }
@@ -3973,12 +3969,12 @@ CMarkup::InsertTextFrag(long iFragInsert, BSTR bstrInsert, IMarkupPointer* pIPoi
             // Note2 (Eric): just force all pointers to embed.  Could make this faster
 
 
-            hr = THR( EmbedPointers() );
+            hr = THR(EmbedPointers());
 
             if (hr)
                 goto Cleanup;
 
-            hr = THR( tpgInsert.MoveTo( pPointerInsert->GetEmbeddedTreePos(), TPG_LEFT ) );
+            hr = THR(tpgInsert.MoveTo(pPointerInsert->GetEmbeddedTreePos(), TPG_LEFT));
             if (hr)
                 goto Cleanup;
         }
@@ -3989,36 +3985,36 @@ CMarkup::InsertTextFrag(long iFragInsert, BSTR bstrInsert, IMarkupPointer* pIPoi
     {
         CTreePos * ptpInsert;
 
-        ptpInsert = NewPointerPos( NULL, FALSE, FALSE );
-        if( ! ptpInsert )
+        ptpInsert = NewPointerPos(NULL, FALSE, FALSE);
+        if (!ptpInsert)
         {
             hr = E_OUTOFMEMORY;
             goto Cleanup;
         }
 
-        hr = THR( Insert( ptpInsert, &tpgInsert ) );
+        hr = THR(Insert(ptpInsert, &tpgInsert));
         if (hr)
         {
-            FreeTreePos( ptpInsert );
+            FreeTreePos(ptpInsert);
             goto Cleanup;
         }
 
-        hr = THR( ptfc->AddTextFrag( ptpInsert, bstrInsert, FormsStringLen( bstrInsert), iFragInsert ) );
+        hr = THR(ptfc->AddTextFrag(ptpInsert, bstrInsert, FormsStringLen(bstrInsert), iFragInsert));
         if (hr)
         {
-            IGNORE_HR( Remove( ptpInsert ) );
+            IGNORE_HR(Remove(ptpInsert));
             goto Cleanup;
         }
     }
 
-    WHEN_DBG( ptfc->TextFragAssertOrder() );
+    WHEN_DBG(ptfc->TextFragAssertOrder());
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
-CMarkup::FindTextFragFromMarkupPointer(IMarkupPointer* pIPointerFind,long* piFrag,BOOL* pfFragFound)
+CMarkup::FindTextFragFromMarkupPointer(IMarkupPointer* pIPointerFind, long* piFrag, BOOL* pfFragFound)
 {
     HRESULT hr = S_OK;
     CDoc *  pDoc = Doc();
@@ -4026,8 +4022,8 @@ CMarkup::FindTextFragFromMarkupPointer(IMarkupPointer* pIPointerFind,long* piFra
     CMarkupPointer *            pPointerFind;
 
     // Check args
-    if (    !pIPointerFind
-        ||  !pDoc->IsOwnerOf( pIPointerFind ))
+    if (!pIPointerFind
+        || !pDoc->IsOwnerOf(pIPointerFind))
     {
         hr = E_INVALIDARG;
         goto Cleanup;
@@ -4048,7 +4044,7 @@ CMarkup::FindTextFragFromMarkupPointer(IMarkupPointer* pIPointerFind,long* piFra
 
         if (ptfc)
         {
-            iFrag = ptfc->FindTextFragAtCp( pPointerFind->GetCp(), &fFragFound );
+            iFrag = ptfc->FindTextFragAtCp(pPointerFind->GetCp(), &fFragFound);
         }
         else
         {
@@ -4065,7 +4061,7 @@ CMarkup::FindTextFragFromMarkupPointer(IMarkupPointer* pIPointerFind,long* piFra
 
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
@@ -4084,8 +4080,8 @@ CMarkup::EnsureStyleSheets()
     if (HasStyleSheetArray())
         return S_OK;
 
-    pStyleSheets = new CStyleSheetArray( this, NULL, 0 );
-    if (!pStyleSheets || pStyleSheets->_fInvalid )
+    pStyleSheets = new CStyleSheetArray(this, NULL, 0);
+    if (!pStyleSheets || pStyleSheets->_fInvalid)
         return E_OUTOFMEMORY;
 
     SetStyleSheetArray(pStyleSheets);
@@ -4095,10 +4091,10 @@ CMarkup::EnsureStyleSheets()
 
 HRESULT
 CMarkup::ApplyStyleSheets(
-        CStyleInfo *    pStyleInfo,
-        ApplyPassType   passType,
-        EMediaType      eMediaType,
-        BOOL *          pfContainsImportant)
+    CStyleInfo *    pStyleInfo,
+    ApplyPassType   passType,
+    EMediaType      eMediaType,
+    BOOL *          pfContainsImportant)
 {
     HRESULT hr = S_OK;
     CStyleSheetArray * pStyleSheets;
@@ -4153,7 +4149,7 @@ CMarkup::OnCssChange(BOOL fStable, BOOL fRecomputePeers)
     }
 
 Cleanup:
-    RRETURN (hr);
+    RRETURN(hr);
 }
 
 

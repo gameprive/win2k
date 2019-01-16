@@ -134,16 +134,10 @@ done:
 // IElementBehaviorSite
 
 
-
-
 //  Member:     Cwfolders::Init
-
 //  Synopsis:   Called when this code is initialized as a behavior.  This
 //              sets up the m_pwb, m_pSite, and m_hwndOwner members as
 //              well.
-
-
-
 HRESULT STDMETHODCALLTYPE
 Cwfolders::Init(IElementBehaviorSite __RPC_FAR *pBehaviorSite)
 {
@@ -162,20 +156,14 @@ Cwfolders::Init(IElementBehaviorSite __RPC_FAR *pBehaviorSite)
         hr = GetClientSiteWindow(m_pSite, &m_hwndOwner);
         if (SUCCEEDED(hr))
             // Get the browser
-            hr = IUnknown_QueryService(m_pSite, SID_SWebBrowserApp,
-                                       IID_IWebBrowser2, (LPVOID *)&m_pwb);
+            hr = IUnknown_QueryService(m_pSite, SID_SWebBrowserApp, IID_IWebBrowser2, (LPVOID *)&m_pwb);
     }
     return hr;
 }
 
 
-
 //  Member:     Cwfolders::Notify
-
 //  Synopsis:   Not really used, but needed by the interface...
-
-
-
 HRESULT STDMETHODCALLTYPE
 Cwfolders::Notify(LONG lEvent, VARIANT __RPC_FAR *pVar)
 {

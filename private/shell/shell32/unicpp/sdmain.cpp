@@ -67,79 +67,87 @@
 
 
 class CShellDispatch : public IShellDispatch2,
-                       public CObjectSafety,
-                       protected CImpIDispatch,
-                       public CObjectWithSite
+    public CObjectSafety,
+    protected CImpIDispatch,
+    public CObjectWithSite
 {
-   friend class CAdviseRouter;
-   friend HRESULT GetApplicationObject(DWORD dwSafetyOptions, IUnknown *punkSite, IDispatch **ppid);
+    friend class CAdviseRouter;
+    friend HRESULT GetApplicationObject(DWORD dwSafetyOptions, IUnknown *punkSite, IDispatch **ppid);
 
-    public:
+public:
 
-        //Non-delegating object IUnknown
-        STDMETHODIMP         QueryInterface(REFIID, void **);
-        STDMETHODIMP_(ULONG) AddRef(void);
-        STDMETHODIMP_(ULONG) Release(void);
+    //Non-delegating object IUnknown
+    STDMETHODIMP         QueryInterface(REFIID, void **);
+    STDMETHODIMP_(ULONG) AddRef(void);
+    STDMETHODIMP_(ULONG) Release(void);
 
-        //IDispatch members
-        virtual STDMETHODIMP GetTypeInfoCount(UINT * pctinfo)
-            { return CImpIDispatch::GetTypeInfoCount(pctinfo); }
-        virtual STDMETHODIMP GetTypeInfo(UINT itinfo, LCID lcid, ITypeInfo **pptinfo)
-            { return CImpIDispatch::GetTypeInfo(itinfo, lcid, pptinfo); }
-        virtual STDMETHODIMP GetIDsOfNames(REFIID riid, OLECHAR **rgszNames, UINT cNames, LCID lcid, DISPID * rgdispid)
-            { return CImpIDispatch::GetIDsOfNames(riid, rgszNames, cNames, lcid, rgdispid); }
-        virtual STDMETHODIMP Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo, UINT * puArgErr)
-            { return CImpIDispatch::Invoke(dispidMember, riid, lcid, wFlags, pdispparams, pvarResult, pexcepinfo, puArgErr); }
+    //IDispatch members
+    virtual STDMETHODIMP GetTypeInfoCount(UINT * pctinfo)
+    {
+        return CImpIDispatch::GetTypeInfoCount(pctinfo);
+    }
+    virtual STDMETHODIMP GetTypeInfo(UINT itinfo, LCID lcid, ITypeInfo **pptinfo)
+    {
+        return CImpIDispatch::GetTypeInfo(itinfo, lcid, pptinfo);
+    }
+    virtual STDMETHODIMP GetIDsOfNames(REFIID riid, OLECHAR **rgszNames, UINT cNames, LCID lcid, DISPID * rgdispid)
+    {
+        return CImpIDispatch::GetIDsOfNames(riid, rgszNames, cNames, lcid, rgdispid);
+    }
+    virtual STDMETHODIMP Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo, UINT * puArgErr)
+    {
+        return CImpIDispatch::Invoke(dispidMember, riid, lcid, wFlags, pdispparams, pvarResult, pexcepinfo, puArgErr);
+    }
 
-        //IShellDispatch functions
-        STDMETHODIMP get_Application(IDispatch **ppid);
-        STDMETHODIMP get_Parent (IDispatch **ppid);
-        STDMETHOD(Open)(THIS_ VARIANT vDir);
-        STDMETHOD(Explore)(THIS_ VARIANT vDir);
-        STDMETHOD(NameSpace)(THIS_ VARIANT vDir, Folder **ppsdf);
-        STDMETHODIMP BrowseForFolder(long Hwnd, BSTR Title, long Options, VARIANT RootFolder, Folder **ppsdf);
-        STDMETHODIMP ControlPanelItem(BSTR szDir);
-        STDMETHODIMP MinimizeAll(void);
-        STDMETHODIMP UndoMinimizeALL(void);
-        STDMETHODIMP FileRun(void);
-        STDMETHODIMP CascadeWindows(void);
-        STDMETHODIMP TileVertically(void);
-        STDMETHODIMP TileHorizontally(void);
-        STDMETHODIMP ShutdownWindows(void);
-        STDMETHODIMP Suspend(void);
-        STDMETHODIMP EjectPC(void);
-        STDMETHODIMP SetTime(void);
-        STDMETHODIMP TrayProperties(void);
-        STDMETHODIMP Help(void);
-        STDMETHODIMP FindFiles(void);
-        STDMETHODIMP FindComputer(void);
-        STDMETHODIMP RefreshMenu(void);
-        STDMETHODIMP Windows(IDispatch **ppid);
-        STDMETHODIMP get_ObjectCount(int *pcObjs);
-        STDMETHODIMP IsRestricted(BSTR Group, BSTR Restriction, long * lpValue);
-        STDMETHODIMP ShellExecute(BSTR File, VARIANT vArgs, VARIANT vDir, VARIANT vOperation, VARIANT vShow);
-        STDMETHODIMP FindPrinter(BSTR name, BSTR location, BSTR model);
-        STDMETHODIMP GetSystemInformation(BSTR name, VARIANT * pvOut);
-        STDMETHODIMP ServiceStart(BSTR ServiceName, VARIANT Persistent, VARIANT *pSuccess);
-        STDMETHODIMP ServiceStop(BSTR ServiceName, VARIANT Persistent, VARIANT *pSuccess);
-        STDMETHODIMP IsServiceRunning(BSTR ServiceName, VARIANT *pRunning);
-        STDMETHODIMP CanStartStopService(BSTR ServiceName, VARIANT *pCanStartStop);
-        STDMETHODIMP ShowBrowserBar( BSTR bstrClsid, VARIANT bShow, VARIANT *pSuccess );
+    //IShellDispatch functions
+    STDMETHODIMP get_Application(IDispatch **ppid);
+    STDMETHODIMP get_Parent(IDispatch **ppid);
+    STDMETHOD(Open)(THIS_ VARIANT vDir);
+    STDMETHOD(Explore)(THIS_ VARIANT vDir);
+    STDMETHOD(NameSpace)(THIS_ VARIANT vDir, Folder **ppsdf);
+    STDMETHODIMP BrowseForFolder(long Hwnd, BSTR Title, long Options, VARIANT RootFolder, Folder **ppsdf);
+    STDMETHODIMP ControlPanelItem(BSTR szDir);
+    STDMETHODIMP MinimizeAll(void);
+    STDMETHODIMP UndoMinimizeALL(void);
+    STDMETHODIMP FileRun(void);
+    STDMETHODIMP CascadeWindows(void);
+    STDMETHODIMP TileVertically(void);
+    STDMETHODIMP TileHorizontally(void);
+    STDMETHODIMP ShutdownWindows(void);
+    STDMETHODIMP Suspend(void);
+    STDMETHODIMP EjectPC(void);
+    STDMETHODIMP SetTime(void);
+    STDMETHODIMP TrayProperties(void);
+    STDMETHODIMP Help(void);
+    STDMETHODIMP FindFiles(void);
+    STDMETHODIMP FindComputer(void);
+    STDMETHODIMP RefreshMenu(void);
+    STDMETHODIMP Windows(IDispatch **ppid);
+    STDMETHODIMP get_ObjectCount(int *pcObjs);
+    STDMETHODIMP IsRestricted(BSTR Group, BSTR Restriction, long * lpValue);
+    STDMETHODIMP ShellExecute(BSTR File, VARIANT vArgs, VARIANT vDir, VARIANT vOperation, VARIANT vShow);
+    STDMETHODIMP FindPrinter(BSTR name, BSTR location, BSTR model);
+    STDMETHODIMP GetSystemInformation(BSTR name, VARIANT * pvOut);
+    STDMETHODIMP ServiceStart(BSTR ServiceName, VARIANT Persistent, VARIANT *pSuccess);
+    STDMETHODIMP ServiceStop(BSTR ServiceName, VARIANT Persistent, VARIANT *pSuccess);
+    STDMETHODIMP IsServiceRunning(BSTR ServiceName, VARIANT *pRunning);
+    STDMETHODIMP CanStartStopService(BSTR ServiceName, VARIANT *pCanStartStop);
+    STDMETHODIMP ShowBrowserBar(BSTR bstrClsid, VARIANT bShow, VARIANT *pSuccess);
 
-        // Constructor and the like..
-        CShellDispatch(void);
-    protected:
-        ULONG           m_cRef;             //Object reference count
+    // Constructor and the like..
+    CShellDispatch(void);
+protected:
+    ULONG           m_cRef;             //Object reference count
 
-        ~CShellDispatch(void);
-        BOOL            FAllowUserToDoAnything(void);   // Check if we are in paranoid mode...
-        HRESULT         _TrayCommand(UINT idCmd);
-        HRESULT         ExecuteFolder(VARIANT vDir, LPCTSTR pszVerb);
-        VARIANT_BOOL    _ServiceStartStop(BSTR ServiceName, BOOL fStart, BOOL fPersist);
+    ~CShellDispatch(void);
+    BOOL            FAllowUserToDoAnything(void);   // Check if we are in paranoid mode...
+    HRESULT         _TrayCommand(UINT idCmd);
+    HRESULT         ExecuteFolder(VARIANT vDir, LPCTSTR pszVerb);
+    VARIANT_BOOL    _ServiceStartStop(BSTR ServiceName, BOOL fStart, BOOL fPersist);
 
-        HMODULE         m_hmodWAB;          // module handle for WAB32
-        LPWABOPEN       _GetWABOpen();
-        HRESULT         _GetNC(BSTR *pbstrResult, LPCTSTR pszDnsForestName);
+    HMODULE         m_hmodWAB;          // module handle for WAB32
+    LPWABOPEN       _GetWABOpen();
+    HRESULT         _GetNC(BSTR *pbstrResult, LPCTSTR pszDnsForestName);
 
 };
 
@@ -168,7 +176,7 @@ HRESULT GetApplicationObject(DWORD dwSafetyOptions, IUnknown *punkSite, IDispatc
     if (dwSafetyOptions && (!punkSite || IsSafePage(punkSite) != S_OK))
         return E_ACCESSDENIED;
 
-    HRESULT hres = CShellDispatch_CreateInstance(NULL, IID_IDispatch, (void **) ppid);
+    HRESULT hres = CShellDispatch_CreateInstance(NULL, IID_IDispatch, (void **)ppid);
     if (SUCCEEDED(hres))
     {
         if (punkSite)
@@ -182,9 +190,9 @@ HRESULT GetApplicationObject(DWORD dwSafetyOptions, IUnknown *punkSite, IDispatc
 }
 
 CShellDispatch::CShellDispatch(void) :
-        m_cRef(1),
-        m_hmodWAB(NULL),
-        CImpIDispatch(&LIBID_Shell32, 1, 0, &IID_IShellDispatch2)
+    m_cRef(1),
+    m_hmodWAB(NULL),
+    CImpIDispatch(&LIBID_Shell32, 1, 0, &IID_IShellDispatch2)
 {
     DllAddRef();
     TraceMsg(DM_TRACE, "CShellDispatch::CShellDispatch called");
@@ -195,7 +203,7 @@ CShellDispatch::~CShellDispatch(void)
 {
     TraceMsg(DM_TRACE, "CShellDispatch::~CShellDispatch called");
 
-    if ( m_hmodWAB )
+    if (m_hmodWAB)
         FreeLibrary(m_hmodWAB);
 
     DllRelease();
@@ -238,7 +246,7 @@ STDMETHODIMP_(ULONG) CShellDispatch::AddRef(void)
 STDMETHODIMP_(ULONG) CShellDispatch::Release(void)
 {
     TraceMsg(DM_TRACE, "CShellDispatch::Release called");
-    if (0L!=--m_cRef)
+    if (0L != --m_cRef)
         return m_cRef;
 
     delete this;
@@ -270,7 +278,7 @@ STDMETHODIMP CShellDispatch::get_Parent(IDispatch **ppid)
 
 HRESULT CShellDispatch::ExecuteFolder(VARIANT vDir, LPCTSTR pszVerb)
 {
-    SHELLEXECUTEINFO sei = {sizeof(SHELLEXECUTEINFO)};
+    SHELLEXECUTEINFO sei = { sizeof(SHELLEXECUTEINFO) };
 
     // Check to see if we allow the user to do this...
     if (!FAllowUserToDoAnything())
@@ -336,7 +344,7 @@ STDMETHODIMP CShellDispatch::IsRestricted(BSTR Group, BSTR Restriction, long * l
 
 STDMETHODIMP CShellDispatch::ShellExecute(BSTR File, VARIANT vArgs, VARIANT vDir, VARIANT vOperation, VARIANT vShow)
 {
-    SHELLEXECUTEINFO sei = {sizeof(SHELLEXECUTEINFO)};
+    SHELLEXECUTEINFO sei = { sizeof(SHELLEXECUTEINFO) };
     TCHAR szFile[MAX_PATH];
     TCHAR szDir[MAX_PATH];
     TCHAR szOper[128];  // don't think any verb longer than this...
@@ -359,7 +367,7 @@ STDMETHODIMP CShellDispatch::ShellExecute(BSTR File, VARIANT vArgs, VARIANT vDir
     sei.lpVerb = VariantToStr(&vOperation, szOper, ARRAYSIZE(szOper));
 
     // Finally the show -- Could use convert, but that takes 3 calls...
-    if (vShow.vt == (VT_BYREF|VT_VARIANT) && vShow.pvarVal)
+    if (vShow.vt == (VT_BYREF | VT_VARIANT) && vShow.pvarVal)
         vShow = *vShow.pvarVal;
     switch (vShow.vt)
     {
@@ -407,7 +415,7 @@ VARIANT_BOOL CShellDispatch::_ServiceStartStop(BSTR ServiceName, BOOL fStart, BO
         hSc,
         ServiceName,
         (fStart ? SERVICE_START : SERVICE_STOP)
-            | (fPersistent ? SERVICE_CHANGE_CONFIG : 0)
+        | (fPersistent ? SERVICE_CHANGE_CONFIG : 0)
     );
     if (!hSvc) {
         goto exit_gracefully;
@@ -541,14 +549,14 @@ STDMETHODIMP CShellDispatch::IsServiceRunning(BSTR ServiceName, VARIANT *pIsRunn
     } // if
 
     switch (ServiceStatus.dwCurrentState) {
-        case SERVICE_START_PENDING:
-        case SERVICE_RUNNING:
-        case SERVICE_CONTINUE_PENDING:
-            pIsRunning->boolVal = VARIANT_TRUE;
-            break;
+    case SERVICE_START_PENDING:
+    case SERVICE_RUNNING:
+    case SERVICE_CONTINUE_PENDING:
+        pIsRunning->boolVal = VARIANT_TRUE;
+        break;
 
-        default:
-            break;
+    default:
+        break;
 
     } // switch
 
@@ -596,7 +604,7 @@ STDMETHODIMP CShellDispatch::CanStartStopService(BSTR ServiceName, VARIANT *pCan
         SERVICE_START | SERVICE_STOP | SERVICE_CHANGE_CONFIG
     );
     if (!hSvc) {
-        DWORD dwErr = GetLastError() ;
+        DWORD dwErr = GetLastError();
         goto exit_gracefully;
     } // if
 
@@ -622,47 +630,44 @@ exit_gracefully:
 
 STDMETHODIMP CShellDispatch::ShowBrowserBar(BSTR bstrClsid, VARIANT varShow, VARIANT *pSuccess)
 {
-    if( !(bstrClsid && *bstrClsid && pSuccess) )
-        return E_INVALIDARG ;
+    if (!(bstrClsid && *bstrClsid && pSuccess))
+        return E_INVALIDARG;
 
-    HRESULT hr        = E_FAIL ;
-    pSuccess->vt      = VT_BOOL ;
-    pSuccess->boolVal = VARIANT_FALSE ;
+    HRESULT hr = E_FAIL;
+    pSuccess->vt = VT_BOOL;
+    pSuccess->boolVal = VARIANT_FALSE;
 
-    if( NULL == _punkSite )
-        return E_FAIL ;
+    if (NULL == _punkSite)
+        return E_FAIL;
 
-    IShellBrowser* psb ;
-    hr = IUnknown_QueryService( _punkSite, SID_STopLevelBrowser, IID_IShellBrowser, (void **)&psb ) ;
-
-    if( SUCCEEDED( hr ) )
+    IShellBrowser* psb;
+    hr = IUnknown_QueryService(_punkSite, SID_STopLevelBrowser, IID_IShellBrowser, (void **)&psb);
+    if (SUCCEEDED(hr))
     {
         IWebBrowser2 *pb2;
-        hr = IUnknown_QueryService( psb, SID_SWebBrowserApp, IID_IWebBrowser2,
-                                   (void **)&pb2);
+        hr = IUnknown_QueryService(psb, SID_SWebBrowserApp, IID_IWebBrowser2, (void **)&pb2);
         if (SUCCEEDED(hr))
         {
-            VARIANT varGuid, varNil ;
+            VARIANT varGuid, varNil;
 
-            varGuid.vt      = VT_BSTR ;
-            varGuid.bstrVal = bstrClsid ;
-            VariantInit( &varNil ) ;
+            varGuid.vt = VT_BSTR;
+            varGuid.bstrVal = bstrClsid;
+            VariantInit(&varNil);
 
-            hr = pb2->ShowBrowserBar( &varGuid, &varShow, &varNil ) ;
+            hr = pb2->ShowBrowserBar(&varGuid, &varShow, &varNil);
+            if (SUCCEEDED(hr))
+                pSuccess->boolVal = VARIANT_TRUE;
 
-            if( SUCCEEDED( hr ) )
-                pSuccess->boolVal = VARIANT_TRUE ;
-
-            pb2->Release() ;
+            pb2->Release();
         }
-        psb->Release() ;
+        psb->Release();
     }
 
-    return hr ;
+    return hr;
 }
 
 STDMETHODIMP CShellDispatch::BrowseForFolder(long Hwnd, BSTR Title, long Options,
-        VARIANT RootFolder, Folder **ppsdf)
+                                             VARIANT RootFolder, Folder **ppsdf)
 {
     // BUGBUG:: Not all of the arguments are being processed yet...
     TCHAR szTitle[MAX_PATH];      // hopefully long enough...
@@ -677,7 +682,7 @@ STDMETHODIMP CShellDispatch::BrowseForFolder(long Hwnd, BSTR Title, long Options
     browse.lpszTitle = szTitle;
 
     browse.pszDisplayName = NULL;
-    browse.hwndOwner = (HWND)LongToHandle( Hwnd );
+    browse.hwndOwner = (HWND)LongToHandle(Hwnd);
     browse.ulFlags = (ULONG)Options;
     browse.lpfn = NULL;
     browse.lParam = 0;
@@ -817,7 +822,7 @@ typedef struct
 
 void _FreeFindPrinterInfo(FINDPRINTERINFO *pfpi)
 {
-    if ( pfpi )
+    if (pfpi)
     {
         Str_SetPtrW(&pfpi->pszName, NULL);
         Str_SetPtrW(&pfpi->pszLocation, NULL);
@@ -833,7 +838,7 @@ HRESULT _SetStrToPropertyBag(IPropertyBag *ppb, LPCWSTR pszProperty, LPCWSTR psz
     V_VT(&variant) = VT_BSTR;
     V_BSTR(&variant) = SysAllocString(pszValue);
 
-    if ( !V_BSTR(&variant) )
+    if (!V_BSTR(&variant))
         return E_OUTOFMEMORY;
 
     HRESULT hres = ppb->Write(pszProperty, &variant);
@@ -850,23 +855,23 @@ HRESULT _GetPrintPropertyBag(FINDPRINTERINFO *pfpi, IPropertyBag **pppb)
     // if we have properties that need to be passed then lets package them up
     // into a property bag.
 
-    if ( pfpi->pszName || pfpi->pszLocation || pfpi->pszModel )
+    if (pfpi->pszName || pfpi->pszLocation || pfpi->pszModel)
     {
         hres = SHCreatePropertyBag(IID_IPropertyBag, (void **)&ppb);
-        if ( SUCCEEDED(hres) )
+        if (SUCCEEDED(hres))
         {
-            if ( pfpi->pszName )
+            if (pfpi->pszName)
                 hres = _SetStrToPropertyBag(ppb, L"printName", pfpi->pszName);
 
-            if ( pfpi->pszLocation && SUCCEEDED(hres) )
+            if (pfpi->pszLocation && SUCCEEDED(hres))
                 hres = _SetStrToPropertyBag(ppb, L"printLocation", pfpi->pszLocation);
 
-            if ( pfpi->pszModel && SUCCEEDED(hres) )
+            if (pfpi->pszModel && SUCCEEDED(hres))
                 hres = _SetStrToPropertyBag(ppb, L"printModel", pfpi->pszModel);
         }
     }
 
-    if ( FAILED(hres) && ppb )
+    if (FAILED(hres) && ppb)
         ppb->Release();
     else
         *pppb = ppb;
@@ -888,10 +893,10 @@ DWORD WINAPI _FindPrinterThreadProc(void *ptp)
         oqw.clsidHandler = CLSID_DsQuery;
         oqw.clsidDefaultForm = CLSID_DsFindPrinter;
 
-        if ( SUCCEEDED(_GetPrintPropertyBag(pfpi, &oqw.ppbFormParameters)) )
+        if (SUCCEEDED(_GetPrintPropertyBag(pfpi, &oqw.ppbFormParameters)))
             pcq->OpenQueryWindow(NULL, &oqw, NULL);
 
-        if ( oqw.pFormParameters )
+        if (oqw.pFormParameters)
             oqw.ppbFormParameters->Release();
 
         pcq->Release();
@@ -910,12 +915,12 @@ STDMETHODIMP CShellDispatch::FindPrinter(BSTR name, BSTR location, BSTR model)
     // bundle the parameters to pass over to the bg thread which will issue the query
 
     FINDPRINTERINFO *pfpi = (FINDPRINTERINFO*)LocalAlloc(LPTR, SIZEOF(FINDPRINTERINFO));
-    if ( !pfpi )
+    if (!pfpi)
         return E_OUTOFMEMORY;
 
-    if ( Str_SetPtrW(&pfpi->pszName, name) &&
-         Str_SetPtrW(&pfpi->pszLocation, location) &&
-         Str_SetPtrW(&pfpi->pszModel, model) )
+    if (Str_SetPtrW(&pfpi->pszName, name) &&
+        Str_SetPtrW(&pfpi->pszLocation, location) &&
+        Str_SetPtrW(&pfpi->pszModel, model))
     {
         if (SHCreateThread(_FindPrinterThreadProc, pfpi, CTF_PROCESS_REF | CTF_COINIT, NULL))
         {
@@ -956,8 +961,8 @@ UINT _GetProcessorLevelFromSystemInfo(SYSTEM_INFO *pinfo)
     case PROCESSOR_INTEL_486:
         uiLevel = 4;
 
-    // We'll assume that everything Pentium or better supports CPUID
-    // But just in case, we'll wrap this inside a try/except.
+        // We'll assume that everything Pentium or better supports CPUID
+        // But just in case, we'll wrap this inside a try/except.
     default:
         __try {
             // The CPUID instruction trashes EBX but the compiler doesn't know
@@ -971,7 +976,8 @@ UINT _GetProcessorLevelFromSystemInfo(SYSTEM_INFO *pinfo)
                 and ah, 15          // Processor level returned in low nibble of ah
                 mov byte ptr uiLevel, ah
             }
-        } __except (EXCEPTION_EXECUTE_HANDLER) { }
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER) { }
         break;
     }
     return uiLevel;
@@ -1013,9 +1019,9 @@ STDMETHODIMP CShellDispatch::GetSystemInformation(BSTR bstrName, VARIANT * pvOut
             return E_FAIL;
 
         DWORD dwValue = 0;
-        DWORD cb = sizeof( dwValue );
+        DWORD cb = sizeof(dwValue);
 
-        if (ERROR_SUCCESS != SHQueryValueEx(hkey, TEXT("~Mhz"), NULL, NULL, (LPBYTE) &dwValue, &cb) == ERROR_SUCCESS)
+        if (ERROR_SUCCESS != SHQueryValueEx(hkey, TEXT("~Mhz"), NULL, NULL, (LPBYTE)&dwValue, &cb) == ERROR_SUCCESS)
         {
             RegCloseKey(hkey);
             return E_FAIL;
@@ -1039,7 +1045,7 @@ STDMETHODIMP CShellDispatch::GetSystemInformation(BSTR bstrName, VARIANT * pvOut
         MemoryStatus.dwLength = SIZEOF(MEMORYSTATUSEX);
         NT5_GlobalMemoryStatusEx(&MemoryStatus);
         pvOut->vt = VT_R8;
-        V_R8(pvOut) = (double)(signed __int64) MemoryStatus.ullTotalPhys;
+        V_R8(pvOut) = (double)(signed __int64)MemoryStatus.ullTotalPhys;
         return S_OK;
     }
     else

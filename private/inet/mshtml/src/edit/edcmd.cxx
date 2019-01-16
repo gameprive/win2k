@@ -56,10 +56,10 @@ CCommandTable::~CCommandTable()
 
 void CCommand::Passivate()
 {
-    if( _leftNode )
+    if (_leftNode)
         _leftNode->Passivate();
 
-    if( _rightNode )
+    if (_rightNode)
         _rightNode->Passivate();
 
     delete this;
@@ -68,7 +68,7 @@ void CCommand::Passivate()
 
 CCommand::CCommand(
     DWORD                     cmdId,
-    CHTMLEditor *             pEd )
+    CHTMLEditor *             pEd)
 {
     _pEd = pEd;
     _cmdId = cmdId;
@@ -104,12 +104,8 @@ CCommand::GetViewServices()
 
 
 // CCommand: GetViewServices
-
 // Synopsis: Gets an IHTMLViewServices ptr from an IMarkupServices ptr
-
-HRESULT
-CCommand::GetViewServices(IMarkupServices *    pMarkupServices,
-                          IHTMLViewServices ** ppViewServices)
+HRESULT CCommand::GetViewServices(IMarkupServices *    pMarkupServices, IHTMLViewServices ** ppViewServices)
 {
     HRESULT         hr;
     IHTMLDocument * pDoc;
@@ -139,8 +135,8 @@ CCommand::IsSelectionActive()
     // If the selection is still active, do nothing for the command
 
 
-    IFC( GetSegmentList(&spSegmentList) );
-    IFC( spSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType) );
+    IFC(GetSegmentList(&spSegmentList));
+    IFC(spSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType));
 
     if (eSelectionType == SELECTION_TYPE_Selection && iSegmentCount > 0)
     {
@@ -164,51 +160,51 @@ CCommand::Exec(
     DWORD                    nCmdexecopt,
     VARIANTARG *             pvarargIn,
     VARIANTARG *             pvarargOut,
-    CMshtmlEd *              pTarget  )
+    CMshtmlEd *              pTarget)
 {
     HRESULT           hr;
 
 
     _pcmdtgt = pTarget;
-    hr = THR( PrivateExec( nCmdexecopt, pvarargIn, pvarargOut ));
+    hr = THR(PrivateExec(nCmdexecopt, pvarargIn, pvarargOut));
     _pcmdtgt = NULL;
 
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 HRESULT
 CCommand::QueryStatus(
     OLECMD                     rgCmds[],
     OLECMDTEXT *             pcmdtext,
-    CMshtmlEd *              pTarget  )
+    CMshtmlEd *              pTarget)
 {
     HRESULT hr;
     _pcmdtgt = pTarget;
-    hr = THR( PrivateQueryStatus( rgCmds, pcmdtext ));
+    hr = THR(PrivateQueryStatus(rgCmds, pcmdtext));
     _pcmdtgt = NULL;
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 
 HRESULT
-CCommand::GetSegmentList( ISegmentList ** ppSegmentList )
+CCommand::GetSegmentList(ISegmentList ** ppSegmentList)
 {
     HRESULT hr = E_UNEXPECTED;
-    AssertSz( _pcmdtgt != NULL , "Attempt to get the segment list without a valid command target." );
-    if( _pcmdtgt == NULL )
+    AssertSz(_pcmdtgt != NULL, "Attempt to get the segment list without a valid command target.");
+    if (_pcmdtgt == NULL)
         goto Cleanup;
 
-    hr = THR( _pcmdtgt->GetSegmentList( ppSegmentList ));
+    hr = THR(_pcmdtgt->GetSegmentList(ppSegmentList));
 
 Cleanup:
-    RRETURN( hr );
+    RRETURN(hr);
 }
 
 CSpringLoader*
 CCommand::GetSpringLoader()
 {
-    AssertSz( _pcmdtgt != NULL , "Attempt to get the spring loader without a valid command target." );
-    if( _pcmdtgt == NULL )
+    AssertSz(_pcmdtgt != NULL, "Attempt to get the spring loader without a valid command target.");
+    if (_pcmdtgt == NULL)
         return NULL;
 
     return _pcmdtgt->GetSpringLoader();
@@ -238,7 +234,7 @@ HRESULT CCommand::FindCommonElement(
     // Find right/left pointers
 
 
-    hr = THR(OldCompare( pStart, pEnd, &iPosition));
+    hr = THR(OldCompare(pStart, pEnd, &iPosition));
     if (FAILED(hr))
         goto Cleanup;
 
@@ -281,7 +277,7 @@ HRESULT CCommand::FindCommonElement(
         {
             if (!GetEditor()->IsPhraseElement(*ppElement))
             {
-                IFC( OldCompare( pCurrent, pRight, &iPosition) );
+                IFC(OldCompare(pCurrent, pRight, &iPosition));
 
                 if (iPosition != RIGHT)
                     break; // found common element
@@ -289,7 +285,7 @@ HRESULT CCommand::FindCommonElement(
         }
         else
         {
-            IFC( OldCompare( pCurrent, pRight, &iPosition) );
+            IFC(OldCompare(pCurrent, pRight, &iPosition));
 
             if (iPosition != RIGHT)
                 break; // found common element
@@ -312,7 +308,7 @@ Cleanup:
 HRESULT CCommand::FindBlockElement(
     IMarkupServices *        pMarkupServices,
     IHTMLElement     *        pElement,
-    IHTMLElement     **        ppBlockElement )
+    IHTMLElement     **        ppBlockElement)
 {
     HRESULT             hr = S_OK;
     IHTMLElement        *pOldElement = NULL;
@@ -337,8 +333,7 @@ HRESULT CCommand::FindBlockElement(
         pOldElement->Release();
         if (FAILED(hr))
             goto Cleanup;
-    }
-    while (*ppBlockElement);
+    } while (*ppBlockElement);
 
 Cleanup:
     ReleaseInterface(pViewServices);
@@ -346,36 +341,36 @@ Cleanup:
 }
 
 BOOL
-CCommand::CanSplitBlock( IMarkupServices *pMarkupServices , IHTMLElement* pElement )
+CCommand::CanSplitBlock(IMarkupServices *pMarkupServices, IHTMLElement* pElement)
 {
     ELEMENT_TAG_ID curTag = TAGID_NULL;
 
-    THR( pMarkupServices->GetElementTagId( pElement, &curTag  ));
+    THR(pMarkupServices->GetElementTagId(pElement, &curTag));
 
 
     // TODO: make sure this is a complete list [ashrafm]
 
 
-    switch( curTag )
+    switch (curTag)
     {
-        case TAGID_P:
-        case TAGID_DIV:
-        case TAGID_LI:
-        case TAGID_BLOCKQUOTE:
-        case TAGID_H1:
-        case TAGID_H2:
-        case TAGID_H3:
-        case TAGID_H4:
-        case TAGID_H5:
-        case TAGID_H6:
-        case TAGID_HR:
-        case TAGID_CENTER:
-        case TAGID_PRE:
-        case TAGID_ADDRESS:
-            return true;
+    case TAGID_P:
+    case TAGID_DIV:
+    case TAGID_LI:
+    case TAGID_BLOCKQUOTE:
+    case TAGID_H1:
+    case TAGID_H2:
+    case TAGID_H3:
+    case TAGID_H4:
+    case TAGID_H5:
+    case TAGID_H6:
+    case TAGID_HR:
+    case TAGID_CENTER:
+    case TAGID_PRE:
+    case TAGID_ADDRESS:
+        return true;
 
-        default:
-            return false;
+    default:
+        return false;
     }
 }
 
@@ -385,7 +380,7 @@ CCommand::IsValidEditContext(IHTMLElement *pElement)
     HRESULT         hr;
     ELEMENT_TAG_ID  tagId;
 
-    IFC( GetMarkupServices()->GetElementTagId(pElement, &tagId) );
+    IFC(GetMarkupServices()->GetElementTagId(pElement, &tagId));
 
     return (tagId != TAGID_BUTTON && tagId != TAGID_INPUT);
 
@@ -406,21 +401,21 @@ CCommand::~CCommand()
 
 
 VOID
-CCommandTable::Add( CCommand* pCommandEntry )
+CCommandTable::Add(CCommand* pCommandEntry)
 {
     CCommand* pInsertNode = NULL;
 
-    if ( _rootNode == NULL )
+    if (_rootNode == NULL)
         _rootNode = pCommandEntry;
     else
     {
-        Verify(!FindEntry( pCommandEntry->GetCommandId() , &pInsertNode));
-        Assert( pInsertNode );
+        Verify(!FindEntry(pCommandEntry->GetCommandId(), &pInsertNode));
+        Assert(pInsertNode);
 
-        if ( pInsertNode->GetCommandId() > pCommandEntry->GetCommandId() )
-            pInsertNode->SetLeft( pCommandEntry );
+        if (pInsertNode->GetCommandId() > pCommandEntry->GetCommandId())
+            pInsertNode->SetLeft(pCommandEntry);
         else
-            pInsertNode->SetRight( pCommandEntry );
+            pInsertNode->SetRight(pCommandEntry);
     }
 
 }
@@ -433,14 +428,14 @@ CCommandTable::Add( CCommand* pCommandEntry )
 
 
 CCommand*
-CCommandTable::Get(DWORD entryKey )
+CCommandTable::Get(DWORD entryKey)
 {
     CCommand* pFoundNode = NULL;
 
-    if (  FindEntry( entryKey, &pFoundNode ) )
+    if (FindEntry(entryKey, &pFoundNode))
     {
-        Assert( pFoundNode );
-        return pFoundNode ;
+        Assert(pFoundNode);
+        return pFoundNode;
     }
     else
     {
@@ -461,14 +456,14 @@ CCommandTable::Get(DWORD entryKey )
 
 
 short
-CCommandTable::FindEntry(DWORD entryKey, CCommand** ppFoundNode )
+CCommandTable::FindEntry(DWORD entryKey, CCommand** ppFoundNode)
 {
     CCommand *pCommandEntry = _rootNode;
     short result = 0;
 
-    while ( pCommandEntry != NULL)
+    while (pCommandEntry != NULL)
     {
-        if ( pCommandEntry->GetCommandId() == entryKey)
+        if (pCommandEntry->GetCommandId() == entryKey)
         {
             result = 1;
             *ppFoundNode = pCommandEntry;
@@ -478,7 +473,7 @@ CCommandTable::FindEntry(DWORD entryKey, CCommand** ppFoundNode )
         {
             *ppFoundNode = pCommandEntry;
 
-            if ( pCommandEntry->GetCommandId() > entryKey )
+            if (pCommandEntry->GetCommandId() > entryKey)
             {
                 pCommandEntry = pCommandEntry->GetLeft();
             }
@@ -492,15 +487,15 @@ CCommandTable::FindEntry(DWORD entryKey, CCommand** ppFoundNode )
 
 #if DBG == 1
 VOID
-CCommand::DumpTree( IUnknown* pUnknown)
+CCommand::DumpTree(IUnknown* pUnknown)
 {
     IOleCommandTarget  *  pHost = NULL;
-    Assert( pUnknown );
+    Assert(pUnknown);
     GUID theGUID = CGID_MSHTML;
-    IGNORE_HR( pUnknown->QueryInterface( IID_IOleCommandTarget,  (void**)& pHost ) ) ;
-    IGNORE_HR( pHost->Exec( &theGUID , IDM_DEBUG_DUMPTREE, 0, NULL, NULL  ));
+    IGNORE_HR(pUnknown->QueryInterface(IID_IOleCommandTarget, (void**)& pHost));
+    IGNORE_HR(pHost->Exec(&theGUID, IDM_DEBUG_DUMPTREE, 0, NULL, NULL));
 
-    ReleaseInterface( pHost );
+    ReleaseInterface(pHost);
 
 }
 
@@ -603,106 +598,106 @@ Cleanup:
 
 HRESULT
 CCommand::SplitInfluenceElement(
-                    IMarkupServices * pMarkupServices,
-                    IMarkupPointer* pStart,
-                    IMarkupPointer* pEnd,
-                    IHTMLElement* pElement,
-                    elemInfluence inElemInfluence,
-                    IHTMLElement** ppElementNew )
+    IMarkupServices * pMarkupServices,
+    IMarkupPointer* pStart,
+    IMarkupPointer* pEnd,
+    IHTMLElement* pElement,
+    elemInfluence inElemInfluence,
+    IHTMLElement** ppElementNew)
 {
-    IMarkupPointer *pStartPointer = NULL ;
-    IMarkupPointer *pEndPointer = NULL ;
+    IMarkupPointer *pStartPointer = NULL;
+    IMarkupPointer *pEndPointer = NULL;
     IHTMLElement *pNewElement = NULL;
     HRESULT hr = S_OK;
     BOOL    bEqual = FALSE;
 
-    switch ( inElemInfluence )
+    switch (inElemInfluence)
     {
-        case elemInfluenceWithin:
+    case elemInfluenceWithin:
+    {
+        hr = pMarkupServices->RemoveElement(pElement);
+    }
+    break;
+
+    case elemInfluenceCompleteContain:
+    {
+        hr = pMarkupServices->CreateMarkupPointer(&pStartPointer);
+        if (!hr) hr = pStartPointer->MoveAdjacentToElement(pElement, ELEM_ADJ_BeforeBegin);
+        if (!hr) hr = pStartPointer->SetGravity(POINTER_GRAVITY_Right);
+        if (!hr) hr = pMarkupServices->CreateMarkupPointer(&pEndPointer);
+        if (!hr) hr = pEndPointer->SetGravity(POINTER_GRAVITY_Left);
+        if (!hr) hr = pEndPointer->MoveAdjacentToElement(pElement, ELEM_ADJ_AfterEnd);
+        if (hr) goto Cleanup;
+
+        hr = pMarkupServices->RemoveElement(pElement);
+        if (!hr) hr = THR(pStartPointer->IsEqualTo(pStart, &bEqual));
+        if (hr) goto Cleanup;
+
+        if (!bEqual)
         {
-            hr = pMarkupServices->RemoveElement( pElement );
+            hr = InsertElement(pMarkupServices, pElement, pStartPointer, pStart);
+            if (hr) goto Cleanup;
         }
-        break;
 
-        case elemInfluenceCompleteContain:
+        hr = THR(pEndPointer->IsEqualTo(pEnd, &bEqual));
+        if (hr) goto Cleanup;
+
+        if (!bEqual)
         {
-            hr = pMarkupServices->CreateMarkupPointer( & pStartPointer   );
-            if (!hr) hr = pStartPointer->MoveAdjacentToElement( pElement, ELEM_ADJ_BeforeBegin );
-            if (!hr) hr = pStartPointer->SetGravity(POINTER_GRAVITY_Right);
-            if (!hr) hr = pMarkupServices->CreateMarkupPointer( & pEndPointer );
-            if (!hr) hr = pEndPointer->SetGravity(POINTER_GRAVITY_Left);
-            if (!hr) hr = pEndPointer->MoveAdjacentToElement( pElement, ELEM_ADJ_AfterEnd );
-            if (hr) goto Cleanup;
-
-            hr = pMarkupServices->RemoveElement( pElement );
-            if (!hr) hr = THR(pStartPointer->IsEqualTo(pStart, &bEqual));
-            if (hr) goto Cleanup;
-
-            if (!bEqual)
-            {
-                hr = InsertElement(pMarkupServices, pElement, pStartPointer, pStart );
-                if (hr) goto Cleanup;
-            }
-
-            hr = THR(pEndPointer->IsEqualTo(pEnd, &bEqual));
-            if (hr) goto Cleanup;
-
-            if (!bEqual)
-            {
-                hr = pMarkupServices->CloneElement( pElement, &pNewElement );
-                if (!hr) hr = InsertElement(pMarkupServices, pNewElement, pEnd , pEndPointer );
-            }
-
-            if ( ppElementNew )
-            {
-                *ppElementNew = pNewElement;
-            }
+            hr = pMarkupServices->CloneElement(pElement, &pNewElement);
+            if (!hr) hr = InsertElement(pMarkupServices, pNewElement, pEnd, pEndPointer);
         }
-        break;
 
-        case elemInfluenceOverlapWithin:
+        if (ppElementNew)
         {
-            hr = pMarkupServices->CreateMarkupPointer( & pEndPointer   );
-            if (!hr) hr = pEndPointer->MoveAdjacentToElement( pElement, ELEM_ADJ_AfterEnd );
-            if (hr) goto Cleanup;
-
-            if (!hr) hr = pMarkupServices->RemoveElement( pElement );
-            if (!hr) hr = THR(pEndPointer->IsEqualTo(pEnd, &bEqual));
-            if (hr) goto Cleanup;
-
-            if (!bEqual)
-            {
-                hr = InsertElement(pMarkupServices, pElement, pEnd, pEndPointer );
-            }
-
+            *ppElementNew = pNewElement;
         }
-        break;
+    }
+    break;
 
-        case elemInfluenceOverlapOutside:
+    case elemInfluenceOverlapWithin:
+    {
+        hr = pMarkupServices->CreateMarkupPointer(&pEndPointer);
+        if (!hr) hr = pEndPointer->MoveAdjacentToElement(pElement, ELEM_ADJ_AfterEnd);
+        if (hr) goto Cleanup;
+
+        if (!hr) hr = pMarkupServices->RemoveElement(pElement);
+        if (!hr) hr = THR(pEndPointer->IsEqualTo(pEnd, &bEqual));
+        if (hr) goto Cleanup;
+
+        if (!bEqual)
         {
-            hr = pMarkupServices->CreateMarkupPointer( & pStartPointer   );
-            if (!hr) hr = pStartPointer->MoveAdjacentToElement( pElement, ELEM_ADJ_BeforeBegin );
-            if (hr) goto Cleanup;
-
-            hr = pMarkupServices->RemoveElement( pElement );
-            if (!hr) hr = THR(pStart->IsEqualTo(pStartPointer, &bEqual));
-            if (hr) goto Cleanup;
-
-            if (!bEqual)
-            {
-                if ( ! hr ) hr = InsertElement(pMarkupServices, pElement, pStartPointer, pStart );
-                if (hr) goto Cleanup;
-            }
+            hr = InsertElement(pMarkupServices, pElement, pEnd, pEndPointer);
         }
-        break;
+
+    }
+    break;
+
+    case elemInfluenceOverlapOutside:
+    {
+        hr = pMarkupServices->CreateMarkupPointer(&pStartPointer);
+        if (!hr) hr = pStartPointer->MoveAdjacentToElement(pElement, ELEM_ADJ_BeforeBegin);
+        if (hr) goto Cleanup;
+
+        hr = pMarkupServices->RemoveElement(pElement);
+        if (!hr) hr = THR(pStart->IsEqualTo(pStartPointer, &bEqual));
+        if (hr) goto Cleanup;
+
+        if (!bEqual)
+        {
+            if (!hr) hr = InsertElement(pMarkupServices, pElement, pStartPointer, pStart);
+            if (hr) goto Cleanup;
+        }
+    }
+    break;
     }
 
 Cleanup:
-    ReleaseInterface( pStartPointer );
-    ReleaseInterface( pEndPointer );
-    if ( ! ppElementNew ) ReleaseInterface( pNewElement );
+    ReleaseInterface(pStartPointer);
+    ReleaseInterface(pEndPointer);
+    if (!ppElementNew) ReleaseInterface(pNewElement);
 
-    RRETURN ( hr );
+    RRETURN(hr);
 }
 
 
@@ -720,33 +715,33 @@ Cleanup:
 // TODO: be careful about contextually equal pointers here [ashrafm]
 
 elemInfluence
-CCommand::GetElementInfluenceOverPointers( IMarkupServices* pMarkupServices, IMarkupPointer* pStart, IMarkupPointer * pEnd, IHTMLElement* pInfluenceElement )
+CCommand::GetElementInfluenceOverPointers(IMarkupServices* pMarkupServices, IMarkupPointer* pStart, IMarkupPointer * pEnd, IHTMLElement* pInfluenceElement)
 {
-    elemInfluence theInfluence = elemInfluenceNone ;
+    elemInfluence theInfluence = elemInfluenceNone;
     int iStartStart, iStartEnd, iEndStart, iEndEnd;
     iStartStart = iStartEnd = iEndStart = iEndEnd = 0;
-    IMarkupPointer *pStartInfluence = NULL ;
-    IMarkupPointer *pEndInfluence = NULL ;
+    IMarkupPointer *pStartInfluence = NULL;
+    IMarkupPointer *pEndInfluence = NULL;
 
-    pMarkupServices->CreateMarkupPointer( & pStartInfluence );
-    pMarkupServices->CreateMarkupPointer( & pEndInfluence );
-    Assert( pStartInfluence && pEndInfluence );
-    pStartInfluence->MoveAdjacentToElement( pInfluenceElement, ELEM_ADJ_BeforeBegin );
-    pEndInfluence->MoveAdjacentToElement( pInfluenceElement, ELEM_ADJ_AfterEnd );
+    pMarkupServices->CreateMarkupPointer(&pStartInfluence);
+    pMarkupServices->CreateMarkupPointer(&pEndInfluence);
+    Assert(pStartInfluence && pEndInfluence);
+    pStartInfluence->MoveAdjacentToElement(pInfluenceElement, ELEM_ADJ_BeforeBegin);
+    pEndInfluence->MoveAdjacentToElement(pInfluenceElement, ELEM_ADJ_AfterEnd);
 
-    OldCompare( pStart, pStartInfluence, &iStartStart);
-    OldCompare( pEnd, pEndInfluence, & iEndEnd);
+    OldCompare(pStart, pStartInfluence, &iStartStart);
+    OldCompare(pEnd, pEndInfluence, &iEndEnd);
 
-    if ( iStartStart == RIGHT ) // Start is to Right of Start of Range
+    if (iStartStart == RIGHT) // Start is to Right of Start of Range
     {
-        if ( iEndEnd == LEFT ) // End is to Left of End of Range
+        if (iEndEnd == LEFT) // End is to Left of End of Range
             theInfluence = elemInfluenceWithin;
         else
         {
             // End is Inside Range - where is the Start ?
 
-            OldCompare( pEnd, pStartInfluence, & iStartEnd );
-            if ( iStartEnd == LEFT ) // Start is Inside Range, End is Outside
+            OldCompare(pEnd, pStartInfluence, &iStartEnd);
+            if (iStartEnd == LEFT) // Start is Inside Range, End is Outside
             {
                 theInfluence = elemInfluenceOverlapWithin;
             }
@@ -756,13 +751,13 @@ CCommand::GetElementInfluenceOverPointers( IMarkupServices* pMarkupServices, IMa
     }
     else // Start is to Left of Range.
     {
-        if ( iEndEnd == RIGHT ) // End is Outside
+        if (iEndEnd == RIGHT) // End is Outside
             theInfluence = elemInfluenceCompleteContain;
         else
         {
             // Start is Outside Range - where does End Start
-            OldCompare( pStart, pEndInfluence, &iEndStart );
-            if ( iEndStart == RIGHT )
+            OldCompare(pStart, pEndInfluence, &iEndStart);
+            if (iEndStart == RIGHT)
             {
                 // End is to Right of Start
                 theInfluence = elemInfluenceOverlapOutside;
@@ -772,8 +767,8 @@ CCommand::GetElementInfluenceOverPointers( IMarkupServices* pMarkupServices, IMa
         }
     }
 
-    ReleaseInterface( pStartInfluence );
-    ReleaseInterface( pEndInfluence );
+    ReleaseInterface(pStartInfluence);
+    ReleaseInterface(pEndInfluence);
 
     return theInfluence;
 }
@@ -785,10 +780,10 @@ CCommand::GetElementInfluenceOverPointers( IMarkupServices* pMarkupServices, IMa
 // Synopsis: Get start/end pointers for a specified segment
 
 
-HRESULT CCommand::GetSegmentPointers( ISegmentList    *pSegmentList,
-                                      INT             iSegment,
-                                      IMarkupPointer  **ppStart,
-                                      IMarkupPointer  **ppEnd)
+HRESULT CCommand::GetSegmentPointers(ISegmentList    *pSegmentList,
+                                     INT             iSegment,
+                                     IMarkupPointer  **ppStart,
+                                     IMarkupPointer  **ppEnd)
 {
     HRESULT        hr;
     IMarkupPointer *pStart = NULL;
@@ -837,35 +832,36 @@ CCommand::ClingToText(IMarkupPointer *pMarkupPointer, Direction direction, IMark
     if (pLimit)
     {
         if (direction == LEFT)
-            IFR( epPosition.SetBoundary(pLimit, NULL) )
+            IFR(epPosition.SetBoundary(pLimit, NULL))
         else
-            IFR( epPosition.SetBoundary(NULL, pLimit) );
+            IFR(epPosition.SetBoundary(NULL, pLimit));
     }
 
     // Do cling to text
-    dwSearch = BREAK_CONDITION_Text           |
-               BREAK_CONDITION_NoScopeSite    |
-               BREAK_CONDITION_NoScopeBlock   |
-               BREAK_CONDITION_ExitSite       |
-               (fSkipExitScopes ? 0 : BREAK_CONDITION_ExitBlock)     |
-               BREAK_CONDITION_Control;
+    dwSearch = BREAK_CONDITION_Text |
+        BREAK_CONDITION_NoScopeSite |
+        BREAK_CONDITION_NoScopeBlock |
+        BREAK_CONDITION_ExitSite |
+        (fSkipExitScopes ? 0 : BREAK_CONDITION_ExitBlock) |
+        BREAK_CONDITION_Control;
 
-    IFR( epPosition.Scan(direction, dwSearch, &dwFound, NULL, NULL, NULL, dwScanOptions) );
+    IFR(epPosition.Scan(direction, dwSearch, &dwFound, NULL, NULL, NULL, dwScanOptions));
 
     if (!epPosition.CheckFlag(dwFound, BREAK_CONDITION_Boundary))
     {
-        dwSearchReverse = BREAK_CONDITION_Text           |
-                          BREAK_CONDITION_NoScopeSite    |
-                          BREAK_CONDITION_NoScopeBlock   |
-                          BREAK_CONDITION_EnterSite      |
-                          (fSkipExitScopes ? 0: BREAK_CONDITION_EnterBlock)     |
-                          BREAK_CONDITION_Control;
+        dwSearchReverse = BREAK_CONDITION_Text |
+            BREAK_CONDITION_NoScopeSite |
+            BREAK_CONDITION_NoScopeBlock |
+            BREAK_CONDITION_EnterSite |
+            (fSkipExitScopes ? 0 : BREAK_CONDITION_EnterBlock) |
+            BREAK_CONDITION_Control;
 
         // move back before break condition
-        IFR( epPosition.Scan(Reverse(direction), dwSearchReverse, &dwFound, NULL, NULL, NULL, dwScanOptions) );     }
+        IFR(epPosition.Scan(Reverse(direction), dwSearchReverse, &dwFound, NULL, NULL, NULL, dwScanOptions));
+    }
 
     // Return pMarkupPointer
-    IFR( pMarkupPointer->MoveToPointer(epPosition) );
+    IFR(pMarkupPointer->MoveToPointer(epPosition));
 
     return S_OK;
 }
@@ -895,8 +891,8 @@ CCommand::Move(
 
     if (!fMove)
     {
-        IFR( GetMarkupServices()->CreateMarkupPointer(&spPointer) );
-        IFR( spPointer->MoveToPointer(pMarkupPointer) );
+        IFR(GetMarkupServices()->CreateMarkupPointer(&spPointer));
+        IFR(spPointer->MoveToPointer(pMarkupPointer));
 
         pMarkupPointer = spPointer; // weak ref
     }
@@ -904,42 +900,42 @@ CCommand::Move(
     for (;;)
     {
         if (direction == LEFT)
-            IFC( GetViewServices()->LeftOrSlave(pMarkupPointer, TRUE, &context, &spElement, NULL, NULL) )
+            IFC(GetViewServices()->LeftOrSlave(pMarkupPointer, TRUE, &context, &spElement, NULL, NULL))
         else
-            IFC( GetViewServices()->RightOrSlave(pMarkupPointer, TRUE, &context, &spElement, NULL, NULL) );
+            IFC(GetViewServices()->RightOrSlave(pMarkupPointer, TRUE, &context, &spElement, NULL, NULL));
 
         switch (context)
         {
-            case CONTEXT_TYPE_EnterScope:
-                IFC( GetMarkupServices()->GetElementTagId(spElement, &tagId) );
+        case CONTEXT_TYPE_EnterScope:
+            IFC(GetMarkupServices()->GetElementTagId(spElement, &tagId));
 
-                if (IsIntrinsic(GetMarkupServices(), spElement))
-                {
-                    if (direction == LEFT)
-                        IFC( pMarkupPointer->MoveAdjacentToElement( spElement, ELEM_ADJ_BeforeBegin ) )
-                    else
-                        IFC( pMarkupPointer->MoveAdjacentToElement( spElement, ELEM_ADJ_AfterEnd ) );
-                }
-                // fall through
+            if (IsIntrinsic(GetMarkupServices(), spElement))
+            {
+                if (direction == LEFT)
+                    IFC(pMarkupPointer->MoveAdjacentToElement(spElement, ELEM_ADJ_BeforeBegin))
+                else
+                    IFC(pMarkupPointer->MoveAdjacentToElement(spElement, ELEM_ADJ_AfterEnd));
+            }
+            // fall through
 
-            case CONTEXT_TYPE_ExitScope:
-            case CONTEXT_TYPE_Text:
-            case CONTEXT_TYPE_None:
-                goto Cleanup; // done;
-                break;
+        case CONTEXT_TYPE_ExitScope:
+        case CONTEXT_TYPE_Text:
+        case CONTEXT_TYPE_None:
+            goto Cleanup; // done;
+            break;
 
-            case CONTEXT_TYPE_NoScope:
-                IFC( GetViewServices()->IsSite(spElement, &fSite, NULL, NULL, NULL) );
-                if (!fSite)
-                    continue;
+        case CONTEXT_TYPE_NoScope:
+            IFC(GetViewServices()->IsSite(spElement, &fSite, NULL, NULL, NULL));
+            if (!fSite)
+                continue;
 
-                goto Cleanup; // done;
-                break;
+            goto Cleanup; // done;
+            break;
 
-            default:
-                AssertSz(0, "CBaseCharCommand: Unsupported context");
-                hr = E_FAIL; // CONTEXT_TYPE_None
-                goto Cleanup;
+        default:
+            AssertSz(0, "CBaseCharCommand: Unsupported context");
+            hr = E_FAIL; // CONTEXT_TYPE_None
+            goto Cleanup;
         }
     }
 
@@ -997,9 +993,9 @@ CCommand::MoveBack(
 // Synopsis: Gets the segment for the active element
 
 HRESULT
-CCommand::GetActiveElemSegment( IMarkupServices *pMarkupServices,
-                                IMarkupPointer  **ppStart,
-                                IMarkupPointer  **ppEnd)
+CCommand::GetActiveElemSegment(IMarkupServices *pMarkupServices,
+                               IMarkupPointer  **ppStart,
+                               IMarkupPointer  **ppEnd)
 {
     HRESULT        hr;
     IHTMLElement   *pElement = NULL;
@@ -1019,15 +1015,15 @@ CCommand::GetActiveElemSegment( IMarkupServices *pMarkupServices,
         goto Cleanup;
 #endif //0
 
-    hr = THR( pDoc->get_activeElement(&pElement));
+    hr = THR(pDoc->get_activeElement(&pElement));
     if (FAILED(hr))
         goto Cleanup;
 
 
     // If a No-Scope is Active - don't position pointers inside.
 
-    IFC( pVS->IsNoScopeElement( pElement, & fNoScope ));
-    if ( fNoScope )
+    IFC(pVS->IsNoScopeElement(pElement, &fNoScope));
+    if (fNoScope)
     {
         hr = E_FAIL;
         goto Cleanup;
@@ -1041,11 +1037,11 @@ CCommand::GetActiveElemSegment( IMarkupServices *pMarkupServices,
     if (FAILED(hr))
         goto Cleanup;
 
-    hr = THR(pStart->MoveAdjacentToElement( pElement, ELEM_ADJ_AfterBegin ));
+    hr = THR(pStart->MoveAdjacentToElement(pElement, ELEM_ADJ_AfterBegin));
     if (FAILED(hr))
         goto Cleanup;
 
-    hr = THR(pEnd->MoveAdjacentToElement( pElement, ELEM_ADJ_BeforeEnd ));
+    hr = THR(pEnd->MoveAdjacentToElement(pElement, ELEM_ADJ_BeforeEnd));
 
 Cleanup:
     if (SUCCEEDED(hr))
@@ -1084,13 +1080,13 @@ Cleanup:
 
 
 HRESULT
-CCommand::GetLeftAdjacentTagId(  IMarkupServices *pMarkupServices,
-                                 IHTMLViewServices *pViewServices,
-                                 IMarkupPointer  *pMarkupPointer,
-                                 ELEMENT_TAG_ID  tagIdTarget,
-                                 IMarkupPointer  **ppLeft,
-                                 IHTMLElement    **ppElement,
-                                 MARKUP_CONTEXT_TYPE *pContext)
+CCommand::GetLeftAdjacentTagId(IMarkupServices *pMarkupServices,
+                               IHTMLViewServices *pViewServices,
+                               IMarkupPointer  *pMarkupPointer,
+                               ELEMENT_TAG_ID  tagIdTarget,
+                               IMarkupPointer  **ppLeft,
+                               IHTMLElement    **ppElement,
+                               MARKUP_CONTEXT_TYPE *pContext)
 {
     HRESULT             hr;
     ELEMENT_TAG_ID      tagIdCurrent;
@@ -1128,8 +1124,8 @@ CCommand::GetLeftAdjacentTagId(  IMarkupServices *pMarkupServices,
             }
             if (ppLeft)
             {
-                 *ppLeft = pCurrent;
-                 pCurrent->AddRef();
+                *ppLeft = pCurrent;
+                pCurrent->AddRef();
             }
             if (pContext)
                 *pContext = context;
@@ -1171,7 +1167,7 @@ CCommand::GetRightAdjacentTagId(
     ELEMENT_TAG_ID  tagIdTarget,
     IMarkupPointer  **ppLeft,
     IHTMLElement    **ppElement,
-    MARKUP_CONTEXT_TYPE *pContext )
+    MARKUP_CONTEXT_TYPE *pContext)
 {
     HRESULT             hr;
     ELEMENT_TAG_ID      tagIdCurrent;
@@ -1209,8 +1205,8 @@ CCommand::GetRightAdjacentTagId(
             }
             if (ppLeft)
             {
-                 *ppLeft = pCurrent;
-                 pCurrent->AddRef();
+                *ppLeft = pCurrent;
+                pCurrent->AddRef();
             }
             if (pContext)
                 *pContext = context;
@@ -1234,12 +1230,12 @@ Cleanup:
     RRETURN1(hr, S_FALSE);
 }
 
-HRESULT CCommand::SplitElement(  IMarkupServices *pMarkupServices,
-                                 IHTMLElement    *pElement,
-                                 IMarkupPointer  *pTagStart,
-                                 IMarkupPointer  *pSegmentEnd,
-                                 IMarkupPointer  *pTagEnd,
-                                 IHTMLElement    **ppNewElement )
+HRESULT CCommand::SplitElement(IMarkupServices *pMarkupServices,
+                               IHTMLElement    *pElement,
+                               IMarkupPointer  *pTagStart,
+                               IMarkupPointer  *pSegmentEnd,
+                               IMarkupPointer  *pTagEnd,
+                               IHTMLElement    **ppNewElement)
 {
     HRESULT      hr;
     IHTMLElement *pNewElement = NULL;
@@ -1252,18 +1248,18 @@ HRESULT CCommand::SplitElement(  IMarkupServices *pMarkupServices,
     Assert(hr == S_OK && tagId != TAGID_BODY);
 
     // Make sure the order of pTagStart, pSegmentEnd, and pTagEnd is right
-    hr = OldCompare( pTagStart, pSegmentEnd, &iPosition);
+    hr = OldCompare(pTagStart, pSegmentEnd, &iPosition);
     Assert(hr == S_OK && iPosition != LEFT);
 
-    hr = OldCompare( pSegmentEnd, pTagEnd, &iPosition);
+    hr = OldCompare(pSegmentEnd, pTagEnd, &iPosition);
     Assert(hr == S_OK && iPosition != LEFT);
 #endif
 
-    hr = THR( pSegmentEnd->SetGravity( POINTER_GRAVITY_Right ));
-    if ( FAILED(hr))
+    hr = THR(pSegmentEnd->SetGravity(POINTER_GRAVITY_Right));
+    if (FAILED(hr))
         goto Cleanup;
-    hr = THR( pTagEnd->SetGravity( POINTER_GRAVITY_Right ));
-    if ( FAILED(hr))
+    hr = THR(pTagEnd->SetGravity(POINTER_GRAVITY_Right));
+    if (FAILED(hr))
         goto Cleanup;
 
     // Move element to first part of range
@@ -1280,11 +1276,11 @@ HRESULT CCommand::SplitElement(  IMarkupServices *pMarkupServices,
     // Clone element for the rest of the range
 
 
-    IFC( pMarkupServices->CloneElement( pElement, &pNewElement ) );
+    IFC(pMarkupServices->CloneElement(pElement, &pNewElement));
 
-    IFC( pSegmentEnd->MoveAdjacentToElement(pElement, ELEM_ADJ_AfterEnd) );
+    IFC(pSegmentEnd->MoveAdjacentToElement(pElement, ELEM_ADJ_AfterEnd));
 
-    IFC( InsertElement(pMarkupServices, pNewElement, pSegmentEnd, pTagEnd) );
+    IFC(InsertElement(pMarkupServices, pNewElement, pSegmentEnd, pTagEnd));
 
 
 Cleanup:
@@ -1320,8 +1316,8 @@ CCommand::InsertBlockElement(IHTMLElement *pElement, IMarkupPointer *pStart, IMa
     // Get the selection type
 
 
-    IFR( GetSegmentList(&spSegmentList) );
-    IFR( spSegmentList->GetSegmentCount(&iSegmentCount, &selectionType) );
+    IFR(GetSegmentList(&spSegmentList));
+    IFR(spSegmentList->GetSegmentCount(&iSegmentCount, &selectionType));
     Assert(iSegmentCount);
 
 
@@ -1331,16 +1327,16 @@ CCommand::InsertBlockElement(IHTMLElement *pElement, IMarkupPointer *pStart, IMa
 
     if (selectionType == SELECTION_TYPE_Caret)
     {
-        IFR( GetMarkupServices()->CreateMarkupPointer(&spPointer) );
-        IFR( GetViewServices()->GetCaret(&spCaret) );
-        IFR( spCaret->MovePointerToCaret(spPointer) );
-        IFR( spCaret->GetNotAtBOL( &fNotAtBOL ));
-        IFR( EdUtil::InsertBlockElement(GetMarkupServices(), pElement, pStart, pEnd, spPointer) );
-        IFR( spCaret->MoveCaretToPointer(spPointer, fNotAtBOL, TRUE, CARET_DIRECTION_INDETERMINATE ));
+        IFR(GetMarkupServices()->CreateMarkupPointer(&spPointer));
+        IFR(GetViewServices()->GetCaret(&spCaret));
+        IFR(spCaret->MovePointerToCaret(spPointer));
+        IFR(spCaret->GetNotAtBOL(&fNotAtBOL));
+        IFR(EdUtil::InsertBlockElement(GetMarkupServices(), pElement, pStart, pEnd, spPointer));
+        IFR(spCaret->MoveCaretToPointer(spPointer, fNotAtBOL, TRUE, CARET_DIRECTION_INDETERMINATE));
     }
     else
     {
-        IFR( GetEditor()->InsertElement(pElement, pStart, pEnd) );
+        IFR(GetEditor()->InsertElement(pElement, pStart, pEnd));
     }
 
     RRETURN(hr);
@@ -1352,8 +1348,8 @@ CCommand::CreateAndInsert(ELEMENT_TAG_ID tagId, IMarkupPointer *pStart, IMarkupP
     HRESULT         hr;
     SP_IHTMLElement  spElement;
 
-    IFR( GetMarkupServices()->CreateElement(tagId, NULL, &spElement) );
-    IFR( InsertBlockElement(spElement, pStart, pEnd) );
+    IFR(GetMarkupServices()->CreateElement(tagId, NULL, &spElement));
+    IFR(InsertBlockElement(spElement, pStart, pEnd));
 
     if (ppElement)
     {
@@ -1366,8 +1362,8 @@ CCommand::CreateAndInsert(ELEMENT_TAG_ID tagId, IMarkupPointer *pStart, IMarkupP
 
 HRESULT
 CCommand::CommonQueryStatus(
-        OLECMD *       pCmd,
-        OLECMDTEXT *   pcmdtext )
+    OLECMD *       pCmd,
+    OLECMDTEXT *   pcmdtext)
 {
     HRESULT             hr;
     SP_ISegmentList     spSegmentList;
@@ -1376,13 +1372,13 @@ CCommand::CommonQueryStatus(
 
     pCmd->cmdf = MSOCMDSTATE_UP; // up by default
 
-    IFR( GetSegmentList( &spSegmentList ));
+    IFR(GetSegmentList(&spSegmentList));
 
 
     // If there is no segment count, return up
 
 
-    IFR( spSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType) );
+    IFR(spSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType));
     if (iSegmentCount <= 0) /// nothing to do
     {
         // enable by default
@@ -1398,7 +1394,7 @@ CCommand::CommonQueryStatus(
         return S_OK;
     }
 
-     // Make sure the edit context is valid
+    // Make sure the edit context is valid
     if (GetEditor())
     {
         CSelectionManager *pSelMan;
@@ -1419,16 +1415,16 @@ CCommand::CommonQueryStatus(
 
 HRESULT
 CCommand::CommonPrivateExec(
-        DWORD                    nCmdexecopt,
-        VARIANTARG *             pvarargIn,
-        VARIANTARG *             pvarargOut )
+    DWORD                    nCmdexecopt,
+    VARIANTARG *             pvarargIn,
+    VARIANTARG *             pvarargOut)
 {
     HRESULT             hr;
     SP_ISegmentList     spSegmentList;
     INT                 iSegmentCount;
 
-    IFR( GetSegmentList(&spSegmentList) );
-    IFR( spSegmentList->GetSegmentCount(&iSegmentCount, NULL) );
+    IFR(GetSegmentList(&spSegmentList));
+    IFR(spSegmentList->GetSegmentCount(&iSegmentCount, NULL));
 
     if (iSegmentCount <= 0) /// nothing to do
         return S_OK;
@@ -1469,26 +1465,26 @@ CCommand::CanAcceptHTML(ISegmentList *pSegmentList)
     SELECTION_TYPE      eSelectionType;
     INT                 iSegmentCount;
 
-    IFC( pSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType) );
+    IFC(pSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType));
 
     switch (eSelectionType)
     {
-        case SELECTION_TYPE_Caret:
-        case SELECTION_TYPE_Selection:
-            bResult = GetEditor()->GetSelectionManager()->CanContextAcceptHTML();
-            break;
+    case SELECTION_TYPE_Caret:
+    case SELECTION_TYPE_Selection:
+        bResult = GetEditor()->GetSelectionManager()->CanContextAcceptHTML();
+        break;
 
-        case SELECTION_TYPE_Control:
-            bResult = IsValidOnControl();
-            break;
+    case SELECTION_TYPE_Control:
+        bResult = IsValidOnControl();
+        break;
 
-        default:
-            IFC( GetSegmentPointers(pSegmentList, 0, &spStart, NULL) );
-            IFC( GetViewServices()->GetFlowElement(spStart, &spFlowElement) );
-            if ( spFlowElement )
-            {
-                IFC( GetViewServices()->IsContainerElement(spFlowElement, NULL, &bResult) );
-            }
+    default:
+        IFC(GetSegmentPointers(pSegmentList, 0, &spStart, NULL));
+        IFC(GetViewServices()->GetFlowElement(spStart, &spFlowElement));
+        if (spFlowElement)
+        {
+            IFC(GetViewServices()->IsContainerElement(spFlowElement, NULL, &bResult));
+        }
     }
 
 Cleanup:
@@ -1503,17 +1499,17 @@ CCommand::GetSegmentElement(ISegmentList *pSegmentList, INT i, IHTMLElement **pp
 
     *ppElement = NULL;
 
-    IFR( GetSegmentPointers(pSegmentList, i, &spStart, NULL) );
+    IFR(GetSegmentPointers(pSegmentList, i, &spStart, NULL));
 
     // Get the element
-    IFR( GetViewServices()->RightOrSlave(spStart, FALSE, NULL, ppElement, NULL, NULL) );
+    IFR(GetViewServices()->RightOrSlave(spStart, FALSE, NULL, ppElement, NULL, NULL));
     Assert(*ppElement);
 
     return S_OK;
 }
 
 HRESULT
-CCommand::CopyAttributes( IHTMLElement * pSrcElement, IHTMLElement * pDestElement, BOOL fCopyId)
+CCommand::CopyAttributes(IHTMLElement * pSrcElement, IHTMLElement * pDestElement, BOOL fCopyId)
 {
     return EdUtil::CopyAttributes(GetViewServices(), pSrcElement, pDestElement, fCopyId);
 }
@@ -1526,11 +1522,11 @@ CCommand::AdjustSegment(IMarkupPointer *pStart, IMarkupPointer *pEnd)
     INT             iSegmentCount;
     SELECTION_TYPE  eSelectionType;
 
-    IFR( GetSegmentList(&spSegmentList) );
+    IFR(GetSegmentList(&spSegmentList));
     if (spSegmentList == NULL)
         return S_FALSE;
 
-    IFR( spSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType) );
+    IFR(spSegmentList->GetSegmentCount(&iSegmentCount, &eSelectionType));
 
     if (iSegmentCount > 0 && eSelectionType == SELECTION_TYPE_Selection)
     {
@@ -1543,15 +1539,15 @@ CCommand::AdjustSegment(IMarkupPointer *pStart, IMarkupPointer *pEnd)
         // so that the edit commands don't apply to unselected lines
 
 
-        IFR( epTest->MoveToPointer(pEnd) );
-        IFR( epTest.SetBoundary(pStart, NULL) );
+        IFR(epTest->MoveToPointer(pEnd));
+        IFR(epTest.SetBoundary(pStart, NULL));
 
-        IFR( epTest.Scan(LEFT, BREAK_CONDITION_OMIT_PHRASE - BREAK_CONDITION_Anchor, &dwFound) );
+        IFR(epTest.Scan(LEFT, BREAK_CONDITION_OMIT_PHRASE - BREAK_CONDITION_Anchor, &dwFound));
         if (epTest.CheckFlag(dwFound, BREAK_CONDITION_Boundary))
             return S_OK;
 
         if (epTest.CheckFlag(dwFound, BREAK_CONDITION_ExitBlock))
-            IFR( pEnd->MoveToPointer(epTest) );
+            IFR(pEnd->MoveToPointer(epTest));
     }
 
     return S_OK;

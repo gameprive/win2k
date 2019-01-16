@@ -121,7 +121,7 @@ static CommandMap cmdMap[] =
 
 CProxyFrame::CProxyFrame(CDHTMLSafe* pCtl)
 {
-    SAFEARRAYBOUND rgsabound[1] = {0};
+    SAFEARRAYBOUND rgsabound[1] = { 0 };
 
     _ASSERTE(pCtl);
 
@@ -167,53 +167,53 @@ CProxyFrame::CProxyFrame(CDHTMLSafe* pCtl)
     m_vbBrowseMode = VARIANT_FALSE;
 
     m_vbUseDivOnCr = VARIANT_FALSE;
-    m_bfIsLoading  = FALSE;
+    m_bfIsLoading = FALSE;
     m_bfBaseURLFromBASETag = FALSE;
     m_bfPreserveDirtyFlagAcrossBrowseMode = FALSE;
-    m_bstrInitialDoc.Empty ();
+    m_bstrInitialDoc.Empty();
 
-    m_bstrCurDocPath.Empty ();
+    m_bstrCurDocPath.Empty();
 
-    wcscpy ( m_wszProtocol, g_wszProtocolPrefix );
+    wcscpy(m_wszProtocol, g_wszProtocolPrefix);
     WCHAR wszSuffix[8];
-    _itow ( s_iProtocolSuffix++, wszSuffix, 10 );
-    if ( MAX_PROTOCOL_SUFFIX <= s_iProtocolSuffix )
+    _itow(s_iProtocolSuffix++, wszSuffix, 10);
+    if (MAX_PROTOCOL_SUFFIX <= s_iProtocolSuffix)
     {
         s_iProtocolSuffix = 0;    // Roll over.
     }
-    wcscat ( m_wszProtocol, wszSuffix );
-    wcscpy ( m_wszProtocolPrefix, m_wszProtocol );
-    wcscat ( m_wszProtocolPrefix, L":" );
+    wcscat(m_wszProtocol, wszSuffix);
+    wcscpy(m_wszProtocolPrefix, m_wszProtocol);
+    wcscat(m_wszProtocolPrefix, L":");
 
     m_pProtInfo = NULL;
-    m_bfIsURL   = FALSE;
+    m_bfIsURL = FALSE;
     m_bstrBaseURL = L"";
     m_hwndRestoreFocus = NULL;
 
 #ifdef LATE_BIND_URLMON_WININET
-    m_hUlrMon                    = NULL;
-    m_hWinINet                    = NULL;
-    m_pfnCoInternetCombineUrl    = NULL;
-    m_pfnCoInternetParseUrl        = NULL;
-    m_pfnCreateURLMoniker        = NULL;
-    m_pfnCoInternetGetSession    = NULL;
-    m_pfnURLOpenBlockingStream    = NULL;
+    m_hUlrMon = NULL;
+    m_hWinINet = NULL;
+    m_pfnCoInternetCombineUrl = NULL;
+    m_pfnCoInternetParseUrl = NULL;
+    m_pfnCreateURLMoniker = NULL;
+    m_pfnCoInternetGetSession = NULL;
+    m_pfnURLOpenBlockingStream = NULL;
 
-    m_pfnDeleteUrlCacheEntry    = NULL;
-    m_pfnInternetCreateUrl        = NULL;
-    m_pfnInternetCrackUrl        = NULL;
+    m_pfnDeleteUrlCacheEntry = NULL;
+    m_pfnInternetCreateUrl = NULL;
+    m_pfnInternetCrackUrl = NULL;
 #endif // LATE_BIND_URLMON_WININET
 
-    m_bfModeSwitched    = FALSE;
-    m_bfReloadAttempted    = FALSE;
-    m_bfSFSRedirect        = FALSE;
+    m_bfModeSwitched = FALSE;
+    m_bfReloadAttempted = FALSE;
+    m_bfSFSRedirect = FALSE;
 }
 
 CProxyFrame::~CProxyFrame()
 {
     _ASSERTE(FALSE == m_fCreated);
     _ASSERTE(FALSE == m_fActivated);
-    _ASSERTE( m_cRef == 0 );
+    _ASSERTE(m_cRef == 0);
 
     if (m_pMenuStrings)
     {
@@ -228,16 +228,16 @@ CProxyFrame::~CProxyFrame()
     }
 
     // This should never happen: SetActiveObject should take care of it.
-    _ASSERTE ( NULL == m_pIOleIPActiveObject );
+    _ASSERTE(NULL == m_pIOleIPActiveObject);
     if (m_pIOleIPActiveObject)
     {
         m_pIOleIPActiveObject->Release();
         m_pIOleIPActiveObject = NULL;
     }
 
-    UnRegisterPluggableProtocol ();
+    UnRegisterPluggableProtocol();
 #ifdef LATE_BIND_URLMON_WININET
-    DynUnloadLibraries ();
+    DynUnloadLibraries();
 #endif // LATE_BIND_URLMON_WININET
 }
 
@@ -251,14 +251,14 @@ CProxyFrame::Init(IUnknown* pUnk, IUnknown** ppUnkTriEdit)
     HRESULT hr = S_OK;
 
 #ifdef LATE_BIND_URLMON_WININET
-    if ( ! DynLoadLibraries () )
+    if (!DynLoadLibraries())
     {
         return E_FAIL;
     }
 #endif // LATE_BIND_URLMON_WININET
 
-    hr = RegisterPluggableProtocol ();
-    if ( FAILED ( hr ) )
+    hr = RegisterPluggableProtocol();
+    if (FAILED(hr))
     {
         return hr;
     }
@@ -266,7 +266,7 @@ CProxyFrame::Init(IUnknown* pUnk, IUnknown** ppUnkTriEdit)
     _ASSERTE(NULL == m_pSite);
     _ASSERTE(GetState() == ESTATE_NOTCREATED);
 
-    InitializeDocString ();
+    InitializeDocString();
 
     if (m_pSite)
         return E_UNEXPECTED;
@@ -316,7 +316,7 @@ CProxyFrame::Close()
     _ASSERTE(m_pSite);
     _ASSERTE(GetState() != ESTATE_NOTCREATED);
 
-    m_bstrCurDocPath.Empty ();
+    m_bstrCurDocPath.Empty();
 
     // triedit must be created
     // any state from created to activated is ok
@@ -339,7 +339,7 @@ CProxyFrame::Close()
 
         pSite->Close(FALSE);
         ReleaseInterface(pSite)
-        pSite = NULL;
+            pSite = NULL;
     }
 
     if (m_pUnkTriEdit != NULL)
@@ -359,9 +359,9 @@ CProxyFrame::Close()
 
 //    Determine which string constant to use and return a pointer to it.
 
-WCHAR* CProxyFrame::GetInitialHTML ()
+WCHAR* CProxyFrame::GetInitialHTML()
 {
-    if ( m_vbUseDivOnCr )
+    if (m_vbUseDivOnCr)
     {
         return g_initialHTMLwithDIV;
     }
@@ -433,7 +433,7 @@ CProxyFrame::Activate()
     ChangeState(ESTATE_ACTIVATED);
 
     // This may have been deferred, because the site's command target did not yet exist...
-    SetBrowseMode ( m_vbBrowseMode );
+    SetBrowseMode(m_vbBrowseMode);
 
     return hr;
 }
@@ -454,7 +454,7 @@ CProxyFrame::LoadInitialDoc()
     if (FAILED(hr = PreActivate()))
         goto error;
 
-    if (FAILED(hr = LoadBSTRDeferred ( m_bstrInitialDoc )))
+    if (FAILED(hr = LoadBSTRDeferred(m_bstrInitialDoc)))
     {
         _ASSERTE(SUCCEEDED(hr));
         goto error;
@@ -472,17 +472,17 @@ error:
 // Before getting or setting a property or calling a method on the docobject,
 // assure that it's been properly activated.
 
-void CProxyFrame::AssureActivated ()
+void CProxyFrame::AssureActivated()
 {
-    if ( ! m_fActivated )
+    if (!m_fActivated)
     {
-        if ( m_pCtl->IsUserMode() )
+        if (m_pCtl->IsUserMode())
         {
-            if ( !m_pCtl->m_bInPlaceActive )
+            if (!m_pCtl->m_bInPlaceActive)
             {
-                m_pCtl->DoVerbInPlaceActivate ( NULL, NULL );
+                m_pCtl->DoVerbInPlaceActivate(NULL, NULL);
             }
-            LoadInitialDoc ();
+            LoadInitialDoc();
         }
     }
 }
@@ -509,99 +509,99 @@ CProxyFrame::OnReadyStateChanged(READYSTATE readyState)
     switch (m_readyState)
     {
     case READYSTATE_UNINITIALIZED:
-        {
-            m_hwndRestoreFocus = NULL;
-        }
-        break;
+    {
+        m_hwndRestoreFocus = NULL;
+    }
+    break;
 
     case READYSTATE_LOADING:
-        {
-            m_hwndRestoreFocus = ::GetFocus ();
-        }
-        break;
+    {
+        m_hwndRestoreFocus = ::GetFocus();
+    }
+    break;
 
     case READYSTATE_LOADED:
-        {
-        }
-        break;
+    {
+    }
+    break;
 
     case READYSTATE_INTERACTIVE:
+    {
+        if (NULL != m_hwndRestoreFocus)
         {
-            if ( NULL != m_hwndRestoreFocus )
+            _ASSERTE(::IsWindow(m_hwndRestoreFocus));
+            if (::IsWindow(m_hwndRestoreFocus))
             {
-                _ASSERTE ( ::IsWindow ( m_hwndRestoreFocus ) );
-                if ( ::IsWindow ( m_hwndRestoreFocus ) )
-                {
-                    ::SetFocus ( m_hwndRestoreFocus );
-                }
+                ::SetFocus(m_hwndRestoreFocus);
             }
+        }
 
-            // See if we failed to get a refresh on a mode change.  This happens if
-            // there are IFrames on the page, perhaps in other cases as well.
-            if ( m_bfModeSwitched && !m_bfReloadAttempted )
+        // See if we failed to get a refresh on a mode change.  This happens if
+        // there are IFrames on the page, perhaps in other cases as well.
+        if (m_bfModeSwitched && !m_bfReloadAttempted)
+        {
+            HRESULT    hr = S_OK;
+
+            CComPtr<IMoniker> srpMoniker;
+            CComPtr<IBindCtx> srpBindCtx;
+            CComQIPtr<IPersistMoniker, &IID_IPersistMoniker> srpPM(m_pUnkTriEdit);
+            _ASSERTE(srpPM);
+
+            if (srpPM)
             {
-                HRESULT    hr    = S_OK;
-
-                CComPtr<IMoniker> srpMoniker;
-                CComPtr<IBindCtx> srpBindCtx;
-                CComQIPtr<IPersistMoniker, &IID_IPersistMoniker> srpPM (m_pUnkTriEdit);
-                _ASSERTE ( srpPM );
-
-                if ( srpPM )
-                {
-                    CComBSTR    bstrProtocol = m_wszProtocolPrefix;
+                CComBSTR    bstrProtocol = m_wszProtocolPrefix;
 
 #ifdef LATE_BIND_URLMON_WININET
-                    _ASSERTE ( m_pfnCreateURLMoniker );
-                    hr = (*m_pfnCreateURLMoniker)( NULL, bstrProtocol, &srpMoniker );
+                _ASSERTE(m_pfnCreateURLMoniker);
+                hr = (*m_pfnCreateURLMoniker)(NULL, bstrProtocol, &srpMoniker);
 #else
-                    hr = CreateURLMoniker ( NULL, bstrProtocol, &srpMoniker );
+                hr = CreateURLMoniker(NULL, bstrProtocol, &srpMoniker);
 #endif // LATE_BIND_URLMON_WININET
 
-                    _ASSERTE ( SUCCEEDED( hr ) );
-                    if ( SUCCEEDED ( hr ) )
+                _ASSERTE(SUCCEEDED(hr));
+                if (SUCCEEDED(hr))
+                {
+                    hr = ::CreateBindCtx(NULL, &srpBindCtx);
+                    _ASSERTE(SUCCEEDED(hr));
+                    if (SUCCEEDED(hr))
                     {
-                        hr = ::CreateBindCtx(NULL, &srpBindCtx);
-                        _ASSERTE ( SUCCEEDED( hr ) );
-                        if ( SUCCEEDED ( hr ) )
-                        {
-                            hr = srpPM->Load(FALSE, srpMoniker,  srpBindCtx, STGM_READ);
-                        }
+                        hr = srpPM->Load(FALSE, srpMoniker, srpBindCtx, STGM_READ);
                     }
                 }
             }
-            m_bfModeSwitched    = FALSE;
-            m_bfReloadAttempted    = FALSE;
         }
-        break;
+        m_bfModeSwitched = FALSE;
+        m_bfReloadAttempted = FALSE;
+    }
+    break;
 
     case READYSTATE_COMPLETE:
+    {
+        HRESULT hr = S_OK;
+
+        m_hwndRestoreFocus = NULL;
+        if (!m_vbBrowseMode)
         {
-            HRESULT hr        = S_OK;
-
-            m_hwndRestoreFocus = NULL;
-            if ( ! m_vbBrowseMode )
-            {
-                hr = HrSetDocLoadedProperties();
-                _ASSERTE(SUCCEEDED(hr));
-            }
-
-            _ASSERTE ( m_pCtl->m_hWnd );
-            _ASSERTE ( ::IsWindow ( m_pCtl->m_hWnd ) );
-
-            if ( m_bfPreserveDirtyFlagAcrossBrowseMode && !m_vbBrowseMode )
-            {
-                m_bfPreserveDirtyFlagAcrossBrowseMode = FALSE;
-                SetDirtyFlag ( TRUE );
-            }
-            // Post a user message to fire the DocumentComplete event.
-            // Otherwise, calling things like LoadURL from DocumentComplete behaves strangely.
-            ::PostMessage ( m_pCtl->m_hWnd, DOCUMENT_COMPETE_MESSAGE, DOCUMENT_COMPETE_SIGNATURE, 0L );
-            HrSetRuntimeProperties ();
-            m_bfIsLoading = FALSE;
-            SetBaseURLFromBaseHref ();    // Must be called after clearing m_bfIsLoading
+            hr = HrSetDocLoadedProperties();
+            _ASSERTE(SUCCEEDED(hr));
         }
-        break;
+
+        _ASSERTE(m_pCtl->m_hWnd);
+        _ASSERTE(::IsWindow(m_pCtl->m_hWnd));
+
+        if (m_bfPreserveDirtyFlagAcrossBrowseMode && !m_vbBrowseMode)
+        {
+            m_bfPreserveDirtyFlagAcrossBrowseMode = FALSE;
+            SetDirtyFlag(TRUE);
+        }
+        // Post a user message to fire the DocumentComplete event.
+        // Otherwise, calling things like LoadURL from DocumentComplete behaves strangely.
+        ::PostMessage(m_pCtl->m_hWnd, DOCUMENT_COMPETE_MESSAGE, DOCUMENT_COMPETE_SIGNATURE, 0L);
+        HrSetRuntimeProperties();
+        m_bfIsLoading = FALSE;
+        SetBaseURLFromBaseHref();    // Must be called after clearing m_bfIsLoading
+    }
+    break;
     }
 }
 
@@ -614,7 +614,7 @@ CProxyFrame::OnReadyStateChanged(READYSTATE readyState)
  * CProxyFrame::AddRef
  * CProxyFrame::Release
 */
-STDMETHODIMP CProxyFrame::QueryInterface( REFIID riid, void **ppv )
+STDMETHODIMP CProxyFrame::QueryInterface(REFIID riid, void **ppv)
 {
     /*
      * We provide IOleInPlaceFrame and IOleCommandTarget
@@ -622,34 +622,34 @@ STDMETHODIMP CProxyFrame::QueryInterface( REFIID riid, void **ppv )
      */
     *ppv = NULL;
 
-    if ( IID_IUnknown == riid || IID_IOleInPlaceUIWindow == riid
-        || IID_IOleWindow == riid || IID_IOleInPlaceFrame == riid )
+    if (IID_IUnknown == riid || IID_IOleInPlaceUIWindow == riid
+        || IID_IOleWindow == riid || IID_IOleInPlaceFrame == riid)
     {
         *ppv = static_cast<IOleInPlaceFrame *>(this);
     }
 
-    else if ( IID_IOleCommandTarget == riid )
+    else if (IID_IOleCommandTarget == riid)
     {
         *ppv = static_cast<IOleCommandTarget *>(this);
     }
-    else if ( IID_IBindStatusCallback == riid )
+    else if (IID_IBindStatusCallback == riid)
     {
         *ppv = static_cast<IBindStatusCallback *>(this);
     }
-    else if ( IID_IAuthenticate == riid )
+    else if (IID_IAuthenticate == riid)
     {
         *ppv = static_cast<IAuthenticate *>(this);
     }
-    else if ( IID_IServiceProvider == riid )
+    else if (IID_IServiceProvider == riid)
     {
         // Ask the control for a security manager IF in edit mode:
-        if ( ! m_vbBrowseMode )
+        if (!m_vbBrowseMode)
         {
-            return m_pCtl->GetUnknown()->QueryInterface ( riid, ppv );
+            return m_pCtl->GetUnknown()->QueryInterface(riid, ppv);
         }
     }
 
-    if ( NULL != *ppv )
+    if (NULL != *ppv)
     {
         ((LPUNKNOWN)*ppv)->AddRef();
         return S_OK;
@@ -659,19 +659,19 @@ STDMETHODIMP CProxyFrame::QueryInterface( REFIID riid, void **ppv )
 }
 
 
-STDMETHODIMP_(ULONG) CProxyFrame::AddRef( void )
+STDMETHODIMP_(ULONG) CProxyFrame::AddRef(void)
 {
     return ++m_cRef;
 }
 
-STDMETHODIMP_(ULONG) CProxyFrame::Release( void )
+STDMETHODIMP_(ULONG) CProxyFrame::Release(void)
 {
     //Nothing special happening here-- life if user-controlled.
     // Debug check to see we don't fall below 0
-    _ASSERTE( m_cRef != 0 );
+    _ASSERTE(m_cRef != 0);
 
     ULONG ulRefCount = --m_cRef;
-    if ( 0 == ulRefCount )
+    if (0 == ulRefCount)
     {
         delete this;    // Do not refer to any member variables after this.
     }
@@ -696,9 +696,9 @@ STDMETHODIMP_(ULONG) CProxyFrame::Release( void )
  *  HRESULT         S_OK if successful, E_FAIL if there is no
  *                  window.
 */
-STDMETHODIMP CProxyFrame::GetWindow( HWND* phWnd )
+STDMETHODIMP CProxyFrame::GetWindow(HWND* phWnd)
 {
-    if ( m_pCtl != NULL )
+    if (m_pCtl != NULL)
     {
         *phWnd = m_pCtl->m_hWnd;
     }
@@ -720,7 +720,7 @@ STDMETHODIMP CProxyFrame::GetWindow( HWND* phWnd )
  * Return Value:
  *  HRESULT         S_OK
 */
-STDMETHODIMP CProxyFrame::ContextSensitiveHelp( BOOL /*fEnterMode*/ )
+STDMETHODIMP CProxyFrame::ContextSensitiveHelp(BOOL /*fEnterMode*/)
 {
     return S_OK;
 }
@@ -741,15 +741,15 @@ STDMETHODIMP CProxyFrame::ContextSensitiveHelp( BOOL /*fEnterMode*/ )
  *  HRESULT         S_OK if all is well, INPLACE_E_NOTOOLSPACE
  *                  if there is no negotiable space.
 */
-STDMETHODIMP CProxyFrame::GetBorder( LPRECT prcBorder )
+STDMETHODIMP CProxyFrame::GetBorder(LPRECT prcBorder)
 {
-    if ( NULL == prcBorder )
+    if (NULL == prcBorder)
     {
         return E_INVALIDARG;
     }
 
     //We return all the client area space
-    m_pCtl->GetClientRect( prcBorder );
+    m_pCtl->GetClientRect(prcBorder);
     return S_OK;
 }
 
@@ -771,7 +771,7 @@ STDMETHODIMP CProxyFrame::GetBorder( LPRECT prcBorder )
  *  HRESULT         S_OK if we can give up space,
  *                  INPLACE_E_NOTOOLSPACE otherwise.
 */
-STDMETHODIMP CProxyFrame::RequestBorderSpace( LPCBORDERWIDTHS /*pBW*/ )
+STDMETHODIMP CProxyFrame::RequestBorderSpace(LPCBORDERWIDTHS /*pBW*/)
 {
     // We have no border space restrictions
     return S_OK;
@@ -795,7 +795,7 @@ STDMETHODIMP CProxyFrame::RequestBorderSpace( LPCBORDERWIDTHS /*pBW*/ )
  * Return Value:
  *  HRESULT         S_OK
 */
-STDMETHODIMP CProxyFrame::SetBorderSpace( LPCBORDERWIDTHS /*pBW*/ )
+STDMETHODIMP CProxyFrame::SetBorderSpace(LPCBORDERWIDTHS /*pBW*/)
 {
     // We turn off the MSHTML.DLL UI so we ignore all of this.
 
@@ -819,11 +819,11 @@ STDMETHODIMP CProxyFrame::SetBorderSpace( LPCBORDERWIDTHS /*pBW*/ )
  * Return Value:
  *  HRESULT         S_OK
 */
-STDMETHODIMP CProxyFrame::SetActiveObject( LPOLEINPLACEACTIVEOBJECT pIIPActiveObj,
-                                            LPCOLESTR /*pszObj*/)
+STDMETHODIMP CProxyFrame::SetActiveObject(LPOLEINPLACEACTIVEOBJECT pIIPActiveObj,
+                                          LPCOLESTR /*pszObj*/)
 {
     // If we already have an active Object then release it.
-    if ( NULL != m_pIOleIPActiveObject )
+    if (NULL != m_pIOleIPActiveObject)
     {
         m_pIOleIPActiveObject->Release();
     }
@@ -831,10 +831,10 @@ STDMETHODIMP CProxyFrame::SetActiveObject( LPOLEINPLACEACTIVEOBJECT pIIPActiveOb
     //NULLs m_pIOleIPActiveObject if pIIPActiveObj is NULL
     m_pIOleIPActiveObject = pIIPActiveObj;
 
-    if ( NULL != m_pIOleIPActiveObject )
+    if (NULL != m_pIOleIPActiveObject)
     {
         m_pIOleIPActiveObject->AddRef();
-        m_pIOleIPActiveObject->GetWindow( &m_hWndObj );
+        m_pIOleIPActiveObject->GetWindow(&m_hWndObj);
     }
     return S_OK;
 }
@@ -858,7 +858,7 @@ STDMETHODIMP CProxyFrame::SetActiveObject( LPOLEINPLACEACTIVEOBJECT pIIPActiveOb
  * Return Value:
  *  HRESULT         E_NOTIMPL
 */
-STDMETHODIMP CProxyFrame::InsertMenus( HMENU /*hMenu*/, LPOLEMENUGROUPWIDTHS /*pMGW*/ )
+STDMETHODIMP CProxyFrame::InsertMenus(HMENU /*hMenu*/, LPOLEMENUGROUPWIDTHS /*pMGW*/)
 {
     // We've turned off the MSHTML.DLL Menus so we don't expect any merging to go on!
     return E_NOTIMPL;
@@ -882,7 +882,7 @@ STDMETHODIMP CProxyFrame::InsertMenus( HMENU /*hMenu*/, LPOLEMENUGROUPWIDTHS /*p
  * Return Value:
  *  HRESULT         NOERROR
 */
-STDMETHODIMP CProxyFrame::SetMenu( HMENU /*hMenu*/, HOLEMENU /*hOLEMenu*/, HWND /*hWndObj*/ )
+STDMETHODIMP CProxyFrame::SetMenu(HMENU /*hMenu*/, HOLEMENU /*hOLEMenu*/, HWND /*hWndObj*/)
 {
     // We've turned off the MSHTML.DLL Menus so we don't expect any merging to go on!
     return E_NOTIMPL;
@@ -904,7 +904,7 @@ STDMETHODIMP CProxyFrame::SetMenu( HMENU /*hMenu*/, HOLEMENU /*hOLEMenu*/, HWND 
  * Return Value:
  *  HRESULT         NOERROR
 */
-STDMETHODIMP CProxyFrame::RemoveMenus( HMENU /*hMenu*/ )
+STDMETHODIMP CProxyFrame::RemoveMenus(HMENU /*hMenu*/)
 {
     // We've turned off the MSHTML.DLL Menus so we don't expect any merging to go on!
     return E_NOTIMPL;
@@ -928,7 +928,7 @@ STDMETHODIMP CProxyFrame::RemoveMenus( HMENU /*hMenu*/ )
  *                  of the text could be displayed, or E_FAIL if
  *                  the container has no status line.
 */
-STDMETHODIMP CProxyFrame::SetStatusText( LPCOLESTR /*pszText*/ )
+STDMETHODIMP CProxyFrame::SetStatusText(LPCOLESTR /*pszText*/)
 {
     return S_OK;
 }
@@ -950,7 +950,7 @@ STDMETHODIMP CProxyFrame::SetStatusText( LPCOLESTR /*pszText*/ )
  *  HRESULT         S_OK
 */
 
-STDMETHODIMP CProxyFrame::EnableModeless( BOOL /*fEnable*/ )
+STDMETHODIMP CProxyFrame::EnableModeless(BOOL /*fEnable*/)
 {
     return S_OK;
 }
@@ -975,7 +975,7 @@ STDMETHODIMP CProxyFrame::EnableModeless( BOOL /*fEnable*/ )
  *  HRESULT         NOERROR if the keystroke was used,
  *                  S_FALSE otherwise.
 */
-STDMETHODIMP CProxyFrame::TranslateAccelerator( LPMSG /*pMSG*/, WORD /*wID*/ )
+STDMETHODIMP CProxyFrame::TranslateAccelerator(LPMSG /*pMSG*/, WORD /*wID*/)
 {
     return S_FALSE;
 }
@@ -984,10 +984,10 @@ STDMETHODIMP CProxyFrame::TranslateAccelerator( LPMSG /*pMSG*/, WORD /*wID*/ )
 /*
  * IOleCommandTarget::QueryStatus
 */
-STDMETHODIMP CProxyFrame::QueryStatus( const GUID* pguidCmdGroup, ULONG cCmds,
-                OLECMD* prgCmds, OLECMDTEXT* pCmdText )
+STDMETHODIMP CProxyFrame::QueryStatus(const GUID* pguidCmdGroup, ULONG cCmds,
+                                      OLECMD* prgCmds, OLECMDTEXT* pCmdText)
 {
-    if ( pguidCmdGroup != NULL )
+    if (pguidCmdGroup != NULL)
     {
         // It's a nonstandard group!!
         return OLECMDERR_E_UNKNOWNGROUP;
@@ -998,28 +998,28 @@ STDMETHODIMP CProxyFrame::QueryStatus( const GUID* pguidCmdGroup, ULONG cCmds,
     HRESULT     hr = S_OK;
 
     // By default command text is NOT SUPPORTED.
-    if ( pCmdText && ( pCmdText->cmdtextf != OLECMDTEXTF_NONE ) )
+    if (pCmdText && (pCmdText->cmdtextf != OLECMDTEXTF_NONE))
     {
         pCmdText->cwActual = 0;
     }
 
     // Loop through each command in the array, setting the status of each.
-    for ( pCmd = prgCmds, c = cCmds; --c >= 0; pCmd++ )
+    for (pCmd = prgCmds, c = cCmds; --c >= 0; pCmd++)
     {
         // By default command status is NOT SUPPORTED.
         pCmd->cmdf = 0;
 
-        switch ( pCmd->cmdID )
+        switch (pCmd->cmdID)
         {
-            case OLECMDID_UPDATECOMMANDS:
-                pCmd->cmdf = OLECMDF_SUPPORTED;
-                break;
+        case OLECMDID_UPDATECOMMANDS:
+            pCmd->cmdf = OLECMDF_SUPPORTED;
+            break;
 
-            case OLECMDID_NEW:
-            case OLECMDID_OPEN:
-            case OLECMDID_SAVE:
-                pCmd->cmdf = (MSOCMDF_SUPPORTED | MSOCMDF_ENABLED);
-                break;
+        case OLECMDID_NEW:
+        case OLECMDID_OPEN:
+        case OLECMDID_SAVE:
+            pCmd->cmdf = (MSOCMDF_SUPPORTED | MSOCMDF_ENABLED);
+            break;
         }
     }
 
@@ -1031,27 +1031,27 @@ STDMETHODIMP CProxyFrame::QueryStatus( const GUID* pguidCmdGroup, ULONG cCmds,
  * IOleCommandTarget::Exec
 */
 
-STDMETHODIMP CProxyFrame::Exec( const GUID* pguidCmdGroup, DWORD nCmdID,
-    DWORD /*nCmdexecopt*/, VARIANTARG* /*pvaIn*/, VARIANTARG* /*pvaOut*/ )
+STDMETHODIMP CProxyFrame::Exec(const GUID* pguidCmdGroup, DWORD nCmdID,
+                               DWORD /*nCmdexecopt*/, VARIANTARG* /*pvaIn*/, VARIANTARG* /*pvaOut*/)
 {
     HRESULT hr = S_OK;
 
-    if ( pguidCmdGroup == NULL )
+    if (pguidCmdGroup == NULL)
     {
         switch (nCmdID)
         {
 
-            case OLECMDID_UPDATECOMMANDS:
-                {
-                    // Fires event to container.
-                    m_pCtl->Fire_DisplayChanged();
-                    hr = S_OK;
-                }
-                break;
+        case OLECMDID_UPDATECOMMANDS:
+        {
+            // Fires event to container.
+            m_pCtl->Fire_DisplayChanged();
+            hr = S_OK;
+        }
+        break;
 
-            default:
-                hr = OLECMDERR_E_NOTSUPPORTED;
-                break;
+        default:
+            hr = OLECMDERR_E_NOTSUPPORTED;
+            break;
         }
     }
     else
@@ -1067,8 +1067,8 @@ STDMETHODIMP CProxyFrame::Exec( const GUID* pguidCmdGroup, DWORD nCmdID,
 void
 CProxyFrame::UpdateObjectRects()
 {
-    _ASSERTE ( m_pSite );
-    if ( NULL != m_pSite )
+    _ASSERTE(m_pSite);
+    if (NULL != m_pSite)
     {
         m_pSite->UpdateObjectRects();
     }
@@ -1107,15 +1107,15 @@ CProxyFrame::HrTranslateAccelerator(LPMSG lpmsg)
 LRESULT
 CProxyFrame::OnSetFocus(UINT /*nMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    if ( ! m_pCtl->m_bUIActive )
+    if (!m_pCtl->m_bUIActive)
     {
-        m_pCtl->DoVerbUIActivate ( NULL, NULL );
+        m_pCtl->DoVerbUIActivate(NULL, NULL);
     }
 
     // Give the focus to the ActiveX Document window
-    if ( m_hWndObj != NULL )
+    if (m_hWndObj != NULL)
     {
-        ::SetFocus( m_hWndObj );
+        ::SetFocus(m_hWndObj);
     }
 
     return 0;
@@ -1125,19 +1125,19 @@ CProxyFrame::OnSetFocus(UINT /*nMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 //    Sets the Trident window's parent correctly when created and destroyed.
 
 void
-CProxyFrame::SetParent ( HWND hwndParent )
+CProxyFrame::SetParent(HWND hwndParent)
 {
     // This may be called before the control has been drawn.
-    if ( NULL != m_hWndObj )
+    if (NULL != m_hWndObj)
     {
-        HWND hwndOldParent = ::SetParent ( m_hWndObj, hwndParent );
-        if ( NULL == hwndOldParent )
+        HWND hwndOldParent = ::SetParent(m_hWndObj, hwndParent);
+        if (NULL == hwndOldParent)
         {
             DWORD dwErr = 0;
-            dwErr = GetLastError ();
+            dwErr = GetLastError();
         }
-        _ASSERTE ( m_pSite );
-        m_pSite->SetWindow ( hwndParent );
+        _ASSERTE(m_pSite);
+        m_pSite->SetWindow(hwndParent);
     }
 }
 
@@ -1145,13 +1145,13 @@ CProxyFrame::SetParent ( HWND hwndParent )
 //    Handles WM_SHOWWINDOW messages directed to the control.
 
 void
-CProxyFrame::Show ( WPARAM nCmdShow )
+CProxyFrame::Show(WPARAM nCmdShow)
 {
     // This may be called before the control has been drawn.
     // Hide or show the hosted Trident
-    if ( NULL != m_hWndObj )
+    if (NULL != m_hWndObj)
     {
-        ::ShowWindow ( m_hWndObj, (int)nCmdShow );
+        ::ShowWindow(m_hWndObj, (int)nCmdShow);
     }
 }
 
@@ -1169,7 +1169,7 @@ CProxyFrame::Show ( WPARAM nCmdShow )
 
 HRESULT
 CProxyFrame::HrMapCommand(DHTMLEDITCMDID typeLibCmdID,
-    ULONG* cmdID, const GUID** ppguidCmdGroup, BOOL* pbOutParam)
+                          ULONG* cmdID, const GUID** ppguidCmdGroup, BOOL* pbOutParam)
 {
 
     _ASSERTE(cmdID);
@@ -1180,7 +1180,7 @@ CProxyFrame::HrMapCommand(DHTMLEDITCMDID typeLibCmdID,
     *ppguidCmdGroup = NULL;
     *pbOutParam = FALSE;
 
-    for (UINT i=0; i < sizeof(cmdMap)/sizeof(CommandMap); ++i)
+    for (UINT i = 0; i < sizeof(cmdMap) / sizeof(CommandMap); ++i)
     {
         if (typeLibCmdID == cmdMap[i].typeLibCmdID)
         {
@@ -1192,7 +1192,7 @@ CProxyFrame::HrMapCommand(DHTMLEDITCMDID typeLibCmdID,
         }
     }
 
-    return OLECMDERR_E_NOTSUPPORTED ;
+    return OLECMDERR_E_NOTSUPPORTED;
 }
 
 
@@ -1200,7 +1200,7 @@ CProxyFrame::HrMapCommand(DHTMLEDITCMDID typeLibCmdID,
 
 HRESULT
 CProxyFrame::HrExecCommand(const GUID* pguidCmdGroup, ULONG ucmdID,
-    OLECMDEXECOPT cmdexecopt, VARIANT* pVarIn, VARIANT* pVarOut)
+                           OLECMDEXECOPT cmdexecopt, VARIANT* pVarIn, VARIANT* pVarOut)
 {
     HRESULT hr = E_FAIL;
     LPOLECOMMANDTARGET pCommandTarget = NULL;
@@ -1230,7 +1230,7 @@ CProxyFrame::HrExecCommand(const GUID* pguidCmdGroup, ULONG ucmdID,
 
 HRESULT
 CProxyFrame::HrMapExecCommand(DHTMLEDITCMDID deCommand, OLECMDEXECOPT cmdexecopt,
-    VARIANT* pVarInput, VARIANT* pVarOutput)
+                              VARIANT* pVarInput, VARIANT* pVarOutput)
 {
     HRESULT hr = S_OK;
     LPOLECOMMANDTARGET pCmdTgt = NULL;
@@ -1258,62 +1258,62 @@ CProxyFrame::HrMapExecCommand(DHTMLEDITCMDID deCommand, OLECMDEXECOPT cmdexecopt
 
     AssureActivated();
 
-    switch ( deCommand )
+    switch (deCommand)
     {
-        case DECMD_GETBLOCKFMTNAMES:
-            hr = HrExecGetBlockFmtNames(pVarInput);
-            break;
+    case DECMD_GETBLOCKFMTNAMES:
+        hr = HrExecGetBlockFmtNames(pVarInput);
+        break;
 
-        case DECMD_INSERTTABLE:
-            hr = HrExecInsertTable(pVarInput);
-            break;
+    case DECMD_INSERTTABLE:
+        hr = HrExecInsertTable(pVarInput);
+        break;
 
-        case DECMD_GETFORECOLOR:
-        case DECMD_GETBACKCOLOR:
-            hr = HrExecGetColor(deCommand, ulMappedCommand, pVarOutput);
-            break;
+    case DECMD_GETFORECOLOR:
+    case DECMD_GETBACKCOLOR:
+        hr = HrExecGetColor(deCommand, ulMappedCommand, pVarOutput);
+        break;
 
-        case DECMD_SETFONTSIZE:
-            hr = HrExecSetFontSize(pVarInput);
-            break;
+    case DECMD_SETFONTSIZE:
+        hr = HrExecSetFontSize(pVarInput);
+        break;
 
-        case DECMD_GETBLOCKFMT:
-            // Trident inconsistancy: GetBlockFmt fails if outparam isn't a BSTR.  GetFontName is OK with VT_EMPTY
-            VariantChangeType ( pVarOutput, pVarOutput, 0, VT_BSTR );
-            // Fall through; do not break!
-        case DECMD_GETFONTNAME:
-        case DECMD_GETFONTSIZE:
-            hr = HrExecGenericCommands(pguidCmdGroup, ulMappedCommand, cmdexecopt, pVarOutput, TRUE );
-            break;
+    case DECMD_GETBLOCKFMT:
+        // Trident inconsistancy: GetBlockFmt fails if outparam isn't a BSTR.  GetFontName is OK with VT_EMPTY
+        VariantChangeType(pVarOutput, pVarOutput, 0, VT_BSTR);
+        // Fall through; do not break!
+    case DECMD_GETFONTNAME:
+    case DECMD_GETFONTSIZE:
+        hr = HrExecGenericCommands(pguidCmdGroup, ulMappedCommand, cmdexecopt, pVarOutput, TRUE);
+        break;
 
         // Because our QueryStatus on DECMD_PROPERTIES returns TRUE for anything with IOleObject, executing the properties
         // verb can return an unexpected error.  Therefore, we ALWAYS return S_OK from this command to avoid causing VB and
         // script to terminate.
-        case DECMD_PROPERTIES:
-        {
-            CComVariant    varParam;
-            varParam.vt        = VT_I4;
-            varParam.lVal    = OLEIVERB_PROPERTIES;
-            hr = HrExecGenericCommands(pguidCmdGroup, ulMappedCommand, cmdexecopt, &varParam, FALSE );
-            hr = S_OK;
-        }
-        break;
+    case DECMD_PROPERTIES:
+    {
+        CComVariant    varParam;
+        varParam.vt = VT_I4;
+        varParam.lVal = OLEIVERB_PROPERTIES;
+        hr = HrExecGenericCommands(pguidCmdGroup, ulMappedCommand, cmdexecopt, &varParam, FALSE);
+        hr = S_OK;
+    }
+    break;
 
-        default:
-            hr = HrExecGenericCommands(pguidCmdGroup, ulMappedCommand, cmdexecopt, pVarInput, bOutParam);
-            break;
+    default:
+        hr = HrExecGenericCommands(pguidCmdGroup, ulMappedCommand, cmdexecopt, pVarInput, bOutParam);
+        break;
     }
 
     if (FAILED(hr))
     {
         if (DISP_E_BADVARTYPE == hr || DISP_E_MEMBERNOTFOUND == hr)
         {
-        // Map these Trident errors to something more general.
-        // These errors can occur if Trident expected the element
-        // it was trying to operate on to support certain interfaces.
-        // The caller was trying to perform an operation not valid
-        // for the current selection. Probably didn't call QueryStatus
-        // first.
+            // Map these Trident errors to something more general.
+            // These errors can occur if Trident expected the element
+            // it was trying to operate on to support certain interfaces.
+            // The caller was trying to perform an operation not valid
+            // for the current selection. Probably didn't call QueryStatus
+            // first.
 
             hr = OLECMDERR_E_NOTSUPPORTED;
         }
@@ -1334,7 +1334,7 @@ CProxyFrame::HrMapExecCommand(DHTMLEDITCMDID deCommand, OLECMDEXECOPT cmdexecopt
 
 HRESULT
 CProxyFrame::HrExecGenericCommands(const GUID* pguidCmdGroup, ULONG cmdID,
-    OLECMDEXECOPT cmdexecopt, LPVARIANT pVarInput, BOOL bOutParam)
+                                   OLECMDEXECOPT cmdexecopt, LPVARIANT pVarInput, BOOL bOutParam)
 {
     HRESULT hr = S_OK;
     LPOLECOMMANDTARGET pCmdTgt = NULL;
@@ -1389,24 +1389,24 @@ CProxyFrame::HrExecGenericCommands(const GUID* pguidCmdGroup, ULONG cmdID,
         if (V_VT(_pVar) != (V_VT(pVarInput) ^ VT_BYREF))
             return hr;
 
-        switch(V_VT(_pVar))
+        switch (V_VT(_pVar))
         {
         case VT_BSTR:
-            _ASSERTE(V_VT(pVarInput) == (VT_BSTR|VT_BYREF));
+            _ASSERTE(V_VT(pVarInput) == (VT_BSTR | VT_BYREF));
 
             if (V_BSTRREF(pVarInput))
                 hr = SysReAllocString(V_BSTRREF(pVarInput), V_BSTR(_pVar));
             break;
 
         case VT_BOOL:
-            _ASSERTE(V_VT(pVarInput) == (VT_BOOL|VT_BYREF));
+            _ASSERTE(V_VT(pVarInput) == (VT_BOOL | VT_BYREF));
 
             if (V_BOOLREF(pVarInput))
                 *(V_BOOLREF(pVarInput)) = V_BOOL(_pVar);
             break;
 
         case VT_I4:
-            _ASSERTE(V_VT(pVarInput) == (VT_I4|VT_BYREF));
+            _ASSERTE(V_VT(pVarInput) == (VT_I4 | VT_BYREF));
 
             if (V_I4REF(pVarInput))
                 *(V_I4REF(pVarInput)) = V_I4(_pVar);
@@ -1420,7 +1420,7 @@ CProxyFrame::HrExecGenericCommands(const GUID* pguidCmdGroup, ULONG cmdID,
 
 cleanup:
     // Our documentation replaces E_FAIL with DE_E_UNEXPECTED: different values.
-    if ( E_FAIL == hr )
+    if (E_FAIL == hr)
     {
         hr = DE_E_UNEXPECTED;
     }
@@ -1446,7 +1446,7 @@ CProxyFrame::HrExecGetBlockFmtNames(LPVARIANT pVarInput)
     if (NULL == pVarInput)
         return E_INVALIDARG;
 
-    if (V_VT(pVarInput) == (VT_BYREF|VT_DISPATCH))
+    if (V_VT(pVarInput) == (VT_BYREF | VT_DISPATCH))
     {
         if (V_DISPATCHREF(pVarInput))
             pUnk = *(V_DISPATCHREF(pVarInput));
@@ -1460,7 +1460,7 @@ CProxyFrame::HrExecGetBlockFmtNames(LPVARIANT pVarInput)
         else
             return E_INVALIDARG;
     }
-    else if (V_VT(pVarInput) == (VT_BYREF|VT_UNKNOWN))
+    else if (V_VT(pVarInput) == (VT_BYREF | VT_UNKNOWN))
     {
         if (V_UNKNOWNREF(pVarInput))
             pUnk = *(V_UNKNOWNREF(pVarInput));
@@ -1485,7 +1485,7 @@ CProxyFrame::HrExecGetBlockFmtNames(LPVARIANT pVarInput)
     // Try to get the names object before
     // performing the command
 
-    if (FAILED(hr = pUnk->QueryInterface(IID_IDEGetBlockFmtNamesParam, (LPVOID*) &piNamesParam)))
+    if (FAILED(hr = pUnk->QueryInterface(IID_IDEGetBlockFmtNamesParam, (LPVOID*)&piNamesParam)))
         return E_INVALIDARG;
 
     _ASSERTE((!piNamesParam) == FALSE);
@@ -1498,7 +1498,7 @@ CProxyFrame::HrExecGetBlockFmtNames(LPVARIANT pVarInput)
     V_VT(&varArray) = VT_ARRAY;
 
     hr = pCmdTgt->Exec(&GUID_TriEditCommandGroup, IDM_TRIED_GETBLOCKFMTS,
-        MSOCMDEXECOPT_DONTPROMPTUSER, NULL, &varArray);
+                       MSOCMDEXECOPT_DONTPROMPTUSER, NULL, &varArray);
 
     if (FAILED(hr))
         goto cleanup;
@@ -1529,7 +1529,7 @@ CProxyFrame::HrExecInsertTable(LPVARIANT pVarInput)
     if (NULL == pVarInput)
         return E_INVALIDARG;
 
-    if (V_VT(pVarInput) == (VT_BYREF|VT_DISPATCH))
+    if (V_VT(pVarInput) == (VT_BYREF | VT_DISPATCH))
     {
         if (V_DISPATCHREF(pVarInput))
             pUnk = *(V_DISPATCHREF(pVarInput));
@@ -1543,7 +1543,7 @@ CProxyFrame::HrExecInsertTable(LPVARIANT pVarInput)
         else
             return E_INVALIDARG;
     }
-    else if (V_VT(pVarInput) == (VT_BYREF|VT_UNKNOWN))
+    else if (V_VT(pVarInput) == (VT_BYREF | VT_UNKNOWN))
     {
         if (V_UNKNOWNREF(pVarInput))
             pUnk = *(V_UNKNOWNREF(pVarInput));
@@ -1565,7 +1565,7 @@ CProxyFrame::HrExecInsertTable(LPVARIANT pVarInput)
     if (NULL == pUnk)
         return E_INVALIDARG;
 
-    if (FAILED(hr = pUnk->QueryInterface(IID_IDEInsertTableParam, (LPVOID*) &piTableParam)))
+    if (FAILED(hr = pUnk->QueryInterface(IID_IDEInsertTableParam, (LPVOID*)&piTableParam)))
         return E_INVALIDARG;
 
     _ASSERTE((!piTableParam) == FALSE);
@@ -1578,7 +1578,7 @@ CProxyFrame::HrExecInsertTable(LPVARIANT pVarInput)
 
 
     hr = pCmdTgt->Exec(&GUID_TriEditCommandGroup, IDM_TRIED_INSERTTABLE,
-        MSOCMDEXECOPT_DONTPROMPTUSER, &varTableArray, NULL);
+                       MSOCMDEXECOPT_DONTPROMPTUSER, &varTableArray, NULL);
 
     return hr;
 }
@@ -1607,7 +1607,7 @@ CProxyFrame::HrExecGetColor(DHTMLEDITCMDID deCommand, ULONG ulMappedCommand, LPV
         return E_INVALIDARG;
 
     // validate the args
-    if (V_VT(pVarOutput) == (VT_BYREF|VT_BSTR))
+    if (V_VT(pVarOutput) == (VT_BYREF | VT_BSTR))
     {
         if (NULL == V_BSTRREF(pVarOutput))
             return E_INVALIDARG;
@@ -1624,7 +1624,7 @@ CProxyFrame::HrExecGetColor(DHTMLEDITCMDID deCommand, ULONG ulMappedCommand, LPV
     V_VT(&varColorOut) = VT_I4;
 
     hr = pCmdTgt->Exec(&GUID_TriEditCommandGroup, ulMappedCommand,
-        MSOCMDEXECOPT_DONTPROMPTUSER, NULL, &varColorOut);
+                       MSOCMDEXECOPT_DONTPROMPTUSER, NULL, &varColorOut);
 
     // Trident will return VT_NULL if color selection
     // was mixed or no text is selected, we return empty
@@ -1635,9 +1635,9 @@ CProxyFrame::HrExecGetColor(DHTMLEDITCMDID deCommand, ULONG ulMappedCommand, LPV
     if (VT_I4 == V_VT(&varColorOut))
     {
         ULONG ulColor = 0;
-        ULONG r=0;
-        ULONG g=0;
-        ULONG b=0;
+        ULONG r = 0;
+        ULONG g = 0;
+        ULONG b = 0;
 
         ulColor = V_I4(&varColorOut);
         r = 0x000000ff & ulColor;
@@ -1649,7 +1649,7 @@ CProxyFrame::HrExecGetColor(DHTMLEDITCMDID deCommand, ULONG ulMappedCommand, LPV
 
     oleStr = T2OLE(buf);
 
-    if (V_VT(pVarOutput) == (VT_BSTR|VT_BYREF))
+    if (V_VT(pVarOutput) == (VT_BSTR | VT_BYREF))
         hr = SysReAllocString(V_BSTRREF(pVarOutput), oleStr);
     else if (V_VT(pVarOutput) == (VT_BSTR))
         hr = SysReAllocString(&(V_BSTR(pVarOutput)), oleStr);
@@ -1691,7 +1691,7 @@ CProxyFrame::HrExecSetFontSize(LPVARIANT pVarInput)
 
 
     hr = pCmdTgt->Exec(&GUID_TriEditCommandGroup, IDM_TRIED_FONTSIZE,
-        MSOCMDEXECOPT_DONTPROMPTUSER, &varSizeIn, NULL);
+                       MSOCMDEXECOPT_DONTPROMPTUSER, &varSizeIn, NULL);
 
     return hr;
 }
@@ -1706,7 +1706,7 @@ CProxyFrame::HrExecSetFontSize(LPVARIANT pVarInput)
 //    Map the control specific command ID to a TriEdit command ID and call QueryStatus.
 
 HRESULT
-CProxyFrame::HrMapQueryStatus( DHTMLEDITCMDID ucmdID, DHTMLEDITCMDF* cmdf)
+CProxyFrame::HrMapQueryStatus(DHTMLEDITCMDID ucmdID, DHTMLEDITCMDF* cmdf)
 {
     LPOLECOMMANDTARGET pCommandTarget = NULL;
 
@@ -1720,7 +1720,7 @@ CProxyFrame::HrMapQueryStatus( DHTMLEDITCMDID ucmdID, DHTMLEDITCMDF* cmdf)
     if (NULL == cmdf)
         return E_INVALIDARG;
 
-    *cmdf = (DHTMLEDITCMDF) 0;
+    *cmdf = (DHTMLEDITCMDF)0;
 
     _ASSERTE(m_pSite);
 
@@ -1730,10 +1730,10 @@ CProxyFrame::HrMapQueryStatus( DHTMLEDITCMDID ucmdID, DHTMLEDITCMDF* cmdf)
     pCommandTarget = m_pSite->GetCommandTarget();
     _ASSERTE(pCommandTarget);
 
-    if ( pCommandTarget != NULL )
+    if (pCommandTarget != NULL)
     {
 
-        AssureActivated ();
+        AssureActivated();
 
         ULONG cmdID = 0;
         const GUID* pguidCmdGroup = NULL;
@@ -1743,11 +1743,11 @@ CProxyFrame::HrMapQueryStatus( DHTMLEDITCMDID ucmdID, DHTMLEDITCMDF* cmdf)
         {
             MSOCMD msocmd;
             msocmd.cmdID = cmdID;
-            msocmd.cmdf  = 0;
+            msocmd.cmdf = 0;
 
             hr = pCommandTarget->QueryStatus(pguidCmdGroup, 1, &msocmd, NULL);
 
-            *cmdf = (DHTMLEDITCMDF) msocmd.cmdf;
+            *cmdf = (DHTMLEDITCMDF)msocmd.cmdf;
         }
     }
 
@@ -1770,23 +1770,23 @@ CProxyFrame::HrQueryStatus(const GUID* pguidCmdGroup, ULONG ucmdID, OLECMDF* cmd
     if (NULL == cmdf)
         return E_INVALIDARG;
 
-    *cmdf = (OLECMDF) 0;
+    *cmdf = (OLECMDF)0;
 
     _ASSERTE(m_pSite);
 
-    if ( m_pSite != NULL ) // m_pSite should always be set
+    if (m_pSite != NULL) // m_pSite should always be set
     {
         LPOLECOMMANDTARGET pCommandTarget = m_pSite->GetCommandTarget();
 
-        if ( pCommandTarget != NULL )
+        if (pCommandTarget != NULL)
         {
             MSOCMD msocmd;
             msocmd.cmdID = ucmdID;
-            msocmd.cmdf  = 0;
+            msocmd.cmdf = 0;
 
             hr = pCommandTarget->QueryStatus(pguidCmdGroup, 1, &msocmd, NULL);
 
-            *cmdf = (OLECMDF) msocmd.cmdf;
+            *cmdf = (OLECMDF)msocmd.cmdf;
         }
     }
 
@@ -1799,20 +1799,20 @@ CProxyFrame::HrQueryStatus(const GUID* pguidCmdGroup, ULONG ucmdID, OLECMDF* cmd
 //    We must detect these, both in file names and file:// URL and return an error.
 
 BOOL
-CProxyFrame::IsMissingBackSlash ( BSTR path, BOOL bfIsURL )
+CProxyFrame::IsMissingBackSlash(BSTR path, BOOL bfIsURL)
 {
     BOOL bfMissing = FALSE;
 
-    if ( bfIsURL )
+    if (bfIsURL)
     {
         WCHAR    wszFileProtocol[] = L"file://";
-        int        cchProtocol        = wcslen ( wszFileProtocol );
+        int        cchProtocol = wcslen(wszFileProtocol);
 
-        if ( 0 == _wcsnicmp ( path, wszFileProtocol, cchProtocol ) )
+        if (0 == _wcsnicmp(path, wszFileProtocol, cchProtocol))
         {
-            if ( OLECHAR(':') == path[cchProtocol+1] )
+            if (OLECHAR(':') == path[cchProtocol + 1])
             {
-                if ( OLECHAR('\\') != path[cchProtocol+2] )
+                if (OLECHAR('\\') != path[cchProtocol + 2])
                 {
                     bfMissing = TRUE;
                 }
@@ -1822,9 +1822,9 @@ CProxyFrame::IsMissingBackSlash ( BSTR path, BOOL bfIsURL )
     else
     {
         // Path name.  chec for drive letter, colon, non-backslash.
-        if ( OLECHAR(':') == path[1] )
+        if (OLECHAR(':') == path[1])
         {
-            if ( OLECHAR('\\') != path[2] )
+            if (OLECHAR('\\') != path[2])
             {
                 bfMissing = TRUE;
             }
@@ -1845,21 +1845,21 @@ CProxyFrame::IsMissingBackSlash ( BSTR path, BOOL bfIsURL )
 //    If "path" is NULL, do NewDocument.  TestbfURL to see if it's a URL or UNC path.
 
 HRESULT
-CProxyFrame::LoadDocument(BSTR path, BOOL bfIsURL )
+CProxyFrame::LoadDocument(BSTR path, BOOL bfIsURL)
 {
     USES_CONVERSION;
 
-    HRESULT hr            = S_OK;
-    UINT pathLen        = 0;
+    HRESULT hr = S_OK;
+    UINT pathLen = 0;
 
-    AssureActivated ();    // This can set m_bstrLoadText as a side effect in unactivated controls!  Be careful!
+    AssureActivated();    // This can set m_bstrLoadText as a side effect in unactivated controls!  Be careful!
 
     if (FALSE == m_fActivated)
         return E_UNEXPECTED;
 
-    m_bstrLoadText.Empty ();    // Clear the text to be added directly, or it will be used instead!
-    m_bstrCurDocPath    = L"";
-    m_bstrBaseURL        = L"";
+    m_bstrLoadText.Empty();    // Clear the text to be added directly, or it will be used instead!
+    m_bstrCurDocPath = L"";
+    m_bstrBaseURL = L"";
 
     if (path)
         pathLen = ::SysStringLen(path);
@@ -1868,7 +1868,7 @@ CProxyFrame::LoadDocument(BSTR path, BOOL bfIsURL )
 
     // We've resetting the contents of the control.  Go back to default save mechanism.
     // If we load Unicode it will be reset.
-    m_pSite->SetSaveAsUnicode ( FALSE );
+    m_pSite->SetSaveAsUnicode(FALSE);
 
     if (path && pathLen)
     {
@@ -1876,35 +1876,35 @@ CProxyFrame::LoadDocument(BSTR path, BOOL bfIsURL )
         _ASSERTE(pathLen > 0);
 
         // First, look out for a wicked error: X:FileName with no '\' is BAD on FAT16.
-        if ( IsMissingBackSlash ( path, bfIsURL ) )
+        if (IsMissingBackSlash(path, bfIsURL))
         {
             hr = DE_E_PATH_NOT_FOUND;
-            LoadBSTRDeferred ( m_bstrInitialDoc );
+            LoadBSTRDeferred(m_bstrInitialDoc);
             goto error;
         }
 
         // Try to open the file -- stop the sequence
         // if its bogus or we don't have access
-        if ( !bfIsURL )
+        if (!bfIsURL)
         {
             if (FAILED(hr = m_pSite->HrTestFileOpen(path)))
             {
-                LoadBSTRDeferred ( m_bstrInitialDoc );
+                LoadBSTRDeferred(m_bstrInitialDoc);
                 goto error;
             }
         }
         m_bfIsURL = bfIsURL;
 
         m_bstrCurDocPath = path;    // This needs to be set before loading, because base url is needed durring load.
-        SetBaseURLFromCurDocPath ( bfIsURL );
+        SetBaseURLFromCurDocPath(bfIsURL);
         m_bfPreserveDirtyFlagAcrossBrowseMode = FALSE;
 
         CComPtr<IMoniker> srpMoniker;
         CComPtr<IBindCtx> srpBindCtx;
-        CComQIPtr<IPersistMoniker, &IID_IPersistMoniker> srpPM (m_pUnkTriEdit);
-        _ASSERTE ( srpPM );
+        CComQIPtr<IPersistMoniker, &IID_IPersistMoniker> srpPM(m_pUnkTriEdit);
+        _ASSERTE(srpPM);
 
-        if ( srpPM )
+        if (srpPM)
         {
             CComBSTR    bstrProtocol = m_wszProtocolPrefix;
             bstrProtocol += L"(";
@@ -1912,44 +1912,44 @@ CProxyFrame::LoadDocument(BSTR path, BOOL bfIsURL )
             bstrProtocol += L")";
 
 #ifdef LATE_BIND_URLMON_WININET
-            _ASSERTE ( m_pfnCreateURLMoniker );
-            hr = (*m_pfnCreateURLMoniker)( NULL, bstrProtocol, &srpMoniker );
+            _ASSERTE(m_pfnCreateURLMoniker);
+            hr = (*m_pfnCreateURLMoniker)(NULL, bstrProtocol, &srpMoniker);
 #else
-            hr = CreateURLMoniker ( NULL, bstrProtocol, &srpMoniker );
+            hr = CreateURLMoniker(NULL, bstrProtocol, &srpMoniker);
 #endif // LATE_BIND_URLMON_WININET
 
-            _ASSERTE ( SUCCEEDED( hr ) );
-            if ( SUCCEEDED ( hr ) )
+            _ASSERTE(SUCCEEDED(hr));
+            if (SUCCEEDED(hr))
             {
                 hr = ::CreateBindCtx(NULL, &srpBindCtx);
-                _ASSERTE ( SUCCEEDED( hr ) );
-                if ( SUCCEEDED ( hr ) )
+                _ASSERTE(SUCCEEDED(hr));
+                if (SUCCEEDED(hr))
                 {
                     // Delete the cache entry before downloading.
                     // This assures that loading, posting, and reloading works.
                     // Bug 18544.
                     // NOTE: Inexact match fails!  http://www.microsoft.com fails,
                     // because this actually loads/caches a specific default page.
-                    if ( bfIsURL )
+                    if (bfIsURL)
                     {
-                        LPTSTR szURL = OLE2T ( m_bstrCurDocPath );
+                        LPTSTR szURL = OLE2T(m_bstrCurDocPath);
 #ifdef LATE_BIND_URLMON_WININET
-                        _ASSERTE ( m_pfnDeleteUrlCacheEntry );
-                        (*m_pfnDeleteUrlCacheEntry)( szURL );
+                        _ASSERTE(m_pfnDeleteUrlCacheEntry);
+                        (*m_pfnDeleteUrlCacheEntry)(szURL);
 #else
-                        DeleteUrlCacheEntry ( szURL );
+                        DeleteUrlCacheEntry(szURL);
 #endif // LATE_BIND_URLMON_WININET
                     }
                     m_bfIsLoading = TRUE;
                     m_hrDeferredLoadError = S_OK;    // URLs: don't let Trident get the error!
 
-                    hr = srpPM->Load(FALSE, srpMoniker,  srpBindCtx, STGM_READ);
+                    hr = srpPM->Load(FALSE, srpMoniker, srpBindCtx, STGM_READ);
 
-                    if ( SUCCEEDED ( hr ) && FAILED ( m_hrDeferredLoadError ) )
+                    if (SUCCEEDED(hr) && FAILED(m_hrDeferredLoadError))
                     {
                         hr = m_hrDeferredLoadError;    // In case we stashed a result
                     }
-                    if ( FAILED ( hr ) )
+                    if (FAILED(hr))
                     {
                         m_bfIsLoading = FALSE;
                     }
@@ -1959,7 +1959,7 @@ CProxyFrame::LoadDocument(BSTR path, BOOL bfIsURL )
     }
     else
     {
-        if (FAILED(hr = LoadBSTRDeferred ( m_bstrInitialDoc )))
+        if (FAILED(hr = LoadBSTRDeferred(m_bstrInitialDoc)))
         {
             _ASSERTE(SUCCEEDED(hr));
             goto error;
@@ -1975,28 +1975,28 @@ error:
 //    Used to restore filtered content extracted directly from DOM.
 
 HRESULT
-CProxyFrame::FilterSourceCode ( BSTR bsSourceIn, BSTR* pbsSourceOut )
+CProxyFrame::FilterSourceCode(BSTR bsSourceIn, BSTR* pbsSourceOut)
 {
     HRESULT                hr;
     CComPtr<IStream>    spStreamIn;
     IStream*            piStreamOut;
 
     hr = m_pSite->HrBstrToStream(bsSourceIn, &spStreamIn);
-    if ( SUCCEEDED ( hr ) )
+    if (SUCCEEDED(hr))
     {
-        if ( m_vbBrowseMode )
+        if (m_vbBrowseMode)
         {
-            spStreamIn->AddRef ();
+            spStreamIn->AddRef();
             piStreamOut = spStreamIn;
         }
         else
         {
-            hr = m_pSite->HrFilter ( FALSE, spStreamIn, &piStreamOut, m_dwFilterOutFlags | dwFilterSourceCode);
+            hr = m_pSite->HrFilter(FALSE, spStreamIn, &piStreamOut, m_dwFilterOutFlags | dwFilterSourceCode);
         }
-        if ( SUCCEEDED ( hr ) )
+        if (SUCCEEDED(hr))
         {
-            hr = m_pSite->HrStreamToBstr ( piStreamOut, pbsSourceOut );
-            piStreamOut->Release ();
+            hr = m_pSite->HrStreamToBstr(piStreamOut, pbsSourceOut);
+            piStreamOut->Release();
         }
     }
     return hr;
@@ -2006,27 +2006,27 @@ CProxyFrame::FilterSourceCode ( BSTR bsSourceIn, BSTR* pbsSourceOut )
 //    Implements the control's Print method
 
 HRESULT
-CProxyFrame::Print ( BOOL bfWithUI )
+CProxyFrame::Print(BOOL bfWithUI)
 {
-    AssureActivated ();
+    AssureActivated();
 
     if (FALSE == m_fActivated)
         return E_UNEXPECTED;
-    return HrExecCommand ( &GUID_TriEditCommandGroup, IDM_TRIED_PRINT,
-        bfWithUI ? MSOCMDEXECOPT_PROMPTUSER : MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL );
+    return HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_PRINT,
+                         bfWithUI ? MSOCMDEXECOPT_PROMPTUSER : MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL);
 }
 
 
 //    Implements the control's Refresh method
 
 HRESULT
-CProxyFrame::RefreshDoc ()
+CProxyFrame::RefreshDoc()
 {
-    if ( NULL != m_hWndObj )
+    if (NULL != m_hWndObj)
     {
-        if ( ::IsWindow ( m_hWndObj ) )
+        if (::IsWindow(m_hWndObj))
         {
-            ::InvalidateRect ( m_hWndObj, NULL, TRUE );
+            ::InvalidateRect(m_hWndObj, NULL, TRUE);
             return S_OK;
         }
     }
@@ -2047,7 +2047,7 @@ CProxyFrame::SaveDocument(BSTR path)
 
     _ASSERTE(GetState() == ESTATE_ACTIVATED);
 
-    AssureActivated ();
+    AssureActivated();
 
     if (GetState() != ESTATE_ACTIVATED)
         return E_UNEXPECTED;
@@ -2065,14 +2065,14 @@ CProxyFrame::SaveDocument(BSTR path)
     _ASSERTE(pathLen);
 
     // First, look out for a wicked error: X:FileName with no '\' is BAD on FAT16.
-    if ( IsMissingBackSlash ( path, FALSE ) )
+    if (IsMissingBackSlash(path, FALSE))
     {
         return DE_E_PATH_NOT_FOUND;
     }
 
     hr = m_pSite->HrSaveToFile(path, m_dwFilterOutFlags);
 
-    if ( SUCCEEDED ( hr ) )
+    if (SUCCEEDED(hr))
     {
         m_bstrCurDocPath = path;
     }
@@ -2105,34 +2105,34 @@ CProxyFrame::SetContextMenuSA(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuState
     if (NULL == pVarMenuStrings || NULL == pVarMenuStates)
         return E_INVALIDARG;
 
-    if ((VT_ARRAY|VT_BSTR) != V_VT(pVarMenuStrings) &&
-        ((VT_ARRAY|VT_BSTR)|VT_BYREF) != V_VT(pVarMenuStrings) &&
-        ((VT_ARRAY|VT_VARIANT)|VT_BYREF) != V_VT(pVarMenuStrings) &&
-        (VT_ARRAY|VT_VARIANT) != V_VT(pVarMenuStrings))
+    if ((VT_ARRAY | VT_BSTR) != V_VT(pVarMenuStrings) &&
+        ((VT_ARRAY | VT_BSTR) | VT_BYREF) != V_VT(pVarMenuStrings) &&
+        ((VT_ARRAY | VT_VARIANT) | VT_BYREF) != V_VT(pVarMenuStrings) &&
+        (VT_ARRAY | VT_VARIANT) != V_VT(pVarMenuStrings))
         return E_INVALIDARG;
 
-    if ((VT_ARRAY|VT_I4) != V_VT(pVarMenuStates) &&
-        ((VT_ARRAY|VT_I4)|VT_BYREF) != V_VT(pVarMenuStates) &&
-        ((VT_ARRAY|VT_VARIANT)|VT_BYREF) != V_VT(pVarMenuStates) &&
-        (VT_ARRAY|VT_VARIANT) != V_VT(pVarMenuStates))
+    if ((VT_ARRAY | VT_I4) != V_VT(pVarMenuStates) &&
+        ((VT_ARRAY | VT_I4) | VT_BYREF) != V_VT(pVarMenuStates) &&
+        ((VT_ARRAY | VT_VARIANT) | VT_BYREF) != V_VT(pVarMenuStates) &&
+        (VT_ARRAY | VT_VARIANT) != V_VT(pVarMenuStates))
         return E_INVALIDARG;
 
-    if ((VT_ARRAY|VT_BSTR) == V_VT(pVarMenuStrings))
+    if ((VT_ARRAY | VT_BSTR) == V_VT(pVarMenuStrings))
     {
         psaStrings = V_ARRAY(pVarMenuStrings);
     }
-    if ((VT_ARRAY|VT_VARIANT) == V_VT(pVarMenuStrings))
+    if ((VT_ARRAY | VT_VARIANT) == V_VT(pVarMenuStrings))
     {
         psaStrings = V_ARRAY(pVarMenuStrings);
     }
-    else if ((VT_ARRAY|VT_BSTR|VT_BYREF) == V_VT(pVarMenuStrings))
+    else if ((VT_ARRAY | VT_BSTR | VT_BYREF) == V_VT(pVarMenuStrings))
     {
         if (NULL == V_ARRAYREF(pVarMenuStrings))
             return E_INVALIDARG;
 
         psaStrings = *(V_ARRAYREF(pVarMenuStrings));
     }
-    else if ((VT_ARRAY|VT_VARIANT|VT_BYREF) == V_VT(pVarMenuStrings))
+    else if ((VT_ARRAY | VT_VARIANT | VT_BYREF) == V_VT(pVarMenuStrings))
     {
         if (NULL == V_ARRAYREF(pVarMenuStrings))
             return E_INVALIDARG;
@@ -2140,22 +2140,22 @@ CProxyFrame::SetContextMenuSA(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuState
         psaStrings = *(V_ARRAYREF(pVarMenuStrings));
     }
 
-    if ((VT_ARRAY|VT_I4) == V_VT(pVarMenuStates))
+    if ((VT_ARRAY | VT_I4) == V_VT(pVarMenuStates))
     {
         psaStates = V_ARRAY(pVarMenuStates);
     }
-    if ((VT_ARRAY|VT_VARIANT) == V_VT(pVarMenuStates))
+    if ((VT_ARRAY | VT_VARIANT) == V_VT(pVarMenuStates))
     {
         psaStates = V_ARRAY(pVarMenuStates);
     }
-    else if ((VT_ARRAY|VT_I4|VT_BYREF) == V_VT(pVarMenuStates))
+    else if ((VT_ARRAY | VT_I4 | VT_BYREF) == V_VT(pVarMenuStates))
     {
         if (NULL == V_ARRAYREF(pVarMenuStates))
             return E_INVALIDARG;
 
         psaStates = *(V_ARRAYREF(pVarMenuStates));
     }
-    else if ((VT_ARRAY|VT_VARIANT|VT_BYREF) == V_VT(pVarMenuStates))
+    else if ((VT_ARRAY | VT_VARIANT | VT_BYREF) == V_VT(pVarMenuStates))
     {
         if (NULL == V_ARRAYREF(pVarMenuStates))
             return E_INVALIDARG;
@@ -2190,7 +2190,7 @@ CProxyFrame::SetContextMenuSA(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuState
 
     // An empty array was passed in
     // The context menu has been cleared
-    if (lLBound ==lUBound )
+    if (lLBound == lUBound)
         goto cleanup;
 
     if (FAILED(hr = SafeArrayCopy(psaStrings, &m_pMenuStrings)))
@@ -2228,7 +2228,7 @@ HRESULT
 CProxyFrame::SetContextMenuDispEx(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuStates)
 {
     HRESULT hr = S_OK;
-    ULONG i=0;
+    ULONG i = 0;
     ULONG ulStringsLen = 0;
     ULONG ulStatesLen = 0;
     IDispatch* pdStrings = NULL;
@@ -2239,8 +2239,8 @@ CProxyFrame::SetContextMenuDispEx(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuS
     CDispExArray dispStates;
     VARIANT varString;
     VARIANT varState;
-    SAFEARRAYBOUND rgsabound[1] = {0};
-    LONG ix[1]                    = {0};
+    SAFEARRAYBOUND rgsabound[1] = { 0 };
+    LONG ix[1] = { 0 };
 
     if (VT_DISPATCH != V_VT(pVarMenuStrings) || VT_DISPATCH != V_VT(pVarMenuStates))
         return E_INVALIDARG;
@@ -2254,13 +2254,13 @@ CProxyFrame::SetContextMenuDispEx(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuS
     _ASSERTE(pdStrings);
     _ASSERTE(pdStates);
 
-    if (FAILED(hr = pdStrings->QueryInterface(IID_IDispatchEx, (LPVOID*) &pdexStrings)))
+    if (FAILED(hr = pdStrings->QueryInterface(IID_IDispatchEx, (LPVOID*)&pdexStrings)))
     {
         return E_INVALIDARG;
     }
     dispStrings.Attach(pdexStrings);
 
-    if (FAILED(hr = pdStates->QueryInterface(IID_IDispatchEx, (LPVOID*) &pdexStates)))
+    if (FAILED(hr = pdStates->QueryInterface(IID_IDispatchEx, (LPVOID*)&pdexStates)))
     {
         return E_INVALIDARG;
     }
@@ -2315,7 +2315,7 @@ CProxyFrame::SetContextMenuDispEx(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuS
     // For iterating through JScript arrays, we expect the elements
     // to be accessable by ordinals starting at 0, i.e., a 0 based array
     hr = S_OK;
-    for (i=0; i < ulStringsLen && hr != S_FALSE; i++)
+    for (i = 0; i < ulStringsLen && hr != S_FALSE; i++)
     {
         if (FAILED(hr = dispStrings.HrGetElement(i, &varString)))
             goto cleanup;
@@ -2330,14 +2330,14 @@ CProxyFrame::SetContextMenuDispEx(LPVARIANT pVarMenuStrings, LPVARIANT pVarMenuS
         }
 
         ix[0] = i;
-        if (FAILED(hr = SafeArrayPutElement(m_pMenuStrings, ix, (LPVOID) V_BSTR(&varString))))
+        if (FAILED(hr = SafeArrayPutElement(m_pMenuStrings, ix, (LPVOID)V_BSTR(&varString))))
             goto cleanup;
 
         if (FAILED(hr = SafeArrayPutElement(m_pMenuStates, ix, (LPVOID) &(V_I4(&varState)))))
             goto cleanup;
 
-        VariantClear ( &varString );
-        VariantClear ( &varState );
+        VariantClear(&varString);
+        VariantClear(&varState);
     }
 
 cleanup:
@@ -2365,38 +2365,38 @@ cleanup:
 //    Get the property from the HTML document.
 
 HRESULT
-CProxyFrame::GetDocumentTitle ( CComBSTR&  bstrTitle )
+CProxyFrame::GetDocumentTitle(CComBSTR&  bstrTitle)
 {
     HRESULT        hr = S_OK;
     DISPID        dispid;
-    DISPPARAMS    dispparamsNoArgs = {NULL, NULL, 0, 0};
+    DISPPARAMS    dispparamsNoArgs = { NULL, NULL, 0, 0 };
     CComVariant    varResult;
 
     CComPtr<IHTMLDocument2> piHtmlDoc = NULL;
-    hr = HrGetDoc( &piHtmlDoc );
+    hr = HrGetDoc(&piHtmlDoc);
 
-    if ( SUCCEEDED ( hr ) )
+    if (SUCCEEDED(hr))
     {
         AssureActivated();
 
-        hr = piHtmlDoc->GetIDsOfNames ( IID_NULL, &g_wszHTMLTitlePropName, 1, LOCALE_SYSTEM_DEFAULT, &dispid );
-        _ASSERTE ( SUCCEEDED ( hr ) );
-        if ( FAILED ( hr ) )
+        hr = piHtmlDoc->GetIDsOfNames(IID_NULL, &g_wszHTMLTitlePropName, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
+        _ASSERTE(SUCCEEDED(hr));
+        if (FAILED(hr))
         {
             return hr;
         }
 
-        hr = piHtmlDoc->Invoke ( dispid, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET,
-            &dispparamsNoArgs, &varResult, NULL, NULL );
-        _ASSERTE ( SUCCEEDED ( hr ) );
-        if ( FAILED ( hr ) )
+        hr = piHtmlDoc->Invoke(dispid, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET,
+                               &dispparamsNoArgs, &varResult, NULL, NULL);
+        _ASSERTE(SUCCEEDED(hr));
+        if (FAILED(hr))
         {
             return hr;
         }
 
-        hr = varResult.ChangeType ( VT_BSTR );
-        _ASSERTE ( SUCCEEDED ( hr ) );
-        if ( FAILED ( hr ) )
+        hr = varResult.ChangeType(VT_BSTR);
+        _ASSERTE(SUCCEEDED(hr));
+        if (FAILED(hr))
         {
             return hr;
         }
@@ -2411,7 +2411,7 @@ CProxyFrame::GetDocumentTitle ( CComBSTR&  bstrTitle )
 //    Implements getting the control's BrowseMode property
 
 HRESULT
-CProxyFrame::GetBrowseMode ( VARIANT_BOOL  *pVal )
+CProxyFrame::GetBrowseMode(VARIANT_BOOL  *pVal)
 {
     *pVal = m_vbBrowseMode;
     return S_OK;
@@ -2421,49 +2421,49 @@ CProxyFrame::GetBrowseMode ( VARIANT_BOOL  *pVal )
 //    Implements setting the control's BrowseMode property
 
 HRESULT
-CProxyFrame::SetBrowseMode ( VARIANT_BOOL  newVal )
+CProxyFrame::SetBrowseMode(VARIANT_BOOL  newVal)
 {
     HRESULT hr = S_FALSE;    // Indicates value was set, but actual mode was not changed.
 
-    _ASSERTE ( m_pSite );
+    _ASSERTE(m_pSite);
 
     // If we're still reading the property bag, just set the value, don't change the text;
     // it hasn't been loaded yet.
-    if ( NULL == m_pSite->GetCommandTarget() )
+    if (NULL == m_pSite->GetCommandTarget())
     {
         m_vbBrowseMode = newVal;
         hr = S_OK;
     }
     else
     {
-        if ( m_vbBrowseMode != newVal )
+        if (m_vbBrowseMode != newVal)
         {
-            AssureActivated ();
+            AssureActivated();
 
             m_bfModeSwitched = TRUE;
 
-            if ( newVal && m_pCtl->IsUserMode () )    // newVal means "switching to browse mode"
+            if (newVal && m_pCtl->IsUserMode())    // newVal means "switching to browse mode"
             {
-                CComPtr<IStream>    spStream    = NULL;
+                CComPtr<IStream>    spStream = NULL;
 
-                HrGetIsDirty ( m_bfPreserveDirtyFlagAcrossBrowseMode );
-                hr = m_pSite->HrSaveToStreamAndFilter ( &spStream, m_dwFilterOutFlags );
-                if ( SUCCEEDED ( hr ) )
+                HrGetIsDirty(m_bfPreserveDirtyFlagAcrossBrowseMode);
+                hr = m_pSite->HrSaveToStreamAndFilter(&spStream, m_dwFilterOutFlags);
+                if (SUCCEEDED(hr))
                 {
-                    m_bstrLoadText.Empty ();
+                    m_bstrLoadText.Empty();
                     // Preserve the byte order mark, or else it will not be reloaded properly
-                    hr = m_pSite->HrStreamToBstr ( spStream, &m_bstrLoadText, TRUE );
+                    hr = m_pSite->HrStreamToBstr(spStream, &m_bstrLoadText, TRUE);
                 }
             }
 
             m_vbBrowseMode = newVal;
 
             // Let Trident know the ambient property has changed.
-            CComQIPtr<IOleControl,&IID_IOleControl>spioc ( m_pSite->GetObjectUnknown() );
-            if ( spioc )
+            CComQIPtr<IOleControl, &IID_IOleControl>spioc(m_pSite->GetObjectUnknown());
+            if (spioc)
             {
                 m_bfIsLoading = TRUE;
-                spioc->OnAmbientPropertyChange ( DISPID_AMBIENT_USERMODE );
+                spioc->OnAmbientPropertyChange(DISPID_AMBIENT_USERMODE);
             }
         }
     }
@@ -2474,7 +2474,7 @@ CProxyFrame::SetBrowseMode ( VARIANT_BOOL  newVal )
 //    Implements getting the control's UseDivOnCarriageReturn property
 
 HRESULT
-CProxyFrame::GetDivOnCr ( VARIANT_BOOL  *pVal )
+CProxyFrame::GetDivOnCr(VARIANT_BOOL  *pVal)
 {
     *pVal = m_vbUseDivOnCr;
     return S_OK;
@@ -2484,18 +2484,18 @@ CProxyFrame::GetDivOnCr ( VARIANT_BOOL  *pVal )
 //    Implements setting the control's UseDivOnCarriageReturn property
 
 HRESULT
-CProxyFrame::SetDivOnCr ( VARIANT_BOOL  newVal )
+CProxyFrame::SetDivOnCr(VARIANT_BOOL  newVal)
 {
-    HRESULT        hr    = S_OK;
+    HRESULT        hr = S_OK;
     CComVariant varDefBlock;
 
     m_vbUseDivOnCr = newVal;
 
     // Reinitialize if we haven't loaded our properties before this point.
-    if ( READYSTATE_UNINITIALIZED == m_readyState )
+    if (READYSTATE_UNINITIALIZED == m_readyState)
     {
         // InitializeDocString takes m_vbUseDivOnCr into account
-        InitializeDocString ();
+        InitializeDocString();
     }
     return hr;
 }
@@ -2504,10 +2504,10 @@ CProxyFrame::SetDivOnCr ( VARIANT_BOOL  newVal )
 //    Implements getting the control's read-only Busy property
 
 HRESULT
-CProxyFrame::GetBusy ( VARIANT_BOOL *pVal )
+CProxyFrame::GetBusy(VARIANT_BOOL *pVal)
 {
 #pragma warning(disable: 4310) // cast truncates constant value
-    *pVal = ( m_bfIsLoading ) ? VARIANT_TRUE : VARIANT_FALSE;
+    *pVal = (m_bfIsLoading) ? VARIANT_TRUE : VARIANT_FALSE;
 #pragma warning(default: 4310) // cast truncates constant value
     return S_OK;
 }
@@ -2763,7 +2763,7 @@ CProxyFrame::HrSetAbsoluteDropMode(BOOL dropMode)
 #pragma warning(default: 4310) // cast truncates constant value
 
         if (SUCCEEDED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_SET_2D_DROP_MODE,
-            MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
+                                         MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
             m_fAbsoluteDropMode = dropMode;
     }
     else
@@ -2796,10 +2796,10 @@ CProxyFrame::HrSetSnapToGrid(BOOL snapToGrid)
     if (m_fActivated)
     {
         VARIANT var;
-        POINT pt = {0};
+        POINT pt = { 0 };
 
         VariantInit(&var);
-        if ( snapToGrid )
+        if (snapToGrid)
         {
             pt.y = m_ulSnapToGridY;
             pt.x = m_ulSnapToGridX;
@@ -2814,7 +2814,7 @@ CProxyFrame::HrSetSnapToGrid(BOOL snapToGrid)
         V_BYREF(&var) = &pt;
 
         if (SUCCEEDED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_SET_ALIGNMENT,
-            MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
+                                         MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
             m_fSnapToGrid = snapToGrid;
 
     }
@@ -2845,7 +2845,7 @@ CProxyFrame::HrSetSnapToGridX(LONG snapToGridX)
 {
     HRESULT hr = S_OK;
 
-    if ( 0 >= snapToGridX )
+    if (0 >= snapToGridX)
     {
         return DE_E_INVALIDARG;
     }
@@ -2853,7 +2853,7 @@ CProxyFrame::HrSetSnapToGridX(LONG snapToGridX)
     if (m_fActivated)
     {
         VARIANT var;
-        POINT pt = {0};
+        POINT pt = { 0 };
 
         VariantInit(&var);
 
@@ -2864,7 +2864,7 @@ CProxyFrame::HrSetSnapToGridX(LONG snapToGridX)
         V_BYREF(&var) = &pt;
 
         if (SUCCEEDED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_SET_ALIGNMENT,
-            MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
+                                         MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
             m_ulSnapToGridX = snapToGridX;
     }
     else
@@ -2894,7 +2894,7 @@ CProxyFrame::HrSetSnapToGridY(LONG snapToGridY)
 {
     HRESULT hr = S_OK;
 
-    if ( 0 >= snapToGridY )
+    if (0 >= snapToGridY)
     {
         return DE_E_INVALIDARG;
     }
@@ -2902,7 +2902,7 @@ CProxyFrame::HrSetSnapToGridY(LONG snapToGridY)
     if (m_fActivated)
     {
         VARIANT var;
-        POINT pt = {0};
+        POINT pt = { 0 };
 
         VariantInit(&var);
         pt.y = snapToGridY;
@@ -2912,7 +2912,7 @@ CProxyFrame::HrSetSnapToGridY(LONG snapToGridY)
         V_BYREF(&var) = &pt;
 
         if (SUCCEEDED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_SET_ALIGNMENT,
-            MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
+                                         MSOCMDEXECOPT_DONTPROMPTUSER, &var, NULL)))
             m_ulSnapToGridY = snapToGridY;
     }
     else
@@ -2947,32 +2947,32 @@ CProxyFrame::HrSetDocumentHTML(BSTR bVal)
     if (NULL == bVal)
         return E_INVALIDARG;
 
-    if (m_pCtl->IsUserMode ())
+    if (m_pCtl->IsUserMode())
     {
         hr = DE_E_UNEXPECTED;
 
-        AssureActivated ();
-        if ( m_fActivated )
+        AssureActivated();
+        if (m_fActivated)
         {
             m_bstrBaseURL = L"";
             m_bfPreserveDirtyFlagAcrossBrowseMode = FALSE;
-            if ( 0 == SysStringLen ( bVal ) )
+            if (0 == SysStringLen(bVal))
             {
-                CComBSTR bstrMT = GetInitialHTML ();
-                hr = LoadBSTRDeferred ( bstrMT );
+                CComBSTR bstrMT = GetInitialHTML();
+                hr = LoadBSTRDeferred(bstrMT);
             }
             else
             {
-                hr = LoadBSTRDeferred ( bVal );
+                hr = LoadBSTRDeferred(bVal);
             }
 
-            if ( FAILED ( hr ) )
+            if (FAILED(hr))
             {
                 goto error;
             }
 
             // We've reset the contents of the control.  Go back to default save mechanism.
-            m_pSite->SetSaveAsUnicode ( FALSE );
+            m_pSite->SetSaveAsUnicode(FALSE);
         }
     }
 
@@ -2987,35 +2987,35 @@ error:
 HRESULT
 CProxyFrame::HrGetDocumentHTML(BSTR* bVal)
 {
-    HRESULT hr            = S_OK;
-    BOOL    bfWasDirty    = FALSE;
+    HRESULT hr = S_OK;
+    BOOL    bfWasDirty = FALSE;
 
     _ASSERTE(bVal);
 
     if (NULL == bVal)
         return E_INVALIDARG;
 
-    if ( m_bfIsLoading )
+    if (m_bfIsLoading)
         return DE_E_UNEXPECTED;    // This is invalid while document is still loading.
 
-    if ( FAILED ( hr = m_pSite->HrIsDirtyIPersistStreamInit(bfWasDirty) ) )
+    if (FAILED(hr = m_pSite->HrIsDirtyIPersistStreamInit(bfWasDirty)))
     {
-        _ASSERTE ( SUCCEEDED ( hr ) );
+        _ASSERTE(SUCCEEDED(hr));
         bfWasDirty = FALSE;    // what else can we do in a situation like this?
     }
 
-    AssureActivated ();
+    AssureActivated();
 
     if (m_fActivated)
     {
         _ASSERTE(m_pSite);
 
-        hr = m_pSite->HrSaveToBstr(bVal, m_dwFilterOutFlags );
+        hr = m_pSite->HrSaveToBstr(bVal, m_dwFilterOutFlags);
 
         // Preserve original dirty state.
-        if ( bfWasDirty )
+        if (bfWasDirty)
         {
-            SetDirtyFlag ( TRUE );
+            SetDirtyFlag(TRUE);
         }
     }
 
@@ -3057,7 +3057,7 @@ CProxyFrame::HrGetIsDirty(BOOL& bVal)
 
     bVal = FALSE;
 
-    AssureActivated ();
+    AssureActivated();
 
     if (m_fActivated)
     {
@@ -3071,11 +3071,11 @@ CProxyFrame::HrGetIsDirty(BOOL& bVal)
 //    Implements getting the BaseURL property
 
 HRESULT
-CProxyFrame::GetBaseURL ( CComBSTR& bstrBaseURL )
+CProxyFrame::GetBaseURL(CComBSTR& bstrBaseURL)
 {
-    AssureActivated ();
+    AssureActivated();
 
-    if ( NULL == m_bstrBaseURL.m_str )
+    if (NULL == m_bstrBaseURL.m_str)
     {
         bstrBaseURL = L"";
     }
@@ -3097,22 +3097,22 @@ CProxyFrame::GetBaseURL ( CComBSTR& bstrBaseURL )
 //    the routine parsing the <BASE> tag!
 
 HRESULT
-CProxyFrame::SetBaseURL ( CComBSTR& bstrBaseURL )
+CProxyFrame::SetBaseURL(CComBSTR& bstrBaseURL)
 {
     HRESULT hr = S_OK;
 
-    _ASSERTE ( bstrBaseURL );
+    _ASSERTE(bstrBaseURL);
 
     // Non-persisted property.  Ignore if not in UserMode.
-    if ( m_pCtl->IsUserMode () )
+    if (m_pCtl->IsUserMode())
     {
-        if ( m_bfBaseURLFromBASETag )
+        if (m_bfBaseURLFromBASETag)
         {
             return S_FALSE;
         }
         else
         {
-            if ( NULL == m_bstrBaseURL.m_str )
+            if (NULL == m_bstrBaseURL.m_str)
             {
                 m_bstrBaseURL = L"";
             }
@@ -3122,18 +3122,18 @@ CProxyFrame::SetBaseURL ( CComBSTR& bstrBaseURL )
             // Response: bstrBaseURL may be the bare protocol prefix, or a prefix with a URL attached
             // for example: dhtmled0:(http://www.microsoft.com).
             // Strip off the prefix and parens (if they exist) and use the interior URL.
-            if ( 0 == _wcsnicmp ( bstrBaseURL.m_str, g_wszProtocolPrefix, wcslen ( g_wszProtocolPrefix ) ) )
+            if (0 == _wcsnicmp(bstrBaseURL.m_str, g_wszProtocolPrefix, wcslen(g_wszProtocolPrefix)))
             {
                 CComBSTR bstrNew = bstrBaseURL.m_str;
 
                 // There must be a colon; it would be possibe to have a legitimate base url beginning with g_wszProtocolPrefix
-                WCHAR* pwcURL = wcschr ( bstrNew, (WCHAR)':' );
-                if ( NULL != pwcURL )
+                WCHAR* pwcURL = wcschr(bstrNew, (WCHAR)':');
+                if (NULL != pwcURL)
                 {
                     // Find the first open paren:
-                    pwcURL = wcschr ( pwcURL, (WCHAR)'(' );
+                    pwcURL = wcschr(pwcURL, (WCHAR)'(');
 
-                    if ( NULL == pwcURL )
+                    if (NULL == pwcURL)
                     {
                         bstrBaseURL = L"";    // No (...)? Set the Base to empty.  Input must have been bare protocol ID.
                     }
@@ -3142,10 +3142,10 @@ CProxyFrame::SetBaseURL ( CComBSTR& bstrBaseURL )
                         pwcURL++;    // Step past the paren.
 
                         // Strip of dhtmledXXX:( ...to... ) and set the BaseURL to what remains.
-                        _ASSERTE ( (WCHAR)')' == pwcURL[wcslen(pwcURL)-1] );
-                        if ( (WCHAR)')' == pwcURL[wcslen(pwcURL)-1] )
+                        _ASSERTE((WCHAR)')' == pwcURL[wcslen(pwcURL) - 1]);
+                        if ((WCHAR)')' == pwcURL[wcslen(pwcURL) - 1])
                         {
-                            pwcURL[wcslen(pwcURL)-1] = (WCHAR)'\0';
+                            pwcURL[wcslen(pwcURL) - 1] = (WCHAR)'\0';
                             bstrBaseURL = pwcURL;
                         }
                         else
@@ -3159,13 +3159,13 @@ CProxyFrame::SetBaseURL ( CComBSTR& bstrBaseURL )
                 }
             }
 
-            if ( 0 != wcscmp ( m_bstrBaseURL.m_str, bstrBaseURL.m_str ) )
+            if (0 != wcscmp(m_bstrBaseURL.m_str, bstrBaseURL.m_str))
             {
                 m_bstrBaseURL = bstrBaseURL;
                 m_bfIsLoading = TRUE;
 
                 // Can't Exec without a command target:
-                if ( NULL != m_pSite->GetCommandTarget() )
+                if (NULL != m_pSite->GetCommandTarget())
                 {
                     // Reload the page, revaluating relative links.
                     hr = HrExecCommand(&CGID_MSHTML, IDM_REFRESH, MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL);
@@ -3191,12 +3191,12 @@ CProxyFrame::SetBaseURL ( CComBSTR& bstrBaseURL )
 HRESULT
 CProxyFrame::HrNudge(DENudgeDirection dir)
 {
-    HRESULT        hr        = S_FALSE;
-    OLECMDF        cmdf    = (OLECMDF) 0;
+    HRESULT        hr = S_FALSE;
+    OLECMDF        cmdf = (OLECMDF)0;
     VARIANT        var;
-    LPVARIANT    pVarIn    = &var;
-    LONG        lXDelta    = m_fSnapToGrid ? m_ulSnapToGridX : 1;
-    LONG        lYDelta    = m_fSnapToGrid ? m_ulSnapToGridY : 1;
+    LPVARIANT    pVarIn = &var;
+    LONG        lXDelta = m_fSnapToGrid ? m_ulSnapToGridX : 1;
+    LONG        lYDelta = m_fSnapToGrid ? m_ulSnapToGridY : 1;
 
     if (FAILED(hr = HrQueryStatus(&GUID_TriEditCommandGroup, IDM_TRIED_NUDGE_ELEMENT, &cmdf)))
     {
@@ -3221,10 +3221,10 @@ CProxyFrame::HrNudge(DENudgeDirection dir)
         // Set increment to snap to absolute grid, not relative grid.
         // Find the selections current position and set increment modulo that position.
         // This assures the first nudge snaps to a grid corner.
-        if ( m_fSnapToGrid )
+        if (m_fSnapToGrid)
         {
             POINT    ptSelPos;
-            if ( SUCCEEDED ( GetSelectionPos ( &ptSelPos ) ) )
+            if (SUCCEEDED(GetSelectionPos(&ptSelPos)))
             {
                 LONG lXNorm = ptSelPos.x % lXDelta;
                 LONG lYNorm = ptSelPos.y % lYDelta;
@@ -3233,42 +3233,42 @@ CProxyFrame::HrNudge(DENudgeDirection dir)
             }
         }
 
-        switch(dir)
+        switch (dir)
         {
         case deNudgeUp:
-            {
-                lpPoint->x = 0;
-                lpPoint->y = -lYDelta;
-            }
-            break;
+        {
+            lpPoint->x = 0;
+            lpPoint->y = -lYDelta;
+        }
+        break;
 
         case deNudgeDown:
-            {
-                lpPoint->x = 0;
-                lpPoint->y = lYDelta;
-            }
-            break;
+        {
+            lpPoint->x = 0;
+            lpPoint->y = lYDelta;
+        }
+        break;
 
         case deNudgeLeft:
-            {
-                lpPoint->x = -lXDelta;
-                lpPoint->y = 0;
-            }
-            break;
+        {
+            lpPoint->x = -lXDelta;
+            lpPoint->y = 0;
+        }
+        break;
 
         case deNudgeRight:
-            {
-                lpPoint->x = lXDelta;
-                lpPoint->y = 0;
-            }
-            break;
+        {
+            lpPoint->x = lXDelta;
+            lpPoint->y = 0;
+        }
+        break;
 
         default: // move right by default
-            {
-                lpPoint->x = lXDelta;
-                lpPoint->y = 0;
-            }
-            break;
+        {
+            lpPoint->x = lXDelta;
+            lpPoint->y = 0;
+        }
+        break;
         }
 
         VariantInit(pVarIn);
@@ -3298,7 +3298,7 @@ HRESULT
 CProxyFrame::HrToggleAbsolutePositioned()
 {
     HRESULT hr = S_FALSE;
-    OLECMDF cmdf = (OLECMDF) 0;
+    OLECMDF cmdf = (OLECMDF)0;
 
     if (FAILED(hr = HrQueryStatus(&GUID_TriEditCommandGroup, IDM_TRIED_MAKE_ABSOLUTE, &cmdf)))
     {
@@ -3309,7 +3309,7 @@ CProxyFrame::HrToggleAbsolutePositioned()
     if (cmdf & OLECMDF_SUPPORTED && cmdf & OLECMDF_ENABLED)
     {
         if (FAILED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_MAKE_ABSOLUTE,
-            MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL)))
+                                      MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL)))
         {
             _ASSERTE(SUCCEEDED(hr));
             goto cleanup;
@@ -3330,7 +3330,7 @@ HRESULT
 CProxyFrame::HrHyperLink()
 {
     HRESULT hr = S_FALSE;
-    OLECMDF cmdf = (OLECMDF) 0;
+    OLECMDF cmdf = (OLECMDF)0;
 
     if (FAILED(hr = HrQueryStatus(&GUID_TriEditCommandGroup, IDM_TRIED_HYPERLINK, &cmdf)))
     {
@@ -3341,7 +3341,7 @@ CProxyFrame::HrHyperLink()
     if (cmdf & OLECMDF_SUPPORTED && cmdf & OLECMDF_ENABLED)
     {
         if (FAILED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_HYPERLINK,
-            MSOCMDEXECOPT_PROMPTUSER, NULL, NULL)))
+                                      MSOCMDEXECOPT_PROMPTUSER, NULL, NULL)))
         {
             _ASSERTE(SUCCEEDED(hr));
             goto cleanup;
@@ -3362,7 +3362,7 @@ HRESULT
 CProxyFrame::HrIncreaseIndent()
 {
     HRESULT hr = S_FALSE;
-    OLECMDF cmdf = (OLECMDF) 0;
+    OLECMDF cmdf = (OLECMDF)0;
 
     if (FAILED(hr = HrQueryStatus(&GUID_TriEditCommandGroup, IDM_TRIED_INDENT, &cmdf)))
     {
@@ -3373,7 +3373,7 @@ CProxyFrame::HrIncreaseIndent()
     if (cmdf & OLECMDF_SUPPORTED && cmdf & OLECMDF_ENABLED)
     {
         if (FAILED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_INDENT,
-            MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL)))
+                                      MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL)))
         {
             _ASSERTE(SUCCEEDED(hr));
             goto cleanup;
@@ -3394,7 +3394,7 @@ HRESULT
 CProxyFrame::HrDecreaseIndent()
 {
     HRESULT hr = S_FALSE;
-    OLECMDF cmdf = (OLECMDF) 0;
+    OLECMDF cmdf = (OLECMDF)0;
 
     if (FAILED(hr = HrQueryStatus(&GUID_TriEditCommandGroup, IDM_TRIED_OUTDENT, &cmdf)))
     {
@@ -3405,7 +3405,7 @@ CProxyFrame::HrDecreaseIndent()
     if (cmdf & OLECMDF_SUPPORTED && cmdf & OLECMDF_ENABLED)
     {
         if (FAILED(hr = HrExecCommand(&GUID_TriEditCommandGroup, IDM_TRIED_OUTDENT,
-            MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL)))
+                                      MSOCMDEXECOPT_DONTPROMPTUSER, NULL, NULL)))
         {
             _ASSERTE(SUCCEEDED(hr));
             goto cleanup;
@@ -3465,15 +3465,15 @@ CProxyFrame::HrHandleAccelerator(LPMSG lpmsg)
         // Process control-tab keys as belonging to the container; this allows the user
         // to tab out of the control in non-MDI apps.  MDI uses control-tab to switch
         // windows, thus these apps (like VID) do not pass them to us.
-        IOleControlSite* piControlSite = m_pCtl->GetControlSite ();
-        _ASSERTE ( piControlSite );
-        if ( NULL != piControlSite )
+        IOleControlSite* piControlSite = m_pCtl->GetControlSite();
+        _ASSERTE(piControlSite);
+        if (NULL != piControlSite)
         {
             // Eat the control key, but preserve shift to perform reverse tabbing.
             // KEYMOD_SHIFT = 0x00000001, but isn't defined in any header...
             DWORD dwModifiers = fShift ? 1 : 0;
 
-            hr = piControlSite->TranslateAccelerator ( lpmsg, dwModifiers );
+            hr = piControlSite->TranslateAccelerator(lpmsg, dwModifiers);
         }
     }
 
@@ -3495,63 +3495,63 @@ CProxyFrame::HrHandleAccelerator(LPMSG lpmsg)
 //    where <LAST> is derived.
 
 HRESULT
-CProxyFrame::SetBaseURLFromBaseHref ()
+CProxyFrame::SetBaseURLFromBaseHref()
 {
-    HRESULT        hr    = S_OK;
+    HRESULT        hr = S_OK;
     CComBSTR    bstrBase;
 
-    if ( !m_bfBaseURLFromBASETag )
+    if (!m_bfBaseURLFromBASETag)
     {
-        if ( SUCCEEDED ( hr ) )
+        if (SUCCEEDED(hr))
         {
             CComPtr<IHTMLDocument2> spHtmlDoc = NULL;
-            hr = HrGetDoc( &spHtmlDoc );
-            if ( spHtmlDoc && SUCCEEDED ( hr ) )
+            hr = HrGetDoc(&spHtmlDoc);
+            if (spHtmlDoc && SUCCEEDED(hr))
             {
                 CComPtr<IHTMLElementCollection> spAll = NULL;
-                hr = spHtmlDoc->get_all ( &spAll );
-                if ( spAll && SUCCEEDED ( hr ) )
+                hr = spHtmlDoc->get_all(&spAll);
+                if (spAll && SUCCEEDED(hr))
                 {
-                    CComVariant varTag        = L"BASE";
-                    IDispatch*    piDispTags    = NULL;
+                    CComVariant varTag = L"BASE";
+                    IDispatch*    piDispTags = NULL;
 
-                    hr = spAll->tags ( varTag, &piDispTags );
-                    if ( piDispTags && SUCCEEDED ( hr ) )
+                    hr = spAll->tags(varTag, &piDispTags);
+                    if (piDispTags && SUCCEEDED(hr))
                     {
-                        CComQIPtr<IHTMLElementCollection, &IID_IHTMLElementCollection> spBases (piDispTags);
-                        piDispTags->Release ();
+                        CComQIPtr<IHTMLElementCollection, &IID_IHTMLElementCollection> spBases(piDispTags);
+                        piDispTags->Release();
                         piDispTags = NULL;
-                        if ( spBases )
+                        if (spBases)
                         {
                             long    cBases = 0;
-                            hr = spBases->get_length ( &cBases );
-                            if ( SUCCEEDED ( hr ) && ( 0 != cBases ) )
+                            hr = spBases->get_length(&cBases);
+                            if (SUCCEEDED(hr) && (0 != cBases))
                             {
                                 CComVariant varName;
                                 varName.vt = VT_I2;
 
-                                for ( varName.iVal = 0; varName.iVal < cBases; varName.iVal++ )
+                                for (varName.iVal = 0; varName.iVal < cBases; varName.iVal++)
                                 {
                                     IDispatch*    piDispBase = NULL;
                                     CComVariant varValue;
 
-                                    hr = spBases->item ( varName, varName, &piDispBase );
-                                    if ( piDispBase && SUCCEEDED ( hr ) )
+                                    hr = spBases->item(varName, varName, &piDispBase);
+                                    if (piDispBase && SUCCEEDED(hr))
                                     {
-                                        CComQIPtr<IHTMLElement, &IID_IHTMLElement> spElem ( piDispBase );
-                                        piDispBase->Release ();
+                                        CComQIPtr<IHTMLElement, &IID_IHTMLElement> spElem(piDispBase);
+                                        piDispBase->Release();
                                         piDispBase = NULL;
 
-                                        if ( spElem )
+                                        if (spElem)
                                         {
-                                            varValue.Clear ();
-                                            hr = spElem->getAttribute ( L"HREF", FALSE, &varValue );
-                                            if ( SUCCEEDED ( hr ) )
+                                            varValue.Clear();
+                                            hr = spElem->getAttribute(L"HREF", FALSE, &varValue);
+                                            if (SUCCEEDED(hr))
                                             {
-                                                hr = varValue.ChangeType ( VT_BSTR );
-                                                if ( SUCCEEDED ( hr ) )
+                                                hr = varValue.ChangeType(VT_BSTR);
+                                                if (SUCCEEDED(hr))
                                                 {
-                                                    if ( 0 != SysStringLen ( varValue.bstrVal ) )
+                                                    if (0 != SysStringLen(varValue.bstrVal))
                                                     {
                                                         bstrBase = varValue.bstrVal;
                                                     }
@@ -3560,9 +3560,9 @@ CProxyFrame::SetBaseURLFromBaseHref ()
                                         }
                                     }
                                 }
-                                if ( 0 != bstrBase.Length () )
+                                if (0 != bstrBase.Length())
                                 {
-                                    hr = SetBaseURL ( bstrBase );    // This clears m_bfBaseURLIsDefault
+                                    hr = SetBaseURL(bstrBase);    // This clears m_bfBaseURLIsDefault
                                     m_bfBaseURLFromBASETag = TRUE;
                                 }
                             }
@@ -3581,16 +3581,16 @@ CProxyFrame::SetBaseURLFromBaseHref ()
 //    so make an intellegent guess.  With files, it should be deterministic.
 
 HRESULT
-CProxyFrame::SetBaseURLFromCurDocPath ( BOOL bfIsURL )
+CProxyFrame::SetBaseURLFromCurDocPath(BOOL bfIsURL)
 {
     m_bfBaseURLFromBASETag = FALSE;    // We're reloading: whipe this out.
-    if ( bfIsURL )
+    if (bfIsURL)
     {
-        return SetBaseURLFromURL ( m_bstrCurDocPath );
+        return SetBaseURLFromURL(m_bstrCurDocPath);
     }
     else
     {
-        return SetBaseURLFromFileName ( m_bstrCurDocPath );
+        return SetBaseURLFromFileName(m_bstrCurDocPath);
     }
 }
 
@@ -3601,35 +3601,35 @@ CProxyFrame::SetBaseURLFromCurDocPath ( BOOL bfIsURL )
 //    Separators may be \ or /.
 
 HRESULT
-CProxyFrame::SetBaseUrlFromFileUrlComponents ( URL_COMPONENTS & urlc )
+CProxyFrame::SetBaseUrlFromFileUrlComponents(URL_COMPONENTS & urlc)
 {
     TCHAR*    pszPath;
-    BOOL    bfBackSlash    = TRUE;
-    HRESULT    hr            = S_OK;
+    BOOL    bfBackSlash = TRUE;
+    HRESULT    hr = S_OK;
 
-    _ASSERTE ( INTERNET_SCHEME_FILE == urlc.nScheme );
-    _ASSERTE ( urlc.dwUrlPathLength );
-    if ( 0 == urlc.dwUrlPathLength )
+    _ASSERTE(INTERNET_SCHEME_FILE == urlc.nScheme);
+    _ASSERTE(urlc.dwUrlPathLength);
+    if (0 == urlc.dwUrlPathLength)
     {
         return E_UNEXPECTED;
     }
-    pszPath = new TCHAR [urlc.dwUrlPathLength + 3];    // Extra room for \0, dot, and /.
-    if ( NULL != pszPath )
+    pszPath = new TCHAR[urlc.dwUrlPathLength + 3];    // Extra room for \0, dot, and /.
+    if (NULL != pszPath)
     {
-        TCHAR    c        = 0;
-        int        iPos    = 0;
+        TCHAR    c = 0;
+        int        iPos = 0;
 
         // Scan backwards and modify in copy (never in BSTR, please) for beginning, '/' or '\'
-        memcpy ( pszPath, urlc.lpszUrlPath, ( urlc.dwUrlPathLength + 1 ) * sizeof(TCHAR) );
-        for ( iPos = urlc.dwUrlPathLength - 1; iPos >= 0; iPos-- )
+        memcpy(pszPath, urlc.lpszUrlPath, (urlc.dwUrlPathLength + 1) * sizeof(TCHAR));
+        for (iPos = urlc.dwUrlPathLength - 1; iPos >= 0; iPos--)
         {
             c = pszPath[iPos];
             pszPath[iPos] = '\0';    // Delete first, ask questions later.  '\' must go.
-            if ( '\\' == c )
+            if ('\\' == c)
             {
                 break;
             }
-            if ( '/' == c )
+            if ('/' == c)
             {
                 bfBackSlash = FALSE;
                 break;
@@ -3638,56 +3638,56 @@ CProxyFrame::SetBaseUrlFromFileUrlComponents ( URL_COMPONENTS & urlc )
 
         // Space was reserved for an additional two characters, if needed.
         // If empty, add a dot.
-        if ( 0 == _tcslen ( pszPath ) )
+        if (0 == _tcslen(pszPath))
         {
-            _tcscat ( pszPath, TEXT(".") );
+            _tcscat(pszPath, TEXT("."));
         }
         // Add a / or \.
-        if ( bfBackSlash )
+        if (bfBackSlash)
         {
-            _tcscat ( pszPath, TEXT("\\") );
+            _tcscat(pszPath, TEXT("\\"));
         }
         else
         {
-            _tcscat ( pszPath, TEXT("/") );
+            _tcscat(pszPath, TEXT("/"));
         }
 
         urlc.lpszUrlPath = pszPath;
-        urlc.dwUrlPathLength = _tcslen ( pszPath );
+        urlc.dwUrlPathLength = _tcslen(pszPath);
 
         DWORD    dwLen = 0;
 #ifdef LATE_BIND_URLMON_WININET
-        _ASSERTE ( m_pfnInternetCreateUrl );
-        (*m_pfnInternetCreateUrl)( &urlc, 0, NULL, &dwLen );    // Get the size required.
+        _ASSERTE(m_pfnInternetCreateUrl);
+        (*m_pfnInternetCreateUrl)(&urlc, 0, NULL, &dwLen);    // Get the size required.
 #else
-        InternetCreateUrl ( &urlc, 0, NULL, &dwLen );    // Get the size required.
+        InternetCreateUrl(&urlc, 0, NULL, &dwLen);    // Get the size required.
 #endif // LATE_BIND_URLMON_WININET
 
-        _ASSERTE ( 0 != dwLen );
-        TCHAR* pszURL = new TCHAR [ dwLen + 1 ];
-        _ASSERTE ( pszURL );
-        if ( NULL != pszURL )
+        _ASSERTE(0 != dwLen);
+        TCHAR* pszURL = new TCHAR[dwLen + 1];
+        _ASSERTE(pszURL);
+        if (NULL != pszURL)
         {
             // Incredibly, on Win98, the URL is terminated with a single byte \0.
             // Intializing this buffer to zero assures full termination of the string.
             dwLen += 1;
-            memset ( pszURL, 0, sizeof(TCHAR) * dwLen );
+            memset(pszURL, 0, sizeof(TCHAR) * dwLen);
 #ifdef LATE_BIND_URLMON_WININET
-            if ( (*m_pfnInternetCreateUrl)( &urlc, 0, pszURL, &dwLen ) )
+            if ((*m_pfnInternetCreateUrl)(&urlc, 0, pszURL, &dwLen))
 #else
-            if ( InternetCreateUrl ( &urlc, 0, pszURL, &dwLen ) )
+            if (InternetCreateUrl(&urlc, 0, pszURL, &dwLen))
 #endif // LATE_BIND_URLMON_WININET
             {
                 m_bstrBaseURL = pszURL;
             }
             else
             {
-                hr = HRESULT_FROM_WIN32 ( GetLastError () );
+                hr = HRESULT_FROM_WIN32(GetLastError());
             }
-            delete [] pszURL;
+            delete[] pszURL;
         }
 
-        delete [] pszPath;
+        delete[] pszPath;
     }
     else
     {
@@ -3705,79 +3705,79 @@ CProxyFrame::SetBaseUrlFromFileUrlComponents ( URL_COMPONENTS & urlc )
 //    We make sure the path ends with a '/'.
 
 HRESULT
-CProxyFrame::SetBaseUrlFromUrlComponents ( URL_COMPONENTS & urlc )
+CProxyFrame::SetBaseUrlFromUrlComponents(URL_COMPONENTS & urlc)
 {
-    _ASSERTE ( INTERNET_SCHEME_FILE != urlc.nScheme );
+    _ASSERTE(INTERNET_SCHEME_FILE != urlc.nScheme);
 
-    BOOL    bfPeriodIncluded    = FALSE;
-    HRESULT    hr                    = S_OK;
+    BOOL    bfPeriodIncluded = FALSE;
+    HRESULT    hr = S_OK;
 
-    if ( 0 == urlc.dwSchemeLength )
+    if (0 == urlc.dwSchemeLength)
     {
         m_bstrBaseURL = L"";
         return S_FALSE;
     }
 
     // Scan backwards over path for beginning, '/'
-    TCHAR    c        = 0;
-    int        iPos    = 0;
+    TCHAR    c = 0;
+    int        iPos = 0;
 
-    for ( iPos = urlc.dwUrlPathLength - 1; iPos >= 0; iPos-- )
+    for (iPos = urlc.dwUrlPathLength - 1; iPos >= 0; iPos--)
     {
         c = urlc.lpszUrlPath[iPos];
-        if ( '/' == c )
+        if ('/' == c)
         {
             break;
         }
-        if ( '.' == c )
+        if ('.' == c)
         {
             bfPeriodIncluded = TRUE;
         }
     }
 
-    if ( bfPeriodIncluded )
+    if (bfPeriodIncluded)
     {
-        if ( 0 > iPos ) iPos = 0;
+        if (0 > iPos) iPos = 0;
         urlc.lpszUrlPath[iPos] = '\0';    // Truncate at the '/', or beginning
-        urlc.dwUrlPathLength = _tcslen ( urlc.lpszUrlPath );
+        urlc.dwUrlPathLength = _tcslen(urlc.lpszUrlPath);
     }
 
     // Recreate the URL:
     DWORD    dwLen = 0;
 #ifdef LATE_BIND_URLMON_WININET
-    _ASSERTE ( m_pfnInternetCreateUrl );
-    (*m_pfnInternetCreateUrl)( &urlc, 0, NULL, &dwLen );    // Get the size required.
+    _ASSERTE(m_pfnInternetCreateUrl);
+    (*m_pfnInternetCreateUrl)(&urlc, 0, NULL, &dwLen);    // Get the size required.
 #else
-    InternetCreateUrl ( &urlc, 0, NULL, &dwLen );    // Get the size required.
+    InternetCreateUrl(&urlc, 0, NULL, &dwLen);    // Get the size required.
 #endif // LATE_BIND_URLMON_WININET
 
-    _ASSERTE ( 0 != dwLen );
-    TCHAR* pszURL = new TCHAR [ dwLen + 1 ];
-    _ASSERTE ( pszURL );
-    if ( NULL != pszURL )
+    _ASSERTE(0 != dwLen);
+    TCHAR* pszURL = new TCHAR[dwLen + 1];
+    _ASSERTE(pszURL);
+    if (NULL != pszURL)
     {
         dwLen += 1;
-        memset ( pszURL, 0, sizeof(TCHAR) * dwLen );
+        memset(pszURL, 0, sizeof(TCHAR) * dwLen);
 #ifdef LATE_BIND_URLMON_WININET
-        if ( (*m_pfnInternetCreateUrl)( &urlc, 0, pszURL, &dwLen ) )
+        if ((*m_pfnInternetCreateUrl)(&urlc, 0, pszURL, &dwLen))
 #else
-        if ( InternetCreateUrl ( &urlc, 0, pszURL, &dwLen ) )
+        if (InternetCreateUrl(&urlc, 0, pszURL, &dwLen))
 #endif
         {
             m_bstrBaseURL = pszURL;
 
             // Append a '/' if needed.
-            WCHAR wc = m_bstrBaseURL.m_str[m_bstrBaseURL.Length () - 1];
-            if ( ( WCHAR('/') != wc ) && ( NULL != urlc.lpszHostName ) )    // hostname: special case for user pluggable protocols
+            WCHAR wc = m_bstrBaseURL.m_str[m_bstrBaseURL.Length() - 1];
+            if ((WCHAR('/') != wc) && (NULL != urlc.lpszHostName))    // hostname: special case for user pluggable protocols
             {
                 m_bstrBaseURL += L"/";
             }
         }
         else
         {
-            hr = HRESULT_FROM_WIN32 ( GetLastError () );
+            hr = HRESULT_FROM_WIN32(GetLastError());
         }
-        delete [] pszURL;
+        delete[] pszURL;
     }
     return hr;
 }
@@ -3786,7 +3786,7 @@ CProxyFrame::SetBaseUrlFromUrlComponents ( URL_COMPONENTS & urlc )
 //    Crack the URL, determine if it's a file scheme or other, and call the appropriate handler.
 
 HRESULT
-CProxyFrame::SetBaseURLFromURL ( const CComBSTR& bstrURL )
+CProxyFrame::SetBaseURLFromURL(const CComBSTR& bstrURL)
 {
     USES_CONVERSION;
 #define SCHEME_BUF_SIZE            64
@@ -3794,53 +3794,53 @@ CProxyFrame::SetBaseURLFromURL ( const CComBSTR& bstrURL )
 #define    URL_SEG_LEN_BUF_SIZE    1024
 #define    URL_SEG_LEN                (URL_SEG_LEN_BUF_SIZE-1)
 
-    HRESULT            hr    = S_OK;
+    HRESULT            hr = S_OK;
     URL_COMPONENTS    urlc;
-    TCHAR            *ptszScheme        = new TCHAR[SCHEME_BUF_SIZE];
-    TCHAR            *ptszHostName    = new TCHAR[URL_SEG_LEN_BUF_SIZE];
-    TCHAR            *ptszUrlPath    = new TCHAR[URL_SEG_LEN_BUF_SIZE];
+    TCHAR            *ptszScheme = new TCHAR[SCHEME_BUF_SIZE];
+    TCHAR            *ptszHostName = new TCHAR[URL_SEG_LEN_BUF_SIZE];
+    TCHAR            *ptszUrlPath = new TCHAR[URL_SEG_LEN_BUF_SIZE];
 
-    _ASSERTE ( 0 != bstrURL.Length () );
+    _ASSERTE(0 != bstrURL.Length());
 
-    memset ( &urlc, 0, sizeof ( urlc ) );
-    urlc.dwStructSize        = sizeof ( urlc );
-    urlc.lpszScheme            = ptszScheme;
-    urlc.dwSchemeLength        = SCHEME_BUF_SIZE;
-    urlc.lpszHostName        = ptszHostName;
-    urlc.dwHostNameLength    = URL_SEG_LEN;
-    urlc.lpszUrlPath        = ptszUrlPath;
-    urlc.dwUrlPathLength    = URL_SEG_LEN;
+    memset(&urlc, 0, sizeof(urlc));
+    urlc.dwStructSize = sizeof(urlc);
+    urlc.lpszScheme = ptszScheme;
+    urlc.dwSchemeLength = SCHEME_BUF_SIZE;
+    urlc.lpszHostName = ptszHostName;
+    urlc.dwHostNameLength = URL_SEG_LEN;
+    urlc.lpszUrlPath = ptszUrlPath;
+    urlc.dwUrlPathLength = URL_SEG_LEN;
 
 #ifdef LATE_BIND_URLMON_WININET
-    _ASSERTE ( m_pfnInternetCrackUrl );
-    hr = (*m_pfnInternetCrackUrl)( OLE2T ( bstrURL ), 0, 0, &urlc );
+    _ASSERTE(m_pfnInternetCrackUrl);
+    hr = (*m_pfnInternetCrackUrl)(OLE2T(bstrURL), 0, 0, &urlc);
 #else
-    hr = InternetCrackUrl ( OLE2T ( bstrURL ), 0, 0, &urlc );
+    hr = InternetCrackUrl(OLE2T(bstrURL), 0, 0, &urlc);
 #endif // LATE_BIND_URLMON_WININET
 
     // Flaw in InternetCrackUrl and    InternetCreateUrl:
     // For a pluggable protocol, the host name may be empty.  The empty string instead of NULL
     // returned here causes extera '/'s to be appeneded to the created URL.
-    if ( 0 == urlc.dwHostNameLength )
+    if (0 == urlc.dwHostNameLength)
     {
         urlc.lpszHostName = NULL;
     }
 
-    if ( SUCCEEDED ( hr ) )
+    if (SUCCEEDED(hr))
     {
-        if ( INTERNET_SCHEME_FILE == urlc.nScheme )
+        if (INTERNET_SCHEME_FILE == urlc.nScheme)
         {
-            hr = SetBaseUrlFromFileUrlComponents ( urlc );
+            hr = SetBaseUrlFromFileUrlComponents(urlc);
         }
         else
         {
-            hr = SetBaseUrlFromUrlComponents ( urlc );
+            hr = SetBaseUrlFromUrlComponents(urlc);
         }
     }
 
-    delete [] ptszScheme;
-    delete [] ptszHostName;
-    delete [] ptszUrlPath;
+    delete[] ptszScheme;
+    delete[] ptszHostName;
+    delete[] ptszUrlPath;
     return hr;
 }
 
@@ -3852,37 +3852,37 @@ CProxyFrame::SetBaseURLFromURL ( const CComBSTR& bstrURL )
 //    add ".".  Then, add "\".
 
 HRESULT
-CProxyFrame::SetBaseURLFromFileName ( const CComBSTR& bstrFName )
+CProxyFrame::SetBaseURLFromFileName(const CComBSTR& bstrFName)
 {
-    if ( 0 == bstrFName.Length () )
+    if (0 == bstrFName.Length())
     {
         m_bstrBaseURL = L"";
     }
     else
     {
-        WCHAR* pwzstr = new WCHAR[bstrFName.Length () + 1];
-        _ASSERTE ( pwzstr );
-        if ( NULL != pwzstr )
+        WCHAR* pwzstr = new WCHAR[bstrFName.Length() + 1];
+        _ASSERTE(pwzstr);
+        if (NULL != pwzstr)
         {
-            WCHAR    wc        = 0;
-            int        iPos    = 0;
+            WCHAR    wc = 0;
+            int        iPos = 0;
 
             // Scan backwards and modify in copy (never in BSTR, please) for beginning or '\'
-            memcpy ( pwzstr, bstrFName.m_str, sizeof(WCHAR) * (bstrFName.Length () + 1) );
-            for ( iPos = wcslen ( pwzstr ) - 1; iPos >= 0; iPos-- )
+            memcpy(pwzstr, bstrFName.m_str, sizeof(WCHAR) * (bstrFName.Length() + 1));
+            for (iPos = wcslen(pwzstr) - 1; iPos >= 0; iPos--)
             {
                 wc = pwzstr[iPos];
                 pwzstr[iPos] = WCHAR('\0');    // Delete first, ask questions later.  '\' must go.
-                if ( WCHAR('\\') == wc )
+                if (WCHAR('\\') == wc)
                 {
                     break;
                 }
             }
             m_bstrBaseURL = pwzstr;
-            delete [] pwzstr;
+            delete[] pwzstr;
 
             // If empty, add a '.'
-            if ( 0 == m_bstrBaseURL.Length () )
+            if (0 == m_bstrBaseURL.Length())
             {
                 m_bstrBaseURL += L".";
             }
@@ -3910,37 +3910,34 @@ CProxyFrame::SetBaseURLFromFileName ( const CComBSTR& bstrFName )
 //    URL of the hosting page.
 //    If there is no Trident host, say we're hosted in VB, return the bootdrive + : + /.
 //    Bootdrive is not always C.
-
-HRESULT
-CProxyFrame::GetSecurityURL (CComBSTR& bstrSecurityURL )
+HRESULT CProxyFrame::GetSecurityURL(CComBSTR& bstrSecurityURL)
 {
-    HRESULT            hr                        = S_OK;
-    IOleClientSite    *piClientSiteUnreffed    = NULL;
+    HRESULT            hr = S_OK;
+    IOleClientSite    *piClientSiteUnreffed = NULL;
 
     bstrSecurityURL = L"";
 
     piClientSiteUnreffed = m_pCtl->m_spClientSite;
-    if ( NULL != piClientSiteUnreffed )
+    if (NULL != piClientSiteUnreffed)
     {
         CComPtr<IOleContainer> spContainer = NULL;
-        hr = piClientSiteUnreffed->GetContainer ( &spContainer );
-        if ( SUCCEEDED ( hr ) && spContainer )
+        hr = piClientSiteUnreffed->GetContainer(&spContainer);
+        if (SUCCEEDED(hr) && spContainer)
         {
-            CComQIPtr<IHTMLDocument2, &IID_IHTMLDocument2> spHostDoc ( spContainer );
-            if ( spHostDoc )
+            CComQIPtr<IHTMLDocument2, &IID_IHTMLDocument2> spHostDoc(spContainer);
+            if (spHostDoc)
             {
                 CComPtr<IHTMLLocation> spHostLoc = NULL;
 
-
-                spHostDoc->get_location ( &spHostLoc );
-                if ( spHostLoc )
+                spHostDoc->get_location(&spHostLoc);
+                if (spHostLoc)
                 {
                     BSTR bsOut;
-                    hr = spHostLoc->get_href ( &bsOut );
-                    if ( SUCCEEDED ( hr ) )
+                    hr = spHostLoc->get_href(&bsOut);
+                    if (SUCCEEDED(hr))
                     {
-                        bstrSecurityURL.Empty ();
-                        bstrSecurityURL.Attach ( bsOut );
+                        bstrSecurityURL.Empty();
+                        bstrSecurityURL.Attach(bsOut);
                     }
                 }
             }
@@ -3948,14 +3945,15 @@ CProxyFrame::GetSecurityURL (CComBSTR& bstrSecurityURL )
             {
                 // If we are not hosted in Trident, use local machine access:
                 TCHAR    tszDrive[4];
-                GetModuleFileName ( _Module.m_hInst, tszDrive, 3 );    // Get X:\.
-                _ASSERTE ( TCHAR(':') == tszDrive[1] );
-                _ASSERTE ( TCHAR('\\') == tszDrive[2] );
+                GetModuleFileName(_Module.m_hInst, tszDrive, 3);    // Get X:\.
+                _ASSERTE(TCHAR(':') == tszDrive[1]);
+                _ASSERTE(TCHAR('\\') == tszDrive[2]);
                 bstrSecurityURL = tszDrive;
                 hr = S_OK;
             }
         }
     }
+
     return hr;
 }
 
@@ -3978,21 +3976,21 @@ CProxyFrame::RegisterPluggableProtocol()
 
     CComPtr<IInternetSession> srpSession;
 #ifdef LATE_BIND_URLMON_WININET
-    _ASSERTE ( m_pfnCoInternetGetSession );
+    _ASSERTE(m_pfnCoInternetGetSession);
     hr = (*m_pfnCoInternetGetSession)(0, &srpSession, 0);
 #else
-    hr = CoInternetGetSession (0, &srpSession, 0);
+    hr = CoInternetGetSession(0, &srpSession, 0);
 #endif // LATE_BIND_URLMON_WININET
 
-    if ( FAILED ( hr ) )
+    if (FAILED(hr))
     {
         return hr;
     }
 
-    if(m_pProtInfo == NULL)
+    if (m_pProtInfo == NULL)
     {
         hr = CComObject<CDHTMLEdProtocolInfo>::CreateInstance(&m_pProtInfo);
-        if ( FAILED ( hr ) )
+        if (FAILED(hr))
         {
             return hr;
         }
@@ -4002,23 +4000,23 @@ CProxyFrame::RegisterPluggableProtocol()
     }
 
     hr = srpSession->RegisterNameSpace(
-                        static_cast<IClassFactory*>(m_pProtInfo),
-                        CLSID_DHTMLEdProtocol,
-                        m_wszProtocol,
-                        0,
-                        NULL,
-                        0);
+        static_cast<IClassFactory*>(m_pProtInfo),
+        CLSID_DHTMLEdProtocol,
+        m_wszProtocol,
+        0,
+        NULL,
+        0);
 
-    if ( FAILED ( hr ) )
+    if (FAILED(hr))
     {
         return hr;
     }
 
-    CComQIPtr <IProtocolInfoConnector, &IID_IProtocolInfoConnector> piPic ( m_pProtInfo );
-    _ASSERTE ( piPic );
-    piPic->SetProxyFrame ( (SIZE_T*)this );
+    CComQIPtr <IProtocolInfoConnector, &IID_IProtocolInfoConnector> piPic(m_pProtInfo);
+    _ASSERTE(piPic);
+    piPic->SetProxyFrame((SIZE_T*)this);
 
-    ATLTRACE( _T("CProxyFrame::Registered ProtocolInfo\n"));
+    ATLTRACE(_T("CProxyFrame::Registered ProtocolInfo\n"));
 
     return NOERROR;
 }
@@ -4028,7 +4026,7 @@ CProxyFrame::RegisterPluggableProtocol()
 HRESULT
 CProxyFrame::UnRegisterPluggableProtocol()
 {
-    if(m_pProtInfo == NULL)
+    if (m_pProtInfo == NULL)
         return E_UNEXPECTED;
 
     // Get InternetSession
@@ -4037,19 +4035,19 @@ CProxyFrame::UnRegisterPluggableProtocol()
     CComPtr<IInternetSession> srpSession;
 
 #ifdef LATE_BIND_URLMON_WININET
-    _ASSERTE ( m_pfnCoInternetGetSession );
+    _ASSERTE(m_pfnCoInternetGetSession);
     hr = (*m_pfnCoInternetGetSession)(0, &srpSession, 0);
 #else
-    hr = CoInternetGetSession (0, &srpSession, 0);
+    hr = CoInternetGetSession(0, &srpSession, 0);
 #endif // LATE_BIND_URLMON_WININET
 
-    if(SUCCEEDED(hr))
+    if (SUCCEEDED(hr))
     {
         // UnRegister Protocol
 
         srpSession->UnregisterNameSpace(
-                            static_cast<IClassFactory*>(m_pProtInfo),
-                            m_wszProtocol);
+            static_cast<IClassFactory*>(m_pProtInfo),
+            m_wszProtocol);
 
     }
 
@@ -4066,18 +4064,18 @@ CProxyFrame::UnRegisterPluggableProtocol()
 //    ParseAndBind calls this to retrieve the data to be displayed in the control.
 
 HRESULT
-CProxyFrame::GetFilteredStream ( IStream** ppStream )
+CProxyFrame::GetFilteredStream(IStream** ppStream)
 {
     USES_CONVERSION;
     HRESULT hr = S_OK;
     LPTSTR pFileName = NULL;
     CComPtr<IStream> piStream;
-    BOOL    bfLoadingFromBSTR = ( 0 != m_bstrLoadText.Length () );
+    BOOL    bfLoadingFromBSTR = (0 != m_bstrLoadText.Length());
 
     *ppStream = NULL;
     m_bfReloadAttempted = TRUE;
 
-    if ( !bfLoadingFromBSTR )
+    if (!bfLoadingFromBSTR)
     {
         _ASSERTE(m_bstrCurDocPath);
 
@@ -4089,11 +4087,11 @@ CProxyFrame::GetFilteredStream ( IStream** ppStream )
             return E_OUTOFMEMORY;
     }
 
-    if ( bfLoadingFromBSTR )
+    if (bfLoadingFromBSTR)
     {
         hr = m_pSite->HrBstrToStream(m_bstrLoadText, &piStream);
     }
-    else if ( m_bfIsURL )
+    else if (m_bfIsURL)
     {
         hr = m_pSite->HrURLToStream(pFileName, &piStream);
     }
@@ -4102,10 +4100,10 @@ CProxyFrame::GetFilteredStream ( IStream** ppStream )
         hr = m_pSite->HrFileToStream(pFileName, &piStream);
     }
 
-    if (FAILED( hr ))
+    if (FAILED(hr))
     {
-        m_bstrCurDocPath.Empty ();
-        m_bstrBaseURL.Empty ();
+        m_bstrCurDocPath.Empty();
+        m_bstrBaseURL.Empty();
 
         // Get TriEdit into a reasonable state by loading an empty document
         // If we reinstanced successfully, this should never fail
@@ -4118,9 +4116,9 @@ CProxyFrame::GetFilteredStream ( IStream** ppStream )
     }
     else
     {
-        if ( m_vbBrowseMode )
+        if (m_vbBrowseMode)
         {
-            piStream->AddRef ();
+            piStream->AddRef();
             *ppStream = piStream;
         }
         else
@@ -4140,7 +4138,7 @@ CProxyFrame::GetFilteredStream ( IStream** ppStream )
 
     // Store the result to return from the (indirectly) called routine,
     // but don't return an error to ParseAndBind!
-    if ( FAILED(hr) && ( ! bfLoadingFromBSTR ) )
+    if (FAILED(hr) && (!bfLoadingFromBSTR))
     {
         m_hrDeferredLoadError = hr;    // Stash this away, we'll pic it up in LoadDocument
         hr = S_OK;
@@ -4158,104 +4156,104 @@ CProxyFrame::GetFilteredStream ( IStream** ppStream )
 
 
 HRESULT
-CProxyFrame::OnTriEditEvent ( const GUID& iidEventInterface, DISPID dispid )
+CProxyFrame::OnTriEditEvent(const GUID& iidEventInterface, DISPID dispid)
 {
     HRESULT hr = S_OK;
 
-    if ( DIID_HTMLDocumentEvents == iidEventInterface )
+    if (DIID_HTMLDocumentEvents == iidEventInterface)
     {
-        switch ( dispid )
+        switch (dispid)
         {
-            case DISPID_HTMLDOCUMENTEVENTS_ONKEYPRESS:
-            case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN:
-                if ( DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN == dispid )
+        case DISPID_HTMLDOCUMENTEVENTS_ONKEYPRESS:
+        case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN:
+            if (DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN == dispid)
+            {
+                m_pCtl->Fire_onmousedown();
+            }
+            else if (DISPID_HTMLDOCUMENTEVENTS_ONKEYPRESS == dispid)
+            {
+                m_pCtl->Fire_onkeypress();
+            }
+
+            // Make the control UIActive if it was clicked in.  Since the DocObject swallows the clicks,
+            // the control isn't activated automatically.
+            // Not needed in browse mode.
+            if (!m_pCtl->m_bUIActive && !m_vbBrowseMode)
+            {
+                m_pCtl->DoVerbUIActivate(NULL, NULL);
+                if (m_hWndObj != NULL)
                 {
-                    m_pCtl->Fire_onmousedown();
+                    ::SetFocus(m_hWndObj);
                 }
-                else if ( DISPID_HTMLDOCUMENTEVENTS_ONKEYPRESS == dispid )
-                {
-                    m_pCtl->Fire_onkeypress();
-                }
+            }
+            break;
 
-                // Make the control UIActive if it was clicked in.  Since the DocObject swallows the clicks,
-                // the control isn't activated automatically.
-                // Not needed in browse mode.
-                if (  !m_pCtl->m_bUIActive && ! m_vbBrowseMode )
-                {
-                    m_pCtl->DoVerbUIActivate ( NULL, NULL );
-                    if ( m_hWndObj != NULL )
-                    {
-                        ::SetFocus( m_hWndObj );
-                    }
-                }
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE:
+            m_pCtl->Fire_onmousemove();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE:
-                m_pCtl->Fire_onmousemove();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP:
+            m_pCtl->Fire_onmouseup();
+            // onclick is not delivered in edit mode.  First one lost in broswe mode.
+            m_pCtl->Fire_onclick();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP:
-                m_pCtl->Fire_onmouseup();
-                // onclick is not delivered in edit mode.  First one lost in broswe mode.
-                m_pCtl->Fire_onclick();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT:
+            m_pCtl->Fire_onmouseout();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT:
-                m_pCtl->Fire_onmouseout();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER:
+            m_pCtl->Fire_onmouseover();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER:
-                m_pCtl->Fire_onmouseover();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONCLICK:
+            // We do not fire the onclick event in response.
+            // It is only delivered in browse mode, and in addition,
+            // the first onclick is lost.  We fire on onmouseup.
+            //m_pCtl->Fire_onclick();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONCLICK:
-                // We do not fire the onclick event in response.
-                // It is only delivered in browse mode, and in addition,
-                // the first onclick is lost.  We fire on onmouseup.
-                //m_pCtl->Fire_onclick();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK:
+            m_pCtl->Fire_ondblclick();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK:
-                m_pCtl->Fire_ondblclick();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONKEYDOWN:
+            m_pCtl->Fire_onkeydown();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONKEYDOWN:
-                m_pCtl->Fire_onkeydown();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONKEYUP:
+            m_pCtl->Fire_onkeyup();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONKEYUP:
-                m_pCtl->Fire_onkeyup();
-                break;
+        case DISPID_HTMLDOCUMENTEVENTS_ONREADYSTATECHANGE:
+            m_pCtl->Fire_onreadystatechange();
+            break;
 
-            case DISPID_HTMLDOCUMENTEVENTS_ONREADYSTATECHANGE:
-                m_pCtl->Fire_onreadystatechange();
-                break;
-
-            default:
-                _ASSERTE ( TRUE );
-                break;
+        default:
+            _ASSERTE(TRUE);
+            break;
         }
     }
-    else if ( DIID_HTMLWindowEvents == iidEventInterface )
+    else if (DIID_HTMLWindowEvents == iidEventInterface)
     {
         // I expected to get these, but I'm not...
-        switch ( dispid )
+        switch (dispid)
         {
-            case DISPID_HTMLWINDOWEVENTS_ONLOAD:
-            case DISPID_HTMLWINDOWEVENTS_ONUNLOAD:
-            case DISPID_HTMLWINDOWEVENTS_ONHELP:
-            case DISPID_HTMLWINDOWEVENTS_ONFOCUS:
-            case DISPID_HTMLWINDOWEVENTS_ONBLUR:
-            case DISPID_HTMLWINDOWEVENTS_ONERROR:
-            case DISPID_HTMLWINDOWEVENTS_ONRESIZE:
-            case DISPID_HTMLWINDOWEVENTS_ONSCROLL:
-            case DISPID_HTMLWINDOWEVENTS_ONBEFOREUNLOAD:
-                hr = S_OK;
-                break;
+        case DISPID_HTMLWINDOWEVENTS_ONLOAD:
+        case DISPID_HTMLWINDOWEVENTS_ONUNLOAD:
+        case DISPID_HTMLWINDOWEVENTS_ONHELP:
+        case DISPID_HTMLWINDOWEVENTS_ONFOCUS:
+        case DISPID_HTMLWINDOWEVENTS_ONBLUR:
+        case DISPID_HTMLWINDOWEVENTS_ONERROR:
+        case DISPID_HTMLWINDOWEVENTS_ONRESIZE:
+        case DISPID_HTMLWINDOWEVENTS_ONSCROLL:
+        case DISPID_HTMLWINDOWEVENTS_ONBEFOREUNLOAD:
+            hr = S_OK;
+            break;
 
-            default:
-                _ASSERTE ( TRUE );
-                break;
+        default:
+            _ASSERTE(TRUE);
+            break;
         }
     }
     return hr;
@@ -4275,72 +4273,72 @@ CProxyFrame::OnTriEditEvent ( const GUID& iidEventInterface, DISPID dispid )
 //    NOTE:
 //    This routine loads ANSI versions.  Needs addaptation for UNICODE.
 
-BOOL CProxyFrame::DynLoadLibraries ()
+BOOL CProxyFrame::DynLoadLibraries()
 {
-    m_hUlrMon    = LoadLibrary ( TEXT("URLMON.DLL") );
-    m_hWinINet    = LoadLibrary ( TEXT("WININET.DLL") );
-    if ( ( NULL == m_hUlrMon ) || ( NULL == m_hWinINet ) )
+    m_hUlrMon = LoadLibrary(TEXT("URLMON.DLL"));
+    m_hWinINet = LoadLibrary(TEXT("WININET.DLL"));
+    if ((NULL == m_hUlrMon) || (NULL == m_hWinINet))
     {
-        DynUnloadLibraries ();
+        DynUnloadLibraries();
         return FALSE;
     }
 
-    m_pfnCoInternetCombineUrl    = (PFNCoInternetCombineUrl)GetProcAddress (
-                                    m_hUlrMon, "CoInternetCombineUrl" );
-                                    _ASSERTE ( m_pfnCoInternetCombineUrl );
-    m_pfnCoInternetParseUrl        = (PFNCoInternetParseUrl)GetProcAddress (
-                                    m_hUlrMon, "CoInternetParseUrl" );
-                                    _ASSERTE ( m_pfnCoInternetParseUrl );
-    m_pfnCreateURLMoniker        = (PFNCreateURLMoniker)GetProcAddress (
-                                    m_hUlrMon, "CreateURLMoniker" );
-                                    _ASSERTE ( m_pfnCreateURLMoniker );
-    m_pfnCoInternetGetSession    = (PFNCoInternetGetSession)GetProcAddress (
-                                    m_hUlrMon, "CoInternetGetSession" );
-                                    _ASSERTE ( m_pfnCoInternetGetSession );
-    m_pfnURLOpenBlockingStream    = (PFNURLOpenBlockingStream)GetProcAddress (
-                                    m_hUlrMon, "URLOpenBlockingStreamA" );
-                                    _ASSERTE ( m_pfnURLOpenBlockingStream );
+    m_pfnCoInternetCombineUrl = (PFNCoInternetCombineUrl)GetProcAddress(
+        m_hUlrMon, "CoInternetCombineUrl");
+    _ASSERTE(m_pfnCoInternetCombineUrl);
+    m_pfnCoInternetParseUrl = (PFNCoInternetParseUrl)GetProcAddress(
+        m_hUlrMon, "CoInternetParseUrl");
+    _ASSERTE(m_pfnCoInternetParseUrl);
+    m_pfnCreateURLMoniker = (PFNCreateURLMoniker)GetProcAddress(
+        m_hUlrMon, "CreateURLMoniker");
+    _ASSERTE(m_pfnCreateURLMoniker);
+    m_pfnCoInternetGetSession = (PFNCoInternetGetSession)GetProcAddress(
+        m_hUlrMon, "CoInternetGetSession");
+    _ASSERTE(m_pfnCoInternetGetSession);
+    m_pfnURLOpenBlockingStream = (PFNURLOpenBlockingStream)GetProcAddress(
+        m_hUlrMon, "URLOpenBlockingStreamA");
+    _ASSERTE(m_pfnURLOpenBlockingStream);
 
-    m_pfnDeleteUrlCacheEntry    = (PFNDeleteUrlCacheEntry)GetProcAddress (
-                                    m_hWinINet, "DeleteUrlCacheEntry" );
-                                    _ASSERTE ( m_pfnDeleteUrlCacheEntry );
-    m_pfnInternetCreateUrl        = (PFNInternetCreateUrl)GetProcAddress (
-                                    m_hWinINet, "InternetCreateUrlA" );
-                                    _ASSERTE ( m_pfnInternetCreateUrl );
-    m_pfnInternetCrackUrl        = (PFNInternetCrackURL)GetProcAddress (
-                                    m_hWinINet, "InternetCrackUrlA" );
-                                    _ASSERTE ( m_pfnInternetCrackUrl );
+    m_pfnDeleteUrlCacheEntry = (PFNDeleteUrlCacheEntry)GetProcAddress(
+        m_hWinINet, "DeleteUrlCacheEntry");
+    _ASSERTE(m_pfnDeleteUrlCacheEntry);
+    m_pfnInternetCreateUrl = (PFNInternetCreateUrl)GetProcAddress(
+        m_hWinINet, "InternetCreateUrlA");
+    _ASSERTE(m_pfnInternetCreateUrl);
+    m_pfnInternetCrackUrl = (PFNInternetCrackURL)GetProcAddress(
+        m_hWinINet, "InternetCrackUrlA");
+    _ASSERTE(m_pfnInternetCrackUrl);
 
-    return ( m_pfnCoInternetCombineUrl && m_pfnCoInternetParseUrl && m_pfnCreateURLMoniker &&
-        m_pfnCoInternetGetSession && m_pfnURLOpenBlockingStream && m_pfnDeleteUrlCacheEntry &&
-        m_pfnInternetCreateUrl && m_pfnInternetCrackUrl );
+    return (m_pfnCoInternetCombineUrl && m_pfnCoInternetParseUrl && m_pfnCreateURLMoniker &&
+            m_pfnCoInternetGetSession && m_pfnURLOpenBlockingStream && m_pfnDeleteUrlCacheEntry &&
+            m_pfnInternetCreateUrl && m_pfnInternetCrackUrl);
 }
 
 
 //    Release the libraries loaded by DynLoadLibraries
 
-void CProxyFrame::DynUnloadLibraries ()
+void CProxyFrame::DynUnloadLibraries()
 {
-    if ( NULL != m_hUlrMon )
+    if (NULL != m_hUlrMon)
     {
-        FreeLibrary ( m_hUlrMon );
+        FreeLibrary(m_hUlrMon);
         m_hUlrMon = NULL;
     }
-    if ( NULL != m_hWinINet )
+    if (NULL != m_hWinINet)
     {
-        FreeLibrary ( m_hWinINet );
+        FreeLibrary(m_hWinINet);
         m_hWinINet = NULL;
     }
 
-    m_pfnCoInternetCombineUrl    = NULL;
-    m_pfnCoInternetParseUrl        = NULL;
-    m_pfnCreateURLMoniker        = NULL;
-    m_pfnCoInternetGetSession    = NULL;
-    m_pfnURLOpenBlockingStream    = NULL;
+    m_pfnCoInternetCombineUrl = NULL;
+    m_pfnCoInternetParseUrl = NULL;
+    m_pfnCreateURLMoniker = NULL;
+    m_pfnCoInternetGetSession = NULL;
+    m_pfnURLOpenBlockingStream = NULL;
 
-    m_pfnDeleteUrlCacheEntry    = NULL;
-    m_pfnInternetCreateUrl        = NULL;
-    m_pfnInternetCrackUrl        = NULL;
+    m_pfnDeleteUrlCacheEntry = NULL;
+    m_pfnInternetCreateUrl = NULL;
+    m_pfnInternetCrackUrl = NULL;
 }
 #endif // LATE_BIND_URLMON_WININET
 
@@ -4352,9 +4350,7 @@ void CProxyFrame::DynUnloadLibraries ()
 
 
 //    Return the IHTMLDocument2 pointer from the hosted doc.
-
-HRESULT
-CProxyFrame::HrGetDoc(IHTMLDocument2 **ppDoc)
+HRESULT CProxyFrame::HrGetDoc(IHTMLDocument2 **ppDoc)
 {
     HRESULT hr = E_FAIL;
     IUnknown* lpUnk = m_pSite->GetObjectUnknown();
@@ -4369,7 +4365,7 @@ CProxyFrame::HrGetDoc(IHTMLDocument2 **ppDoc)
 
     _ASSERTE(lpUnk);
 
-    if ( m_bfIsLoading )
+    if (m_bfIsLoading)
         return DE_E_UNEXPECTED;    // This is invalid while document is still loading.
 
     if (lpUnk != NULL)
@@ -4415,7 +4411,7 @@ HRESULT
 CProxyFrame::HrTridentGetPropBool(ULONG cmd, BOOL& bVal)
 {
     HRESULT hr = S_OK;
-    OLECMDF cmdf = (OLECMDF) 0;
+    OLECMDF cmdf = (OLECMDF)0;
 
     if (SUCCEEDED(HrQueryStatus(&CGID_MSHTML, cmd, &cmdf)))
     {
@@ -4436,41 +4432,41 @@ CProxyFrame::HrTridentGetPropBool(ULONG cmd, BOOL& bVal)
 //    Clear the BaseURL, and mark the control "Loading..."
 
 HRESULT
-CProxyFrame::LoadBSTRDeferred ( BSTR bVal )
+CProxyFrame::LoadBSTRDeferred(BSTR bVal)
 {
-    HRESULT    hr    = E_FAIL;
+    HRESULT    hr = E_FAIL;
 
-    _ASSERTE ( m_pUnkTriEdit );
+    _ASSERTE(m_pUnkTriEdit);
 
     m_bstrLoadText = bVal;
 
     CComPtr<IMoniker> srpMoniker;
     CComPtr<IBindCtx> srpBindCtx;
-    CComQIPtr<IPersistMoniker, &IID_IPersistMoniker> srpPM (m_pUnkTriEdit);
-    _ASSERTE ( srpPM );
+    CComQIPtr<IPersistMoniker, &IID_IPersistMoniker> srpPM(m_pUnkTriEdit);
+    _ASSERTE(srpPM);
 
-    if ( srpPM )
+    if (srpPM)
     {
 #ifdef LATE_BIND_URLMON_WININET
-        _ASSERTE ( m_pfnCreateURLMoniker );
-        hr = (*m_pfnCreateURLMoniker)( NULL, m_wszProtocolPrefix, &srpMoniker );
+        _ASSERTE(m_pfnCreateURLMoniker);
+        hr = (*m_pfnCreateURLMoniker)(NULL, m_wszProtocolPrefix, &srpMoniker);
 #else
-        hr = CreateURLMoniker ( NULL, m_wszProtocolPrefix, &srpMoniker );
+        hr = CreateURLMoniker(NULL, m_wszProtocolPrefix, &srpMoniker);
 #endif // LATE_BIND_URLMON_WININET
 
-        _ASSERTE ( SUCCEEDED( hr ) );
-        if ( SUCCEEDED ( hr ) )
+        _ASSERTE(SUCCEEDED(hr));
+        if (SUCCEEDED(hr))
         {
             hr = ::CreateBindCtx(NULL, &srpBindCtx);
-            _ASSERTE ( SUCCEEDED( hr ) );
-            if ( SUCCEEDED ( hr ) )
+            _ASSERTE(SUCCEEDED(hr));
+            if (SUCCEEDED(hr))
             {
                 m_bfIsLoading = TRUE;
                 m_bfBaseURLFromBASETag = FALSE;
 
-                hr = srpPM->Load(FALSE, srpMoniker,  srpBindCtx, STGM_READ);
+                hr = srpPM->Load(FALSE, srpMoniker, srpBindCtx, STGM_READ);
 
-                _ASSERTE ( SUCCEEDED( hr ) );
+                _ASSERTE(SUCCEEDED(hr));
             }
         }
     }
@@ -4481,7 +4477,7 @@ CProxyFrame::LoadBSTRDeferred ( BSTR bVal )
 //    Set the document stream's dirty flag
 
 HRESULT
-CProxyFrame::SetDirtyFlag ( BOOL bfMakeDirty )
+CProxyFrame::SetDirtyFlag(BOOL bfMakeDirty)
 {
     CComVariant varDirty;
 
@@ -4546,7 +4542,7 @@ CProxyFrame::HrGetCurrentDocumentPath(BSTR* bVal)
     if (NULL == bVal)
         return E_INVALIDARG;
 
-    *bVal = m_bstrCurDocPath.Copy ();
+    *bVal = m_bstrCurDocPath.Copy();
     return hr;
 }
 
@@ -4600,17 +4596,17 @@ error:
 HRESULT
 CProxyFrame::HrGetTableSafeArray(IDEInsertTableParam* pTable, LPVARIANT pVarIn)
 {
-    HRESULT hr                    = S_OK;
-    UINT i                        = 0;
-    SAFEARRAY FAR* psa            = NULL;
-    SAFEARRAYBOUND rgsabound[1] = {0};
-    LONG ix[1]                    = {0};
+    HRESULT hr = S_OK;
+    UINT i = 0;
+    SAFEARRAY FAR* psa = NULL;
+    SAFEARRAYBOUND rgsabound[1] = { 0 };
+    LONG ix[1] = { 0 };
     VARIANT varElem;
-    LONG  nNumRows                = 0;
-    LONG  nNumCols                = 0;
-    BSTR bstrTableAttrs            = NULL;
-    BSTR bstrCellAttrs            = NULL;
-    BSTR bstrCaption            = NULL;
+    LONG  nNumRows = 0;
+    LONG  nNumCols = 0;
+    BSTR bstrTableAttrs = NULL;
+    BSTR bstrCellAttrs = NULL;
+    BSTR bstrCaption = NULL;
 
     _ASSERTE(pTable);
 
@@ -4653,14 +4649,14 @@ CProxyFrame::HrGetTableSafeArray(IDEInsertTableParam* pTable, LPVARIANT pVarIn)
     psa = SafeArrayCreate(VT_VARIANT, 1, rgsabound);
     _ASSERTE(psa);
 
-    if(NULL == psa)
+    if (NULL == psa)
         return E_OUTOFMEMORY;
 
     VariantInit(pVarIn);
     V_VT(pVarIn) = VT_ARRAY;
     V_ARRAY(pVarIn) = psa;
 
-    i=0;
+    i = 0;
 
     // elmement 1: number of rows
     ix[0] = i;
@@ -4700,7 +4696,7 @@ CProxyFrame::HrGetTableSafeArray(IDEInsertTableParam* pTable, LPVARIANT pVarIn)
 
     // elmement 5: table caption
     // VK bug 15857: don't include caption if it's empty.
-    if ( 0 != SysStringLen ( bstrCaption ) )
+    if (0 != SysStringLen(bstrCaption))
     {
         ix[0] = i;
         VariantInit(&varElem);
@@ -4718,47 +4714,47 @@ CProxyFrame::HrGetTableSafeArray(IDEInsertTableParam* pTable, LPVARIANT pVarIn)
 //    Determine which object is selected, and return its position
 
 HRESULT
-CProxyFrame::GetSelectionPos ( LPPOINT lpWhere )
+CProxyFrame::GetSelectionPos(LPPOINT lpWhere)
 {
-    HRESULT    hr    = E_FAIL;
-    CComPtr<IHTMLDocument2> spHtmlDoc                = NULL;
-    CComPtr<IHTMLSelectionObject> spSelectionObj    = NULL;
-    CComPtr<IDispatch> spRangeDisp                    = NULL;
-    CComPtr<IHTMLElement> spElement                    = NULL;
+    HRESULT    hr = E_FAIL;
+    CComPtr<IHTMLDocument2> spHtmlDoc = NULL;
+    CComPtr<IHTMLSelectionObject> spSelectionObj = NULL;
+    CComPtr<IDispatch> spRangeDisp = NULL;
+    CComPtr<IHTMLElement> spElement = NULL;
 
-    lpWhere->x    = 0;
-    lpWhere->y    = 0;
+    lpWhere->x = 0;
+    lpWhere->y = 0;
 
-    hr = HrGetDoc ( &spHtmlDoc );
-    if ( SUCCEEDED ( hr ) )
+    hr = HrGetDoc(&spHtmlDoc);
+    if (SUCCEEDED(hr))
     {
-        hr = spHtmlDoc->get_selection ( &spSelectionObj );
-        if ( SUCCEEDED ( hr ) )
+        hr = spHtmlDoc->get_selection(&spSelectionObj);
+        if (SUCCEEDED(hr))
         {
-            hr = spSelectionObj->createRange ( &spRangeDisp );
-            if (SUCCEEDED ( hr ) )
+            hr = spSelectionObj->createRange(&spRangeDisp);
+            if (SUCCEEDED(hr))
             {
-                CComQIPtr<IHTMLTxtRange, &IID_IHTMLTxtRange> spTextRange ( spRangeDisp );
-                if ( spTextRange )
+                CComQIPtr<IHTMLTxtRange, &IID_IHTMLTxtRange> spTextRange(spRangeDisp);
+                if (spTextRange)
                 {
                     hr = spTextRange->parentElement(&spElement);
                 }
                 else
                 {
-                    CComQIPtr<IHTMLControlRange, &IID_IHTMLControlRange> spControlRange ( spRangeDisp );
-                    if ( spControlRange )
+                    CComQIPtr<IHTMLControlRange, &IID_IHTMLControlRange> spControlRange(spRangeDisp);
+                    if (spControlRange)
                     {
                         hr = spControlRange->commonParentElement(&spElement);
                     }
                 }
-                if ( spElement )
+                if (spElement)
                 {
                     CComPtr<IHTMLStyle> spStyle = NULL;
-                    hr = spElement->get_style ( &spStyle );
-                    if ( spStyle )
+                    hr = spElement->get_style(&spStyle);
+                    if (spStyle)
                     {
-                        spStyle->get_pixelTop ( &( lpWhere->y ) );
-                        spStyle->get_pixelLeft ( &( lpWhere->x ) );
+                        spStyle->get_pixelTop(&(lpWhere->y));
+                        spStyle->get_pixelLeft(&(lpWhere->x));
                     }
                 }
             }
@@ -4773,15 +4769,15 @@ CProxyFrame::GetSelectionPos ( LPPOINT lpWhere )
 //    Return S_FALSE for a URL or no file name.  S_OK if a file name is supplied.
 
 HRESULT
-CProxyFrame::GetCurDocNameWOPath ( CComBSTR& bstrDocName )
+CProxyFrame::GetCurDocNameWOPath(CComBSTR& bstrDocName)
 {
     bstrDocName = L"";
 
-    if ( m_bfIsURL )
+    if (m_bfIsURL)
     {
         return S_FALSE;
     }
-    if ( 0 == m_bstrCurDocPath.Length () )
+    if (0 == m_bstrCurDocPath.Length())
     {
         return S_FALSE;
     }
@@ -4789,9 +4785,9 @@ CProxyFrame::GetCurDocNameWOPath ( CComBSTR& bstrDocName )
     bstrDocName = m_bstrCurDocPath;
 
     // Truncate at first backslash:
-    _wcsrev ( bstrDocName );
-    wcstok ( bstrDocName, OLESTR( "\\" ) );
-    _wcsrev ( bstrDocName );
+    _wcsrev(bstrDocName);
+    wcstok(bstrDocName, OLESTR("\\"));
+    _wcsrev(bstrDocName);
 
     return S_OK;
 }
@@ -4800,44 +4796,44 @@ CProxyFrame::GetCurDocNameWOPath ( CComBSTR& bstrDocName )
 //    Used by ShowContextMenu to properly offset the position of the click
 
 HRESULT
-CProxyFrame::GetScrollPos ( LPPOINT lpPos )
+CProxyFrame::GetScrollPos(LPPOINT lpPos)
 {
-    HRESULT                    hr            = E_FAIL;
-    CComPtr<IHTMLDocument2>    spHtmlDoc    = NULL;
-    CComPtr<IHTMLElement>    spBodyElem    = NULL;
+    HRESULT                    hr = E_FAIL;
+    CComPtr<IHTMLDocument2>    spHtmlDoc = NULL;
+    CComPtr<IHTMLElement>    spBodyElem = NULL;
 
-    _ASSERTE ( lpPos );
+    _ASSERTE(lpPos);
 
-    hr = HrGetDoc ( &spHtmlDoc );
+    hr = HrGetDoc(&spHtmlDoc);
 
     // It's possible that the user clicked while the doc was still loading.
     // If so, just return 0, 0.
-    if ( DE_E_UNEXPECTED == hr )
+    if (DE_E_UNEXPECTED == hr)
     {
         lpPos->x = lpPos->y = 0;
         return S_FALSE;
     }
 
-    _ASSERTE ( spHtmlDoc );
-    if ( SUCCEEDED ( hr ) )
+    _ASSERTE(spHtmlDoc);
+    if (SUCCEEDED(hr))
     {
-        hr = spHtmlDoc->get_body ( &spBodyElem );
-        _ASSERTE ( spBodyElem );
-        if ( SUCCEEDED ( hr ) )
+        hr = spHtmlDoc->get_body(&spBodyElem);
+        _ASSERTE(spBodyElem);
+        if (SUCCEEDED(hr))
         {
-            CComQIPtr<IHTMLTextContainer, &IID_IHTMLTextContainer> spHtmlTextCont ( spBodyElem );
-            if ( spHtmlTextCont )
+            CComQIPtr<IHTMLTextContainer, &IID_IHTMLTextContainer> spHtmlTextCont(spBodyElem);
+            if (spHtmlTextCont)
             {
-                LONG    lxPos    = 0;
-                LONG    lyPos    = 0;
+                LONG    lxPos = 0;
+                LONG    lyPos = 0;
 
-                hr = spHtmlTextCont->get_scrollLeft ( &lxPos );
-                _ASSERTE ( SUCCEEDED ( hr ) );
-                if ( SUCCEEDED ( hr ) )
+                hr = spHtmlTextCont->get_scrollLeft(&lxPos);
+                _ASSERTE(SUCCEEDED(hr));
+                if (SUCCEEDED(hr))
                 {
-                    hr = spHtmlTextCont->get_scrollTop ( &lyPos );
-                    _ASSERTE ( SUCCEEDED ( hr ) );
-                    if ( SUCCEEDED ( hr ) )
+                    hr = spHtmlTextCont->get_scrollTop(&lyPos);
+                    _ASSERTE(SUCCEEDED(hr));
+                    if (SUCCEEDED(hr))
                     {
                         lpPos->x = lxPos;
                         lpPos->y = lyPos;
@@ -4847,7 +4843,7 @@ CProxyFrame::GetScrollPos ( LPPOINT lpPos )
             else
             {
                 hr = E_NOINTERFACE;
-                _ASSERTE ( SUCCEEDED ( hr ) );
+                _ASSERTE(SUCCEEDED(hr));
             }
         }
     }
@@ -4856,13 +4852,13 @@ CProxyFrame::GetScrollPos ( LPPOINT lpPos )
 
 
 HRESULT
-CProxyFrame::GetContainer ( LPOLECONTAINER* ppContainer )
+CProxyFrame::GetContainer(LPOLECONTAINER* ppContainer)
 {
-    _ASSERTE ( m_pCtl );
-    _ASSERTE ( m_pCtl->m_spClientSite );
-    if ( m_pCtl->m_spClientSite )
+    _ASSERTE(m_pCtl);
+    _ASSERTE(m_pCtl->m_spClientSite);
+    if (m_pCtl->m_spClientSite)
     {
-        return m_pCtl->m_spClientSite->GetContainer ( ppContainer );
+        return m_pCtl->m_spClientSite->GetContainer(ppContainer);
     }
     return E_NOTIMPL;
 }
@@ -4873,52 +4869,52 @@ CProxyFrame::GetContainer ( LPOLECONTAINER* ppContainer )
 //    Note that this makes the SFS control virtually useless in VB, which returns
 //    the Boot Drive Root Folder as the Security URL.
 
-HRESULT CProxyFrame::CheckCrossZoneSecurity ( BSTR urlToLoad )
+HRESULT CProxyFrame::CheckCrossZoneSecurity(BSTR urlToLoad)
 {
-    HRESULT        hr    = S_OK;
+    HRESULT        hr = S_OK;
 
     CComPtr<IInternetSecurityManager> srpSec;
     CComBSTR    bstrSecURL;
 
-    hr = GetSecurityURL ( bstrSecURL );
-    _ASSERTE ( SUCCEEDED ( hr ) );
-    if ( SUCCEEDED ( hr ) )
+    hr = GetSecurityURL(bstrSecURL);
+    _ASSERTE(SUCCEEDED(hr));
+    if (SUCCEEDED(hr))
     {
 #ifdef LATE_BIND_URLMON_WININET
-        hr = (m_pfnCoInternetCreateSecurityManager)( NULL, &srpSec, 0 );
+        hr = (m_pfnCoInternetCreateSecurityManager)(NULL, &srpSec, 0);
 #else
-        hr = CoInternetCreateSecurityManager( NULL, &srpSec, 0 );
+        hr = CoInternetCreateSecurityManager(NULL, &srpSec, 0);
 #endif // LATE_BIND_URLMON_WININET
-        if ( SUCCEEDED ( hr ) && srpSec )
+        if (SUCCEEDED(hr) && srpSec)
         {
-            BYTE*    pbSidToLoad        = NULL;
-            BYTE*    pbDSidSecURL    = NULL;
-            DWORD    dwSizeToLoad    = INTERNET_MAX_URL_LENGTH;
-            DWORD    dwSizeSecURL    = INTERNET_MAX_URL_LENGTH;
+            BYTE*    pbSidToLoad = NULL;
+            BYTE*    pbDSidSecURL = NULL;
+            DWORD    dwSizeToLoad = INTERNET_MAX_URL_LENGTH;
+            DWORD    dwSizeSecURL = INTERNET_MAX_URL_LENGTH;
 
-            pbSidToLoad  = new BYTE [INTERNET_MAX_URL_LENGTH];
-            pbDSidSecURL = new BYTE [INTERNET_MAX_URL_LENGTH];
+            pbSidToLoad = new BYTE[INTERNET_MAX_URL_LENGTH];
+            pbDSidSecURL = new BYTE[INTERNET_MAX_URL_LENGTH];
 
-            hr = srpSec->GetSecurityId ( urlToLoad, pbSidToLoad, &dwSizeToLoad, 0 );
-            _ASSERTE ( SUCCEEDED ( hr ) );
-            if ( SUCCEEDED ( hr ) )
+            hr = srpSec->GetSecurityId(urlToLoad, pbSidToLoad, &dwSizeToLoad, 0);
+            _ASSERTE(SUCCEEDED(hr));
+            if (SUCCEEDED(hr))
             {
-                hr = srpSec->GetSecurityId ( bstrSecURL, pbDSidSecURL, &dwSizeSecURL, 0 );
-                _ASSERTE ( SUCCEEDED ( hr ) );
-                if ( SUCCEEDED ( hr ) )
+                hr = srpSec->GetSecurityId(bstrSecURL, pbDSidSecURL, &dwSizeSecURL, 0);
+                _ASSERTE(SUCCEEDED(hr));
+                if (SUCCEEDED(hr))
                 {
                     hr = DE_E_ACCESS_DENIED;
 
-                    if ( ( dwSizeToLoad == dwSizeSecURL ) &&
-                        ( 0 == memcmp ( pbSidToLoad, pbDSidSecURL, dwSizeToLoad ) ) )
+                    if ((dwSizeToLoad == dwSizeSecURL) &&
+                        (0 == memcmp(pbSidToLoad, pbDSidSecURL, dwSizeToLoad)))
                     {
                         hr = S_OK;
                     }
                 }
             }
 
-            delete [] pbSidToLoad;
-            delete [] pbDSidSecURL;
+            delete[] pbSidToLoad;
+            delete[] pbDSidSecURL;
         }
     }
     return hr;
@@ -4927,10 +4923,10 @@ HRESULT CProxyFrame::CheckCrossZoneSecurity ( BSTR urlToLoad )
 
 HRESULT CProxyFrame::OnProgress(ULONG, ULONG, ULONG ulStatusCode, LPCWSTR)
 {
-    if ( BINDSTATUS_REDIRECTING == ulStatusCode )
+    if (BINDSTATUS_REDIRECTING == ulStatusCode)
     {
         // If we're the SFS control, cancel on Redirect.  Otherwise, ignore it.
-        if ( m_pCtl->IsSafeForScripting ())
+        if (m_pCtl->IsSafeForScripting())
         {
             m_bfSFSRedirect = TRUE;
         }

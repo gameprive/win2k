@@ -44,14 +44,14 @@ typedef struct
 
 
 class CDFCommand : public ISearchCommandExt,
-                   public CImpIDispatch,
-                   public CObjectWithSite,
-                   public CObjectSafety,
-                   public IConnectionPointContainer,
-                   public IProvideClassInfo2,
-                   public CShellFolderData,
-                   public IRowsetWatchNotify,
-                   public IDocFindControllerNotify
+    public CImpIDispatch,
+    public CObjectWithSite,
+    public CObjectSafety,
+    public IConnectionPointContainer,
+    public IProvideClassInfo2,
+    public CShellFolderData,
+    public IRowsetWatchNotify,
+    public IDocFindControllerNotify
 {
     friend HRESULT CDocFindCommand_CreateInstance(IUnknown *punkOuter, REFIID riid, void **ppvObj);
 
@@ -87,7 +87,7 @@ public:
     STDMETHOD(get_ProgressText)(BSTR *pbs);
     STDMETHOD(SaveSearch)(void);
     STDMETHOD(RestoreSearch)(void);
-    STDMETHOD(GetErrorInfo)(BSTR *pbs,  int *phr);
+    STDMETHOD(GetErrorInfo)(BSTR *pbs, int *phr);
     STDMETHOD(SearchFor)(int iFor);
     STDMETHOD(GetScopeInfo)(BSTR bsScope, int *pdwScopeInfo);
     STDMETHOD(RestoreSavedSearch)(VARIANT *pvarFile);
@@ -111,9 +111,9 @@ private:
     ~CDFCommand();
     HRESULT      Init(void);
     HRESULT      _GetSearchIDList(LPITEMIDLIST *ppidl);
-    HRESULT      _SetEmptyText( UINT nID ) ;
+    HRESULT      _SetEmptyText(UINT nID);
     void         _SelectResults();
-    STDMETHODIMP _Clear() ;
+    STDMETHODIMP _Clear();
 
     struct ExecThreadParams {
         CDFCommand    *pThis;
@@ -127,29 +127,43 @@ private:
     };
 
     // Internal class to handle notifications from top level browser
-    class CWBEvents2: public DWebBrowserEvents
+    class CWBEvents2 : public DWebBrowserEvents
     {
     public:
         STDMETHOD(QueryInterface) (REFIID riid, void **ppvObject);
         STDMETHOD_(ULONG, AddRef)(void)
-                { return _pcdfc->AddRef();}
+        {
+            return _pcdfc->AddRef();
+        }
         STDMETHOD_(ULONG, Release)(void)
-                { return _pcdfc->Release();}
+        {
+            return _pcdfc->Release();
+        }
 
         // *** (DwebBrowserEvents)IDispatch methods ***
         STDMETHOD(GetTypeInfoCount)(UINT * pctinfo)
-                { return E_NOTIMPL;}
+        {
+            return E_NOTIMPL;
+        }
         STDMETHOD(GetTypeInfo)(UINT itinfo, LCID lcid, ITypeInfo * * pptinfo)
-                { return E_NOTIMPL;}
+        {
+            return E_NOTIMPL;
+        }
         STDMETHOD(GetIDsOfNames)(REFIID riid, OLECHAR * * rgszNames, UINT cNames, LCID lcid, DISPID * rgdispid)
-                { return E_NOTIMPL;}
+        {
+            return E_NOTIMPL;
+        }
         STDMETHOD(Invoke)(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo, UINT * puArgErr);
 
         // Some helper functions...
         void SetOwner(CDFCommand *pcdfc)
-            { _pcdfc = pcdfc; }  // Don't addref as part of larger object... }
+        {
+            _pcdfc = pcdfc;
+        }  // Don't addref as part of larger object... }
         void SetWaiting(BOOL fWait)
-            {_fWaitingForNavigate = fWait;}
+        {
+            _fWaitingForNavigate = fWait;
+        }
 
     protected:
         // Internal variables...
@@ -174,7 +188,7 @@ private:
     HRESULT                 _ExecData_ValidateRightSearchResults(IShellFolder *psf);
     STDMETHODIMP            _ExecData_Release();
     BOOL                    _Execute_SetupBrowserCP();
-    void cdecl              _NotifyProgressText(UINT ids,...);
+    void cdecl              _NotifyProgressText(UINT ids, ...);
     static LRESULT CALLBACK s_ThreadNotifyWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void                    _PTN_SearchProgress(void);
     void                    _PTN_AsyncProgress(int nPercentComplete, DWORD cAsync);
@@ -184,7 +198,7 @@ private:
     void                    _DeferHandleUpdateDir(LPITEMIDLIST pidl, BOOL bRecurse);
     void                    _ClearDeferUpdateDirList();
     HRESULT                 _SetLastError(HRESULT hr);
-    inline BOOL             _SearchForComputer() {return (_iSearchFor == 1);};
+    inline BOOL             _SearchForComputer() { return (_iSearchFor == 1); };
     IUnknown*               _GetObjectToPersist();
     HRESULT                 _ForcedUnadvise(void);
     void                    _PostMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -213,9 +227,9 @@ private:
     LONG                _cRef;
     HDSA                _hdsaConstraints;
     DWORD               _cExecInProgress;
-    BITBOOL             _fAsyncNotifyReceived:1;
-    BITBOOL             _fDeferRestore:1;
-    BITBOOL             _fDeferRestoreTried:1;
+    BITBOOL             _fAsyncNotifyReceived : 1;
+    BITBOOL             _fDeferRestore : 1;
+    BITBOOL             _fDeferRestoreTried : 1;
     BOOL                _fContinue;
     BOOL                _fNew;
     CConnectionPoint    _cpEvents;
@@ -223,7 +237,7 @@ private:
     OLEDBSimpleProviderListener *_pListener;
     HDPA                _hdpaItemsToAdd1;
     HDPA                _hdpaItemsToAdd2;
-    TCHAR               _szProgressText[MAX_PATH+40];   // progress text leave room for chars...
+    TCHAR               _szProgressText[MAX_PATH + 40];   // progress text leave room for chars...
     LPITEMIDLIST        _pidlUpdate;                    // Are we processing an updatedir?
     LPITEMIDLIST        _pidlRestore;                   // pidl to do restore from...
     struct DeferUpdateDir *_pdudFirst;                  // Do we have any defered update dirs?
@@ -236,8 +250,8 @@ private:
 };
 
 
-class CDFConstraint: public DFConstraint,
-                   public CImpIDispatch
+class CDFConstraint : public DFConstraint,
+    public CImpIDispatch
 {
     friend HRESULT CDFConstraint_CreateInstance(BSTR bName, VARIANT vValue);
 
@@ -271,9 +285,9 @@ private:
 
 
 CDFCommand::CDFCommand()
-: CImpIDispatch(&LIBID_Shell32, 1, 0, &IID_ISearchCommandExt)
+    : CImpIDispatch(&LIBID_Shell32, 1, 0, &IID_ISearchCommandExt)
 {
-    _cRef                 = 1;
+    _cRef = 1;
     _fAsyncNotifyReceived = 0;
     _fContinue = TRUE;
     ASSERT(NULL == _pidlRestore);
@@ -320,7 +334,7 @@ CDFCommand::~CDFCommand()
     if (_hdpaItemsToAdd2)
         DPA_Destroy(_hdpaItemsToAdd2);
 
-    ILFree(_pidlRestore) ;
+    ILFree(_pidlRestore);
 }
 
 
@@ -333,7 +347,7 @@ STDMETHODIMP CDFCommand::QueryInterface(REFIID riid, LPVOID *ppvObj)
         QITABENT(CDFCommand, ISearchCommandExt),             // ISearchCommandExt
         QITABENTMULTI(CDFCommand, IDispatch, ISearchCommandExt),   //IID_IDispatch
         QITABENT(CDFCommand, IProvideClassInfo2),       //IID_IProvideClassInfo2
-        QITABENTMULTI(CDFCommand, IProvideClassInfo,IProvideClassInfo2 ),   //IID_IProvideClassInfo
+        QITABENTMULTI(CDFCommand, IProvideClassInfo,IProvideClassInfo2),   //IID_IProvideClassInfo
         QITABENT(CDFCommand, IObjectWithSite),              //IID_IOBjectWithSite
         QITABENT(CDFCommand, IObjectSafety),                // IID_IObjectSafety
         QITABENT(CDFCommand, IConnectionPointContainer),    // IID_IConnectionPointContainer
@@ -351,13 +365,13 @@ STDMETHODIMP CDFCommand::QueryInterface(REFIID riid, LPVOID *ppvObj)
 STDMETHODIMP_(ULONG) CDFCommand::AddRef()
 {
     InterlockedIncrement(&_cRef);
-    TraceMsg(TF_DOCFIND, "CDFCommand.AddRef %d",_cRef);
+    TraceMsg(TF_DOCFIND, "CDFCommand.AddRef %d", _cRef);
     return _cRef;
 }
 
 STDMETHODIMP_(ULONG) CDFCommand::Release()
 {
-    TraceMsg(TF_DOCFIND, "CDFCommand.Release %d",_cRef-1);
+    TraceMsg(TF_DOCFIND, "CDFCommand.Release %d", _cRef - 1);
     if (InterlockedDecrement(&_cRef)) {
         return _cRef;
     }
@@ -512,7 +526,7 @@ void CDFCommand::_ClearConstraints()
     DSA_DeleteAllItems(_hdsaConstraints);
 }
 
-void cdecl CDFCommand::_NotifyProgressText(UINT ids,...)
+void cdecl CDFCommand::_NotifyProgressText(UINT ids, ...)
 {
     va_list ArgList;
     va_start(ArgList, ids);
@@ -525,7 +539,7 @@ void cdecl CDFCommand::_NotifyProgressText(UINT ids,...)
 
         // a-msadek; needed only for BiDi Win95 loc
         // Mirroring will take care of that over NT5 & BiDi Win98
-        if(g_bBiDiW95Loc)
+        if (g_bBiDiW95Loc)
         {
             _szProgressText[0] = _szProgressText[1] = TEXT('\t');
             pszDst = &_szProgressText[2];
@@ -533,7 +547,7 @@ void cdecl CDFCommand::_NotifyProgressText(UINT ids,...)
         else
             pszDst = &_szProgressText[0];
 
-        StrCpyN(pszDst, psz, ARRAYSIZE(_szProgressText)-2);
+        StrCpyN(pszDst, psz, ARRAYSIZE(_szProgressText) - 2);
 
         LocalFree(psz);
     }
@@ -626,7 +640,7 @@ void CDFCommand::_PTN_SearchProgress(void)
                         // Now see if the item is in the DPA
                         if (psfItem)
                         {
-                            for (j=cItems-1, iItemCheck = iLastMatch + 1; j > 0; j--)
+                            for (j = cItems - 1, iItemCheck = iLastMatch + 1; j > 0; j--)
                             {
                                 if (iItemCheck >= cItems)
                                     iItemCheck = 0;
@@ -655,7 +669,7 @@ void CDFCommand::_PTN_SearchProgress(void)
                     }
                     if (iItem && _execData.psfv)
                     {
-                         hr = _execData.psfv->SetObjectCount(iItem, SFVSOC_NOSCROLL);
+                        hr = _execData.psfv->SetObjectCount(iItem, SFVSOC_NOSCROLL);
                     }
                 }
                 else
@@ -666,7 +680,7 @@ void CDFCommand::_PTN_SearchProgress(void)
                     for (i = 0; i < cItemsToAdd; i++)
                     {
                         if (SUCCEEDED(hr = _execData.pdfFolder->AddPidl(iItem,
-                                pidl = (LPITEMIDLIST)DPA_FastGetPtr(hdpa, i), -1, NULL)))
+                                                                        pidl = (LPITEMIDLIST)DPA_FastGetPtr(hdpa, i), -1, NULL)))
                             iItem++;
                         ILFree(pidl);   // The AddPidl does a clone of the pidl...
                     }
@@ -753,11 +767,11 @@ void CDFCommand::_PTN_SearchComplete(HRESULT hr, BOOL fAbort)
     // repro w/ manual testing or debug binaries, only sometimes after an automation run.  when
     // it happens it is too late to figure out what happened so just patch it here.
     if (_cpEvents._HasSinks())
-        _cpEvents.InvokeDispid(fAbort? DISPID_SEARCHCOMMAND_ABORT : DISPID_SEARCHCOMMAND_COMPLETE);
+        _cpEvents.InvokeDispid(fAbort ? DISPID_SEARCHCOMMAND_ABORT : DISPID_SEARCHCOMMAND_COMPLETE);
     // someone clicked on new button -- cannot set no files found text in listview
     // because we'll overwrite enter search criteria to begin
     if (!_fNew)
-        _SetEmptyText( IDS_FINDVIEWEMPTY ) ;
+        _SetEmptyText(IDS_FINDVIEWEMPTY);
     _SetLastError(hr);
 
     // _execData.pdfFolder is NULL when Searh is complete by navigating away from the search page
@@ -819,7 +833,7 @@ void CDFCommand::_PTN_SearchComplete(HRESULT hr, BOOL fAbort)
 
         // clear the update dir flags
         _execData.pdfFolder->GetFolderListItemCount(&cPidf);
-        for (i = 0; i < cPidf; i++ )
+        for (i = 0; i < cPidf; i++)
         {
             DFFolderListItem *pdffli;
 
@@ -903,28 +917,28 @@ void CDFCommand::_handleFSChange(LONG code, LPITEMIDLIST *ppidl)
         break;
 
     case SHCNE_UPDATEDIR:
+    {
+        // BUGBUG:: How to handle updatedir when there is an async enum involved...
+        // for now punt
+        TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_UPDATEDIR, pidl=0x%X", *ppidl);
+        BOOL bRecurse = (ppidl[1] != NULL);
+        if (!pdfEnumAsync)
         {
-            // BUGBUG:: How to handle updatedir when there is an async enum involved...
-            // for now punt
-            TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_UPDATEDIR, pidl=0x%X",*ppidl);
-            BOOL bRecurse = (ppidl[1] != NULL);
-            if (!pdfEnumAsync)
+            if (_cExecInProgress)
             {
-                if (_cExecInProgress)
+                _DeferHandleUpdateDir(*ppidl, bRecurse);
+            }
+            else
+            {
+                if (DFB_handleUpdateDir(_execData.pdfFolder, *ppidl, bRecurse))
                 {
-                    _DeferHandleUpdateDir(*ppidl, bRecurse);
-                }
-                else
-                {
-                    if (DFB_handleUpdateDir(_execData.pdfFolder, *ppidl, bRecurse))
-                    {
-                        // Need to spawn sub-search on this...
-                        _Execute_Start(FALSE, -1, *ppidl);
-                    }
+                    // Need to spawn sub-search on this...
+                    _Execute_Start(FALSE, -1, *ppidl);
                 }
             }
         }
-        return;
+    }
+    return;
 
     default:
         return;     // we are not interested in this event
@@ -942,14 +956,14 @@ void CDFCommand::_handleFSChange(LONG code, LPITEMIDLIST *ppidl)
     switch (code)
     {
     case SHCNE_RMDIR:
-        TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_RMDIR, pidl=0x%X",*ppidl);
+        TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_RMDIR, pidl=0x%X", *ppidl);
         DFB_handleRMDir(_execData.pdfFolder, _execData.psfv, *ppidl);
         // Fall through to see if we should delete the item itself...
         goto RMObj;
 
     case SHCNE_DELETE:
-        TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_DELETE, pidl=0x%X",*ppidl);
-RMObj:
+        TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_DELETE, pidl=0x%X", *ppidl);
+    RMObj:
         if (pidlT != NULL)
         {
             _execData.psfv->RemoveObject(pidlT, &idsMsg);
@@ -960,47 +974,47 @@ RMObj:
         // BUGBUG:: On rename directory we should see if the old one is in our
         // range and the new one is not and then call the HandleRMDir function
     case SHCNE_RENAMEITEM:
+    {
+        if (pidlT)
         {
-            if (pidlT)
+            LPITEMIDLIST pidl1;
+            LPITEMIDLIST pidl2;
+            // If the two items dont have the same parent, we will go ahead
+            // and remove it...
+            _execData.pdfFolder->GetParentsPIDL(pidlT, &pidl1);
+            pidl2 = ILClone(ppidl[1]);
+            if (pidl1 && pidl2)
             {
-                LPITEMIDLIST pidl1;
-                LPITEMIDLIST pidl2;
-                // If the two items dont have the same parent, we will go ahead
-                // and remove it...
-                _execData.pdfFolder->GetParentsPIDL(pidlT, &pidl1);
-                pidl2 = ILClone(ppidl[1]);
-                if (pidl1 && pidl2)
+                ILRemoveLastID(pidl2);
+                if (!ILIsEqual(pidl1, pidl2))
                 {
-                    ILRemoveLastID(pidl2);
-                    if (!ILIsEqual(pidl1, pidl2))
-                    {
-                        _execData.psfv->RemoveObject(pidlT, &idsMsg);
+                    _execData.psfv->RemoveObject(pidlT, &idsMsg);
 
-                        // And maybe add it back to the end... of the list
-                        DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, ppidl[1], NULL);
-                    }
-                    else
-                    {
-                        // The object is in same folder so must be rename...
-                        // And maybe add it back to the end... of the list
-                        DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, ppidl[1], pidlT);
-                    }
+                    // And maybe add it back to the end... of the list
+                    DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, ppidl[1], NULL);
                 }
-                ILFree(pidl2);
+                else
+                {
+                    // The object is in same folder so must be rename...
+                    // And maybe add it back to the end... of the list
+                    DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, ppidl[1], pidlT);
+                }
             }
-            else
-                DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, ppidl[1], NULL);
+            ILFree(pidl2);
         }
-        break;
+        else
+            DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, ppidl[1], NULL);
+    }
+    break;
 
     case SHCNE_UPDATEITEM:
-        {
-            TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_UPDATEITEM, pidl=0x%X",*ppidl);
-            // We need to do a find first and convert to pidl...
-            if (pidlT)
-                DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, pidlT, pidlT);
-        }
-        break;
+    {
+        TraceMsg(TF_DOCFIND, "DocFind got notify SHCNE_UPDATEITEM, pidl=0x%X", *ppidl);
+        // We need to do a find first and convert to pidl...
+        if (pidlT)
+            DFB_UpdateOrMaybeAddPidl(_execData.pdfFolder, _execData.psfv, code, pidlT, pidlT);
+    }
+    break;
     }
 
 
@@ -1091,19 +1105,19 @@ LRESULT CALLBACK CDFCommand::s_ThreadNotifyWndProc(HWND hwnd, UINT uMsg, WPARAM 
     {
         switch (uMsg) {
         case WM_DF_FSNOTIFY:
-            {
-                LPSHChangeNotificationLock  pshcnl;
-                LPITEMIDLIST *ppidl;
-                LONG lEvent;
+        {
+            LPSHChangeNotificationLock  pshcnl;
+            LPITEMIDLIST *ppidl;
+            LONG lEvent;
 
-                pshcnl = SHChangeNotification_Lock((HANDLE)wParam, (DWORD)lParam, &ppidl, &lEvent);
-                if (pshcnl)
-                {
-                    pThis->_handleFSChange(lEvent, ppidl);
-                    SHChangeNotification_Unlock(pshcnl);
-                }
+            pshcnl = SHChangeNotification_Lock((HANDLE)wParam, (DWORD)lParam, &ppidl, &lEvent);
+            if (pshcnl)
+            {
+                pThis->_handleFSChange(lEvent, ppidl);
+                SHChangeNotification_Unlock(pshcnl);
             }
-            break;
+        }
+        break;
 
         case WM_DF_SEARCHPROGRESS:
             pThis->_PTN_SearchProgress();
@@ -1173,7 +1187,7 @@ DWORD CALLBACK CDFCommand::_Execute_ThreadProc(LPVOID lpThreadParams)
             DBCOUNTITEM dwTotalAsync;
             BOOL fDone;
             int nPercentComplete;
-            while((hr = pParams->pdfenum->GetAsyncCount(&dwTotalAsync, &nPercentComplete, &fDone)==S_OK))
+            while ((hr = pParams->pdfenum->GetAsyncCount(&dwTotalAsync, &nPercentComplete, &fDone) == S_OK))
             {
                 if (!pThis->_fContinue)
                 {
@@ -1217,7 +1231,7 @@ DWORD CALLBACK CDFCommand::_Execute_ThreadProc(LPVOID lpThreadParams)
             pThis->_updateParams.hdpa = pThis->_hdpaItemsToAdd1;    // Assume first one now...
             pThis->_updateParams.dwTimeLastNotify = GetTickCount();
 
-            while (((hr = pParams->pdfenum->Next(&pidl, &cItemsSearched, &cFoldersSearched, &pThis->_fContinue, &state, NULL))==S_OK)) {
+            while (((hr = pParams->pdfenum->Next(&pidl, &cItemsSearched, &cFoldersSearched, &pThis->_fContinue, &state, NULL)) == S_OK)) {
                 if (state == GNF_DONE)
                 {   // we ran out of people to search
                     TraceMsg(TF_DOCFIND, "CDFCommand: done exec.\n");
@@ -1240,13 +1254,13 @@ DWORD CALLBACK CDFCommand::_Execute_ThreadProc(LPVOID lpThreadParams)
                     pThis->_updateParams.fFilesAdded = TRUE;
                     LeaveCriticalSection(&pThis->_updateParams.csSearch);
                 }
-                if (cFoldersSearchedPrev != cFoldersSearched){
+                if (cFoldersSearchedPrev != cFoldersSearched) {
                     pThis->_updateParams.fDirChanged = TRUE;
                     cFoldersSearchedPrev = cFoldersSearched;
                 }
 
                 if (!pThis->_updateParams.fUpdatePosted
-                && (pThis->_updateParams.fDirChanged || pThis->_updateParams.fFilesAdded))
+                    && (pThis->_updateParams.fDirChanged || pThis->_updateParams.fFilesAdded))
                 {
                     if (GetTickCount() > (pThis->_updateParams.dwTimeLastNotify + 200))
                     {
@@ -1324,7 +1338,7 @@ STDMETHODIMP CDFCommand::_Execute_Init(ExecThreadParams **ppParams, int iCol, LP
             if (SUCCEEDED(hr))
             {
                 hr = pdfff->EnumObjects(_execData.psf, pidlUpdate, dwFlags, iCol,
-                        _execData.szProgressText, SAFECAST_IROWSETTWATCHNOTIFY(this), &(pParams->pdfenum));
+                                        _execData.szProgressText, SAFECAST_IROWSETTWATCHNOTIFY(this), &(pParams->pdfenum));
             }
         }
         pdfff->Release();
@@ -1465,9 +1479,9 @@ BOOL CDFCommand::_Execute_SetupBrowserCP()
 
         // OK now lets register ourself with the Defview to get any events that they may generate...
         if (SUCCEEDED(hr = IUnknown_QueryService(_punkSite, SID_STopLevelBrowser,
-                IID_IServiceProvider, (void**)&pspTLB))) {
+                                                 IID_IServiceProvider, (void**)&pspTLB))) {
             if (SUCCEEDED(hr = pspTLB->QueryService(IID_IExpDispSupport, IID_IConnectionPointContainer, (void **)&pcpc))) {
-                hr = ConnectToConnectionPoint(SAFECAST(&_cwbe,IDispatch*), DIID_DWebBrowserEvents2,
+                hr = ConnectToConnectionPoint(SAFECAST(&_cwbe, IDispatch*), DIID_DWebBrowserEvents2,
                                               TRUE, pcpc, &_dwCookie, &_pcpBrowser);
                 pcpc->Release();
             }
@@ -1533,7 +1547,7 @@ STDMETHODIMP CDFCommand::_Execute_Start(BOOL fNavigateIfFail, int iCol, LPITEMID
         }
         else
         {
-        // Tell defview to delete everything. - Use our Clear function to save code
+            // Tell defview to delete everything. - Use our Clear function to save code
             _Clear();
         }
 
@@ -1553,7 +1567,7 @@ STDMETHODIMP CDFCommand::_Execute_Start(BOOL fNavigateIfFail, int iCol, LPITEMID
         {
             _cExecInProgress--;
             _ExecParams_Free(pExecThreadParams);
-            _SetEmptyText( IDS_FINDVIEWEMPTY ) ;
+            _SetEmptyText(IDS_FINDVIEWEMPTY);
         }
     }
     else
@@ -1592,14 +1606,15 @@ STDMETHODIMP CDFCommand::EnumConnectionPoints(LPENUMCONNECTIONPOINTS * ppEnum)
 
 STDMETHODIMP CDFCommand::FindConnectionPoint(REFIID iid, LPCONNECTIONPOINT *ppCP)
 {
-    ASSERT( ppCP );
+    ASSERT(ppCP);
 
     if (!ppCP)
         return E_POINTER;
 
     if (IsEqualIID(iid, DIID_DSearchCommandEvents) || IsEqualIID(iid, IID_IDispatch)) {
         *ppCP = _cpEvents.CastToIConnectionPoint();
-    } else {
+    }
+    else {
         *ppCP = NULL;
         return E_NOINTERFACE;
     }
@@ -1665,30 +1680,30 @@ STDMETHODIMP CDFCommand::SetSite(IUnknown *punkSite)
 
 void CDFCommand::_SelectResults()
 {
-    if( _execData.psfv )
+    if (_execData.psfv)
     {
         //  If there are any items...
         UINT cItems = 0;
-        if( SUCCEEDED(_execData.psfv->GetObjectCount( &cItems )) && cItems > 0 )
+        if (SUCCEEDED(_execData.psfv->GetObjectCount(&cItems)) && cItems > 0)
         {
             IShellView* psv;
-            if( SUCCEEDED(_execData.psfv->QueryInterface( IID_IShellView, (void**)&psv )) )
+            if (SUCCEEDED(_execData.psfv->QueryInterface(IID_IShellView, (void**)&psv)))
             {
                 //  If none are selected (don't want to rip the user's selection out of his hand)...
                 UINT cSelected = 0;
-                if( SUCCEEDED(_execData.psfv->GetSelectedCount( &cSelected )) && cSelected == 0 )
+                if (SUCCEEDED(_execData.psfv->GetSelectedCount(&cSelected)) && cSelected == 0)
                 {
                     //  Retrieve the pidl for the first item in the list...
                     LPITEMIDLIST pidlFirst = NULL;
-                    if( SUCCEEDED(_execData.psfv->GetObject( &pidlFirst,  0 )) )
+                    if (SUCCEEDED(_execData.psfv->GetObject(&pidlFirst, 0)))
                     {
                         //  Give it the focus
-                        psv->SelectItem( pidlFirst, SVSI_FOCUSED | SVSI_ENSUREVISIBLE );
+                        psv->SelectItem(pidlFirst, SVSI_FOCUSED | SVSI_ENSUREVISIBLE);
                     }
                 }
 
                 //  Activate the view.
-                psv->UIActivate( SVUIA_ACTIVATE_FOCUS );
+                psv->UIActivate(SVUIA_ACTIVATE_FOCUS);
                 psv->Release();
             }
         }
@@ -1697,7 +1712,7 @@ void CDFCommand::_SelectResults()
 
 STDMETHODIMP CDFCommand::ClearResults(void)
 {
-    HRESULT hr = _Clear() ;
+    HRESULT hr = _Clear();
 
     if (SUCCEEDED(hr))
     {
@@ -1705,7 +1720,7 @@ STDMETHODIMP CDFCommand::ClearResults(void)
         _SetEmptyText(IDS_FINDVIEWEMPTYINIT);
     }
 
-    return hr ;
+    return hr;
 }
 
 STDMETHODIMP CDFCommand::_Clear()
@@ -1725,25 +1740,25 @@ STDMETHODIMP CDFCommand::_Clear()
 }
 
 
-HRESULT CDFCommand::_SetEmptyText( UINT nIDEmptyText )
+HRESULT CDFCommand::_SetEmptyText(UINT nIDEmptyText)
 {
-    if( _execData.pdfFolder )
+    if (_execData.pdfFolder)
     {
-        TCHAR szEmptyText[128] ;
-        EVAL( LoadString( HINST_THISDLL, nIDEmptyText,
-                          szEmptyText, ARRAYSIZE(szEmptyText) ) ) ;
-        return _execData.pdfFolder->SetEmptyText( szEmptyText ) ;
+        TCHAR szEmptyText[128];
+        EVAL(LoadString(HINST_THISDLL, nIDEmptyText,
+                        szEmptyText, ARRAYSIZE(szEmptyText)));
+        return _execData.pdfFolder->SetEmptyText(szEmptyText);
     }
-    return E_FAIL ;
+    return E_FAIL;
 }
 
 
 HRESULT CDFCommand::_GetSearchIDList(LPITEMIDLIST *ppidl)
 {
     return SHILCreateFromPath(_SearchForComputer() ?
-        TEXT("::{1f4de370-d627-11d1-ba4f-00a0c91eedba}")  : // CLSID_ComputerFindFolder
-        TEXT("::{e17d4fc0-5564-11d1-83f2-00a0c90dc849}"),   // CLSID_DocFindFolder
-        ppidl, NULL);
+                              TEXT("::{1f4de370-d627-11d1-ba4f-00a0c91eedba}") : // CLSID_ComputerFindFolder
+                              TEXT("::{e17d4fc0-5564-11d1-83f2-00a0c90dc849}"),   // CLSID_DocFindFolder
+                              ppidl, NULL);
 }
 
 STDMETHODIMP CDFCommand::NavigateToSearchResults(void)
@@ -1756,7 +1771,7 @@ STDMETHODIMP CDFCommand::NavigateToSearchResults(void)
         hr = _GetSearchIDList(&pidl);
         if (SUCCEEDED(hr))
         {
-            hr = psb->BrowseObject(pidl,  SBSP_SAMEBROWSER | SBSP_ABSOLUTE | SBSP_WRITENOHISTORY);
+            hr = psb->BrowseObject(pidl, SBSP_SAMEBROWSER | SBSP_ABSOLUTE | SBSP_WRITENOHISTORY);
             ILFree(pidl);
         }
         psb->Release();
@@ -1889,12 +1904,12 @@ static const UINT error_strings[] =
     SCEE_CASESENINDEX, IDS_DOCFIND_CI_NOT_CASE_SEN,
 };
 
-STDMETHODIMP CDFCommand::GetErrorInfo(BSTR *pbs,  int *phr)
+STDMETHODIMP CDFCommand::GetErrorInfo(BSTR *pbs, int *phr)
 {
-    int     nCode     = HRESULT_CODE(_hrLastError);
+    int     nCode = HRESULT_CODE(_hrLastError);
     UINT    uSeverity = HRESULT_SEVERITY(_hrLastError);
 
-    if( phr )
+    if (phr)
         *phr = nCode;
 
     if (pbs)
@@ -1902,23 +1917,23 @@ STDMETHODIMP CDFCommand::GetErrorInfo(BSTR *pbs,  int *phr)
         UINT nIDString = 0;
         *pbs = NULL;
 
-        for( int i=0; i<ARRAYSIZE(error_strings); i+=2 )
+        for (int i = 0; i < ARRAYSIZE(error_strings); i += 2)
         {
-            if( error_strings[i] == (UINT)nCode )
+            if (error_strings[i] == (UINT)nCode)
             {
-                nIDString =  error_strings[i+1];
-                break ;
+                nIDString = error_strings[i + 1];
+                break;
             }
         }
 
-        if( nIDString )
+        if (nIDString)
         {
             WCHAR wszMsg[MAX_PATH];
-            EVAL(LoadStringW( HINST_THISDLL, nIDString, wszMsg, ARRAYSIZE(wszMsg) ));
-            *pbs = SysAllocString( wszMsg );
+            EVAL(LoadStringW(HINST_THISDLL, nIDString, wszMsg, ARRAYSIZE(wszMsg)));
+            *pbs = SysAllocString(wszMsg);
         }
         else
-            *pbs = SysAllocString( L"" );
+            *pbs = SysAllocString(L"");
     }
 
     return S_OK;
@@ -1937,23 +1952,23 @@ STDMETHODIMP CDFCommand::GetScopeInfo(BSTR bsScope, int *pdwScopeInfo)
     return E_NOTIMPL;
 }
 
-STDMETHODIMP CDFCommand::RestoreSavedSearch( IN VARIANT *pvarFile )
+STDMETHODIMP CDFCommand::RestoreSavedSearch(IN VARIANT *pvarFile)
 {
-    if( pvarFile != NULL )
+    if (pvarFile != NULL)
     {
-        if( pvarFile->vt != VT_EMPTY )
+        if (pvarFile->vt != VT_EMPTY)
         {
-            LPITEMIDLIST pidl = VariantToIDList( pvarFile ) ;
-            if( pidl )
+            LPITEMIDLIST pidl = VariantToIDList(pvarFile);
+            if (pidl)
             {
-                ILFree( _pidlRestore ) ;
-                _pidlRestore = pidl ;
+                ILFree(_pidlRestore);
+                _pidlRestore = pidl;
             }
         }
-        VariantClear( pvarFile ) ;
+        VariantClear(pvarFile);
     }
 
-    if( _pidlRestore )
+    if (_pidlRestore)
     {
         IShellBrowser  *psb;
         if (SUCCEEDED(IUnknown_QueryService(_punkSite, SID_STopLevelBrowser, IID_IShellBrowser, (void**)&psb)))
@@ -1970,15 +1985,14 @@ STDMETHODIMP CDFCommand::RestoreSavedSearch( IN VARIANT *pvarFile )
                 psv->Release();
 
                 IWebBrowser2* pwb;
-                if (EVAL(SUCCEEDED(IUnknown_QueryService(psb, SID_SWebBrowserApp,
-                        IID_IWebBrowser2, (void **) &pwb))))
+                if (EVAL(SUCCEEDED(IUnknown_QueryService(psb, SID_SWebBrowserApp, IID_IWebBrowser2, (void **)&pwb))))
                 {
                     if (SUCCEEDED(_ExecData_Init()))
                     {
                         _execData.pdfFolder->RestoreSearchFromSaveFile(_pidlRestore, _execData.psfv);
                         _cpEvents.InvokeDispid(DISPID_SEARCHCOMMAND_RESTORE);
-                        ILFree( _pidlRestore ) ;
-                        _pidlRestore = NULL ;
+                        ILFree(_pidlRestore);
+                        _pidlRestore = NULL;
 
                     }
                     pwb->Release();
@@ -2032,8 +2046,8 @@ STDMETHODIMP CDFCommand::DoSortOnColumn(UINT iCol, BOOL fSameCol)
 // Implemention of our IDispatch to hookup to the top level browsers connnection point...
 STDMETHODIMP CDFCommand::CWBEvents2::QueryInterface(REFIID riid, LPVOID *ppvObj)
 {
-    if ( riid == IID_IUnknown || riid == IID_IDispatch || riid == DIID_DWebBrowserEvents2
-         || riid == DIID_DWebBrowserEvents){
+    if (riid == IID_IUnknown || riid == IID_IDispatch || riid == DIID_DWebBrowserEvents2
+        || riid == DIID_DWebBrowserEvents) {
         *ppvObj = (LPVOID)this;
         AddRef();
     }
@@ -2047,7 +2061,7 @@ STDMETHODIMP CDFCommand::CWBEvents2::QueryInterface(REFIID riid, LPVOID *ppvObj)
 STDMETHODIMP CDFCommand::CWBEvents2::Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo, UINT * puArgErr)
 {
     if (_fWaitingForNavigate) {
-        TraceMsg(TF_WARNING, "CDFCommand::CWBEvents2::Invoke dispid=%d.",dispidMember);
+        TraceMsg(TF_WARNING, "CDFCommand::CWBEvents2::Invoke dispid=%d.", dispidMember);
         if ((dispidMember == DISPID_NAVIGATECOMPLETE) || (dispidMember == DISPID_DOCUMENTCOMPLETE)) {
             // Assume this is ours... Should maybe check parameters...
             _fWaitingForNavigate = FALSE;
@@ -2057,7 +2071,7 @@ STDMETHODIMP CDFCommand::CWBEvents2::Invoke(DISPID dispidMember, REFIID riid, LC
             {
                 _pcdfc->_fDeferRestore = FALSE;
                 _pcdfc->_fDeferRestoreTried = TRUE;
-                _pcdfc->RestoreSavedSearch( NULL );
+                _pcdfc->RestoreSavedSearch(NULL);
             }
             else
                 return _pcdfc->_Execute_Start(FALSE, -1, NULL);
@@ -2073,9 +2087,9 @@ STDMETHODIMP CDFCommand::CWBEvents2::Invoke(DISPID dispidMember, REFIID riid, LC
 
 
 CDFConstraint::CDFConstraint(BSTR bstr, VARIANT var)
-: CImpIDispatch(&LIBID_Shell32, 1, 0, &IID_DFConstraint)
+    : CImpIDispatch(&LIBID_Shell32, 1, 0, &IID_DFConstraint)
 {
-    _cRef       = 1;
+    _cRef = 1;
     _bstr = bstr;
     _var = var;
 }
@@ -2103,13 +2117,13 @@ STDMETHODIMP CDFConstraint::QueryInterface(REFIID riid, LPVOID *ppvObj)
 STDMETHODIMP_(ULONG) CDFConstraint::AddRef()
 {
     InterlockedIncrement(&_cRef);
-    TraceMsg(TF_DOCFIND, "CDFConstraint.AddRef %d",_cRef);
+    TraceMsg(TF_DOCFIND, "CDFConstraint.AddRef %d", _cRef);
     return _cRef;
 }
 
 STDMETHODIMP_(ULONG) CDFConstraint::Release()
 {
-    TraceMsg(TF_DOCFIND, "CDFConstraint.Release %d",_cRef-1);
+    TraceMsg(TF_DOCFIND, "CDFConstraint.Release %d", _cRef - 1);
     if (InterlockedDecrement(&_cRef)) {
         return _cRef;
     }
@@ -2132,7 +2146,14 @@ STDMETHODIMP CDFConstraint::GetIDsOfNames(REFIID riid, OLECHAR * * rgszNames, UI
     return CImpIDispatch::GetIDsOfNames(riid, rgszNames, cNames, lcid, rgdispid);
 }
 
-STDMETHODIMP CDFConstraint::Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS * pdispparams, VARIANT * pvarResult, EXCEPINFO * pexcepinfo, UINT * puArgErr)
+STDMETHODIMP CDFConstraint::Invoke(DISPID dispidMember,
+                                   REFIID riid,
+                                   LCID lcid,
+                                   WORD wFlags,
+                                   DISPPARAMS * pdispparams,
+                                   VARIANT * pvarResult,
+                                   EXCEPINFO * pexcepinfo,
+                                   UINT * puArgErr)
 {
     return CImpIDispatch::Invoke(dispidMember, riid, lcid, wFlags, pdispparams, pvarResult, pexcepinfo, puArgErr);
 }
@@ -2140,7 +2161,7 @@ STDMETHODIMP CDFConstraint::Invoke(DISPID dispidMember, REFIID riid, LCID lcid, 
 STDMETHODIMP CDFConstraint::get_Name(BSTR *pbs)
 {
     *pbs = SysAllocString(_bstr);
-    return *pbs? S_OK : E_OUTOFMEMORY;
+    return *pbs ? S_OK : E_OUTOFMEMORY;
 }
 
 STDMETHODIMP CDFConstraint::get_Value(VARIANT *pvar)

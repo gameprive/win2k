@@ -4871,10 +4871,8 @@ HRESULT CActiveDesktop::_InsertNewDesktopItems(IHTMLDocument2  *pDoc)
 
 // This function takes a pointer to the ActiveDesktop's ole obj, reads all the changes to be done
 // from the registry and makes those changes to the various elements through dynamic HTML interfaces.
-
 HRESULT CActiveDesktop::MakeDynamicChanges(IOleObject *pOleObj)
 {
-
     IHTMLDocument2  *pDoc;
     HRESULT         hres = E_FAIL;
 
