@@ -143,27 +143,15 @@ PRIVATE LPSTR MapProto(int proto) {
 
 
 
-ICSocket *
-ContainingICSocket(
-    LPVOID lpAddress
-    )
-
+ICSocket * ContainingICSocket(LPVOID lpAddress)
 /*++
-
 Routine Description:
-
     Returns address of start of ICSocket (i.e. vtable) given address of list
-
 Arguments:
-
     lpAddress   - address of m_List part of ICSocket
-
 Return Value:
-
     ICSocket *  - address of start of ICSocket object (also ICSecureSocket)
-
 --*/
-
 {
     return CONTAINING_RECORD(lpAddress, ICSocket, m_List);
 }
@@ -172,34 +160,17 @@ Return Value:
 // ICSocket methods
 
 
-
-ICSocket::ICSocket(
-    VOID
-    )
-
+ICSocket::ICSocket(VOID)
 /*++
-
 Routine Description:
-
     ICSocket constructor
-
 Arguments:
-
     None.
-
 Return Value:
-
     None.
-
 --*/
-
 {
-    DEBUG_ENTER((DBG_OBJECTS,
-                 None,
-                 "ICSocket::ICSocket",
-                 "{%#x}",
-                 this
-                 ));
+    DEBUG_ENTER((DBG_OBJECTS, None, "ICSocket::ICSocket", "{%#x}", this));
 
     SIGN_ICSOCKET();
 
@@ -218,23 +189,14 @@ Return Value:
 
 
 ICSocket::~ICSocket()
-
 /*++
-
 Routine Description:
-
     ICSocket destructor. Virtual function
-
 Arguments:
-
     None.
-
 Return Value:
-
     None.
-
 --*/
-
 {
     DEBUG_ENTER((DBG_OBJECTS,
                  None,
@@ -259,27 +221,15 @@ Return Value:
 }
 
 
-VOID
-ICSocket::Destroy(
-    VOID
-    )
-
+VOID ICSocket::Destroy(VOID)
 /*++
-
 Routine Description:
-
     description-of-function.
-
 Arguments:
-
     None.
-
 Return Value:
-
     None.
-
 --*/
-
 {
     DEBUG_ENTER((DBG_OBJECTS,
                  None,
@@ -299,27 +249,15 @@ Return Value:
 }
 
 
-VOID
-ICSocket::Reference(
-    VOID
-    )
-
+VOID ICSocket::Reference(VOID)
 /*++
-
 Routine Description:
-
     Just increases the reference count
-
 Arguments:
-
     None.
-
 Return Value:
-
     None.
-
 --*/
-
 {
     CHECK_ICSOCKET();
 
@@ -327,40 +265,26 @@ Return Value:
 }
 
 
-BOOL
-ICSocket::Dereference(
-    VOID
-    )
-
+BOOL ICSocket::Dereference(VOID)
 /*++
-
 Routine Description:
-
     Reduces the reference count. If it goes to zero, the object is deleted
-
 Arguments:
-
     None.
-
 Return Value:
-
     BOOL
         TRUE    - object deleted
-
         FALSE   - object still alive
-
 --*/
-
 {
     CHECK_ICSOCKET();
 
     if (InterlockedDecrement(&m_ReferenceCount) == 0) {
-
         INET_ASSERT(m_ReferenceCount == 0);
-
         delete this;
         return TRUE;
     }
+
     return FALSE;
 }
 
@@ -373,27 +297,17 @@ ICSocket::EnableSocks(
     )
 
 /*++
-
 Routine Description:
-
     Set SOCKS gateway IP address and port in this socket object
-
 Arguments:
-
     lpSocksHost - IP address or host name of SOCKS host
-
     ipSocksPort - port address of SOCKS host
-
 Return Value:
-
     DWORD
         Success - ERROR_SUCCESS
-
         Failure - ERROR_INTERNET_NAME_NOT_RESOLVED
                     failed to resolve SOCKS host name
-
 --*/
-
 {
     DEBUG_ENTER((DBG_SOCKETS,
                  Dword,

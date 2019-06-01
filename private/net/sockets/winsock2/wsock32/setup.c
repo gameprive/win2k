@@ -2256,7 +2256,10 @@ Return Value:
             }
         }
 
-        // If we made it this far, then either a) we couldn't load the helper DLL, b) the helper DLL doesn't export the new entrypoint, c) the entrypoint failed to return the required info, or d) the
+        // If we made it this far, then either 
+		// a) we couldn't load the helper DLL, 
+		// b) the helper DLL doesn't export the new entrypoint, 
+		// c) the entrypoint failed to return the required info, or d) the
         // entrypoint returned bogus data causing us to throw an exception when we tried to copy it.
         // In any case, just proceed and construct the new data ourselves.
 

@@ -247,16 +247,5 @@ getanswer(
 
 //ULONG SockNbtResolveName (IN PCHAR Name);
 
-//PHOSTENT
-//QueryHostentCache (
-//    IN LPSTR Name OPTIONAL,
-//    IN DWORD IpAddress OPTIONAL
-//    );
-
-//FILE *
-//SockOpenNetworkDataBase(
-//    IN  char *Database,
-//    OUT char *Pathname,
-//    IN  int   PathnameLen,
-//    IN  char *OpenFlags
-//    );
+//PHOSTENT QueryHostentCache (IN LPSTR Name OPTIONAL, IN DWORD IpAddress OPTIONAL);
+//FILE * SockOpenNetworkDataBase(IN  char *Database, OUT char *Pathname, IN  int   PathnameLen, IN  char *OpenFlags);
